@@ -260,63 +260,75 @@ a:hover {
 }
 
 /* ==================== HEADER ==================== */
-/* Sticky header */
 header {
     background: var(--forest);
     color: var(--text-on-dark);
-    padding: var(--space-5) var(--space-6);
+    padding: var(--space-4) var(--space-6);
     position: sticky;
     top: 0;
     z-index: 200;
-    border-bottom: 3px solid var(--sage);
+    border-bottom: 2px solid rgba(157,201,144,0.3);
 }
 
-[data-theme="dark"] header { background: #0f1a0e; border-bottom-color: var(--fern); }
+[data-theme="dark"] header { background: #0f1a0e; border-bottom-color: rgba(122,175,110,0.25); }
 
-.header-content { max-width: 1200px; margin: 0 auto; }
-
-.header-top {
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     gap: var(--space-6);
-    margin-bottom: var(--space-3);
+    min-height: 3.5rem;
+}
+
+/* Left side — branding + greeting stacked */
+.header-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-1);
+    min-width: 0;
+}
+
+.header-branding {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    flex-wrap: wrap;
 }
 
 .header-branding h1 {
     font-family: var(--font-display);
     color: var(--text-on-dark);
-    font-size: clamp(1.75rem, 4.5vw, 2.375rem);
+    font-size: clamp(1.375rem, 3vw, 1.75rem);
     font-weight: 700;
-    letter-spacing: -0.022em;
-    margin-bottom: var(--space-2);
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    line-height: 1.1;
+    letter-spacing: -0.018em;
+    line-height: 1;
+    white-space: nowrap;
 }
-
-.brand-icon { flex-shrink: 0; display: flex; }
 
 .subtitle {
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
     font-family: var(--font-body);
-    font-weight: 400;
-    color: rgba(232, 244, 230, 0.82);
-    line-height: 1.5;
-}
-
-.specialty-badge {
-    background: rgba(122, 175, 110, 0.28);
-    border: 1px solid rgba(122, 175, 110, 0.45);
-    padding: 0.1em 0.6em;
-    border-radius: var(--radius-full);
-    font-size: 0.84em;
-    font-weight: 700;
-    color: #cde8ca;
+    font-weight: 500;
+    color: rgba(232, 244, 230, 0.6);
     letter-spacing: 0.02em;
+    white-space: nowrap;
 }
 
+.greeting {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: rgba(232, 244, 230, 0.78);
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Right side — controls row */
 .header-controls {
     display: flex;
     align-items: center;
@@ -324,22 +336,21 @@ header {
     flex-shrink: 0;
 }
 
-/* Clock widget — HCI #2: Visibility of system status */
 .clock-widget {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 0.125rem;
+    gap: 0.1rem;
     background: rgba(255,255,255,0.07);
     border: 1px solid rgba(255,255,255,0.13);
     border-radius: var(--radius-lg);
-    padding: var(--space-3) var(--space-4);
+    padding: var(--space-2) var(--space-4);
 }
 
 .clock-time {
     font-family: var(--font-display);
-    font-size: clamp(1.25rem, 3vw, 1.625rem);
-    font-weight: 500;
+    font-size: clamp(1.1rem, 2.5vw, 1.375rem);
+    font-weight: 600;
     line-height: 1;
     color: var(--text-on-dark);
     letter-spacing: 0.01em;
@@ -351,15 +362,7 @@ header {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.07em;
-    color: rgba(232, 244, 230, 0.7);
-}
-
-.greeting {
-    font-family: var(--font-display);
-    font-size: var(--text-sm);
-    font-style: italic;
-    color: rgba(232, 244, 230, 0.85);
-    line-height: 1.5;
+    color: rgba(232, 244, 230, 0.6);
 }
 
 /* Icon buttons */
@@ -376,13 +379,12 @@ header {
     align-items: center;
     justify-content: center;
     transition:
-        background var(--t-base),
-        border-color var(--t-base),
+        background var(--t-smooth),
+        border-color var(--t-smooth),
         transform var(--t-fast);
     flex-shrink: 0;
     position: relative;
 }
-
 
 .icon-btn:hover,
 .theme-toggle:hover {
@@ -390,7 +392,6 @@ header {
     border-color: rgba(255,255,255,0.28);
     transform: scale(1.06);
 }
-
 
 .icon-btn:active,
 .theme-toggle:active {
@@ -400,6 +401,98 @@ header {
 
 .icon-btn svg,
 .theme-toggle svg { width: 1.125rem; height: 1.125rem; }
+
+/* Mobile header */
+/* ── Mobile header ── */
+@media (max-width: 640px) {
+    header {
+        padding: var(--space-3) var(--space-4) var(--space-2);
+    }
+
+    /* Two rows: [title | controls] then [greeting] */
+    .header-content {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto auto;
+        grid-template-areas:
+            "left controls"
+            "greeting greeting";
+        gap: var(--space-1) var(--space-3);
+        min-height: unset;
+        align-items: center;
+    }
+
+    .header-left {
+        grid-area: left;
+        gap: 0.15rem;
+    }
+
+    .header-controls {
+        grid-area: controls;
+        gap: var(--space-2);
+        align-items: center;
+    }
+
+    .greeting {
+        grid-area: greeting;
+        display: block;
+        font-size: 0.72rem;
+        font-style: italic;
+        color: rgba(232,244,230,0.65);
+        padding-top: var(--space-1);
+        border-top: 1px solid rgba(255,255,255,0.08);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.4;
+    }
+
+    .header-branding {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.1rem;
+    }
+
+    .header-branding h1 {
+        font-size: 1.2rem;
+        line-height: 1;
+        letter-spacing: -0.01em;
+    }
+
+    .subtitle {
+        display: block;
+        font-size: 0.62rem;
+        color: rgba(232,244,230,0.55);
+        letter-spacing: 0.01em;
+    }
+
+    /* Compact clock */
+    .clock-widget {
+        padding: 0.25rem var(--space-2);
+        gap: 0.05rem;
+        align-items: center;
+    }
+    .clock-time { font-size: 0.9rem; }
+    .clock-date { font-size: 0.55rem; letter-spacing: 0.05em; }
+
+    /* Smaller icon buttons */
+    .icon-btn, .theme-toggle {
+        width: 2rem;
+        height: 2rem;
+    }
+    .icon-btn svg, .theme-toggle svg {
+        width: 0.95rem;
+        height: 0.95rem;
+    }
+
+    /* Hide online label, show dot only */
+    .offline-label { display: none; }
+    .offline-badge {
+        gap: 0;
+        padding: 0 0.4rem;
+        height: 2rem;
+    }
+}
 
 /* ==================== CONTAINER ==================== */
 .container { max-width: 1200px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
@@ -664,7 +757,9 @@ input[type="time"],
 select {
     width: 100%;
     min-height: var(--touch-target);
-    padding: var(--space-3) var(--space-10) var(--space-3) var(--space-4);
+    /* right padding reserves fixed space for arrow — never changes */
+    padding: var(--space-3) 2.75rem var(--space-3) var(--space-4);
+    /* Use outline instead of border so layout never shifts on focus */
     border: 2px solid var(--border);
     border-radius: var(--radius-lg);
     font-family: var(--font-body);
@@ -674,23 +769,25 @@ select {
     color: var(--text-primary);
     transition:
         border-color var(--t-smooth),
-        background   var(--t-smooth),
         box-shadow   var(--t-smooth);
     outline: none;
     line-height: 1.5;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
+    /* Arrow always at right:0.875rem — fixed with background-position-x */
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23718f6a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 0.85rem center;
-    background-size: 1rem;
+    background-position: right 0.875rem center;
+    background-size: 1rem 1rem;
+    background-attachment: local;
     cursor: pointer;
     box-sizing: border-box;
-    max-width: 100%;
-    /* Prevent layout shift when dropdown opens */
-    will-change: auto;
+    /* GPU layer — prevents repaint from shifting siblings */
     transform: translateZ(0);
+    will-change: border-color, box-shadow;
+    /* Contain paint so layout is never affected by state changes */
+    contain: layout style;
 }
 
 
@@ -705,14 +802,22 @@ select:hover:not(:focus) {
 
 input[type="number"]:focus,
 input[type="text"]:focus,
-input[type="time"]:focus,
-select:focus {
+input[type="time"]:focus {
     border-color: var(--border-focus);
     background: var(--bg-card);
     box-shadow: var(--focus-ring);
     outline: none;
     caret-color: var(--sage);
 }
+
+/* Select focus: only change border + shadow, never background
+   so the arrow background-position stays perfectly still */
+select:focus {
+    border-color: var(--border-focus);
+    box-shadow: var(--focus-ring);
+    outline: none;
+}
+
 
 
 input.input-error  { border-color: var(--danger); background: var(--danger-bg); }
@@ -2151,17 +2256,14 @@ a, button, input, select, textarea, label,
     .tab-btn { animation: none; }
 }
 
-/* Prevent select dropdown layout shift */
-.form-group {
-    position: relative;
-    isolation: isolate;
-}
+/* Form rows */
 .form-row {
     align-items: start;
 }
-select:focus {
-    position: relative;
-    z-index: 2;
+
+/* Prevent select state changes from reflowing siblings */
+.form-group:has(select) {
+    contain: layout;
 }
 </style>
 </head>
@@ -2274,33 +2376,33 @@ select:focus {
 <!-- ==================== HEADER ==================== -->
 <header role="banner" aria-label="MedConvert application header">
     <div class="header-content">
-        <div class="header-top">
+        <div class="header-left">
             <div class="header-branding">
                 <h1>MedConvert</h1>
-                <p class="subtitle" id="subtitle-text">An Offline Tool for Abigail</p>
+                <p class="subtitle" id="subtitle-text">An Offline Tool For Abigail</p>
             </div>
-            <div class="header-controls">
-                <div class="clock-widget">
-                    <div class="clock-time" id="clock-time">12:00 PM</div>
-                    <div class="clock-date" id="clock-date">Mon, Jan 1</div>
-                </div>
-                <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode" aria-label="Toggle dark mode">
-                    <svg><use href="#icon-moon"/></svg>
-                </button>
-                <div class="offline-badge" id="offline-badge" title="Connectivity status" aria-live="polite">
-                    <span class="offline-dot"></span><span class="offline-label">Online</span>
-                </div>
-                <button class="icon-btn" onclick="openSettings()" title="Settings" aria-label="Open settings">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-                        <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/>
-                        <circle cx="8" cy="6" r="2" fill="currentColor"/>
-                        <circle cx="16" cy="12" r="2" fill="currentColor"/>
-                        <circle cx="10" cy="18" r="2" fill="currentColor"/>
-                    </svg>
-                </button>
-            </div>
+            <p class="greeting" id="greeting">Good day — ready for your shift?</p>
         </div>
-        <p class="greeting" id="greeting" style="margin-top:0">Good day — ready for your shift?</p>
+        <div class="header-controls">
+            <div class="clock-widget">
+                <div class="clock-time" id="clock-time">12:00 PM</div>
+                <div class="clock-date" id="clock-date">Mon, Jan 1</div>
+            </div>
+            <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode" aria-label="Toggle dark mode">
+                <svg><use href="#icon-moon"/></svg>
+            </button>
+            <div class="offline-badge" id="offline-badge" title="Connectivity status" aria-live="polite">
+                <span class="offline-dot"></span><span class="offline-label">Online</span>
+            </div>
+            <button class="icon-btn" onclick="openSettings()" title="Settings" aria-label="Open settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                    <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/>
+                    <circle cx="8" cy="6" r="2" fill="currentColor"/>
+                    <circle cx="16" cy="12" r="2" fill="currentColor"/>
+                    <circle cx="10" cy="18" r="2" fill="currentColor"/>
+                </svg>
+            </button>
+        </div>
     </div>
 </header>
 
