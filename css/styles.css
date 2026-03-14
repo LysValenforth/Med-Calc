@@ -1,6 +1,22 @@
+/* ==========================================
+   MEDCONVERT — Ghibli-Inspired Medical Toolkit
+   HCI-Enhanced Edition · All 8 Principles Applied
+   ==========================================
+   1. Consistency      — unified tokens, shapes, interaction language
+   2. Visibility       — hover states, active indicators, validation
+   3. Feedback         — micro-interactions, transitions, confirmations
+   4. Affordance       — buttons filled/outlined, inputs distinct
+   5. Accessibility    — WCAG AA contrast, ARIA, keyboard focus rings
+   6. Cognitive Load   — hierarchy, whitespace, 5-color palette
+   7. Fitts's Law      — min 44px targets, generous spacing
+   8. User Control     — back-to-top, dark mode, smooth scroll
+   =========================================== */
+
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700;800&display=swap');
 
+/* ==================== DESIGN TOKENS ==================== */
 :root {
+    /* ── 5-Color Palette (Ghibli · Solid Only · No Gradients) ── */
     --forest:     #2d5a27;   /* 1. Deep forest green  — primary actions, headings */
     --sage:       #5c8a52;   /* 2. Sage green         — interactive hover/focus  */
     --moss:       #9dc990;   /* 3. Soft moss           — selected, highlighted    */
