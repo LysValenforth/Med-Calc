@@ -8,29 +8,17 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>MedConvert — Offline Medical Toolkit</title>
     <meta name="description" content="Comprehensive offline medical calculator toolkit — dosage, IV drip, vitals, pediatric, and lab reference.">
+    <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+    <link rel="apple-touch-icon" href="image/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-/* ==========================================
-   MEDCONVERT — Ghibli-Inspired Medical Toolkit
-   HCI-Enhanced Edition · All 8 Principles Applied
-   ==========================================
-   1. Consistency      — unified tokens, shapes, interaction language
-   2. Visibility       — hover states, active indicators, validation
-   3. Feedback         — micro-interactions, transitions, confirmations
-   4. Affordance       — buttons filled/outlined, inputs distinct
-   5. Accessibility    — WCAG AA contrast, ARIA, keyboard focus rings
-   6. Cognitive Load   — hierarchy, whitespace, 5-color palette
-   7. Fitts's Law      — min 44px targets, generous spacing
-   8. User Control     — back-to-top, dark mode, smooth scroll
-   =========================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700;800&display=swap');
 
-/* ==================== DESIGN TOKENS ==================== */
 :root {
-    /* 5-Color Palette (Ghibli · Solid Only · No Gradients) */
+    /* Color Palette */
     --forest:     #2d5a27;   /* 1. Deep forest green  — primary actions, headings */
     --sage:       #5c8a52;   /* 2. Sage green         — interactive hover/focus  */
     --moss:       #9dc990;   /* 3. Soft moss           — selected, highlighted    */
@@ -260,116 +248,212 @@ a:hover {
 }
 
 /* ==================== HEADER ==================== */
-/* Sticky header */
 header {
     background: var(--forest);
     color: var(--text-on-dark);
-    padding: var(--space-5) var(--space-6);
+    padding: 0;
     position: sticky;
     top: 0;
     z-index: 200;
-    border-bottom: 3px solid var(--sage);
+    /* Subtle texture overlay */
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeBlend in='SourceGraphic' mode='multiply'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    /* Hairline bottom border using gradient for elegance */
+    box-shadow: 0 1px 0 rgba(122, 175, 110, 0.35), 0 2px 16px rgba(0,0,0,0.18);
 }
 
-[data-theme="dark"] header { background: #0f1a0e; border-bottom-color: var(--fern); }
+[data-theme="dark"] header {
+    background: #0d1a0f;
+    box-shadow: 0 1px 0 rgba(122, 175, 110, 0.2), 0 2px 20px rgba(0,0,0,0.35);
+}
 
-.header-content { max-width: 1200px; margin: 0 auto; }
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-5);
+}
 
+/* Main header row — always single row, flex with wrap protection */
 .header-top {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: var(--space-6);
-    margin-bottom: var(--space-3);
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    min-height: 0;
 }
+
+/* Branding — row layout: tile + text */
+.header-branding-old-placeholder { display: none; }
 
 .header-branding h1 {
     font-family: var(--font-display);
-    color: var(--text-on-dark);
-    font-size: clamp(1.75rem, 4.5vw, 2.375rem);
+    color: #fff;
+    font-size: clamp(1.15rem, 4vw, 1.625rem);
     font-weight: 700;
     letter-spacing: -0.022em;
-    margin-bottom: var(--space-2);
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    line-height: 1.1;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    white-space: nowrap;
 }
 
-.brand-icon { flex-shrink: 0; display: flex; }
+.header-branding .subtitle {
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+}
+
+/* Logo mark — sized to match wordmark+subtitle height */
+.brand-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    flex-shrink: 0;
+    border-radius: 0.55rem;
+    overflow: hidden;
+    align-self: center;
+}
+.brand-logo svg { width: 2.4rem; height: 2.4rem; display: block; }
+
+/* Stack wordmark + subtitle beside the logo tile */
+.header-branding {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.65rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.18rem;
+    min-width: 0;
+    align-self: center;
+}
 
 .subtitle {
-    font-size: var(--text-sm);
+    font-size: 0.72rem;
     font-family: var(--font-body);
-    font-weight: 400;
-    color: rgba(232, 244, 230, 0.82);
-    line-height: 1.5;
+    font-weight: 500;
+    color: rgba(200, 230, 195, 0.7);
+    letter-spacing: 0.01em;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.specialty-badge {
-    background: rgba(122, 175, 110, 0.28);
-    border: 1px solid rgba(122, 175, 110, 0.45);
-    padding: 0.1em 0.6em;
-    border-radius: var(--radius-full);
-    font-size: 0.84em;
-    font-weight: 700;
-    color: #cde8ca;
-    letter-spacing: 0.02em;
-}
-
+/* Controls — fixed, never wraps */
 .header-controls {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
     flex-shrink: 0;
 }
 
-/* Clock widget — HCI #2: Visibility of system status */
+/* Divider between groups */
+.header-divider {
+    width: 1px;
+    height: 1.4rem;
+    background: rgba(255,255,255,0.12);
+    margin: 0 2px;
+    flex-shrink: 0;
+}
+
+/* Clock widget — compact pill */
 .clock-widget {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.125rem;
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.13);
+    align-items: center;
+    gap: var(--space-2);
+    background: rgba(0,0,0,0.18);
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: var(--radius-lg);
-    padding: var(--space-3) var(--space-4);
+    padding: 0.35rem var(--space-3);
+    cursor: default;
+    flex-shrink: 0;
 }
 
 .clock-time {
     font-family: var(--font-display);
-    font-size: clamp(1.25rem, 3vw, 1.625rem);
-    font-weight: 500;
+    font-size: 0.95rem;
+    font-weight: 600;
     line-height: 1;
-    color: var(--text-on-dark);
+    color: #fff;
     letter-spacing: 0.01em;
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.clock-sep {
+    width: 1px;
+    height: 0.85rem;
+    background: rgba(255,255,255,0.18);
+    flex-shrink: 0;
 }
 
 .clock-date {
-    font-size: var(--text-2xs);
+    font-size: 0.6rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.07em;
-    color: rgba(232, 244, 230, 0.7);
+    color: rgba(200, 230, 195, 0.65);
+    line-height: 1;
+    white-space: nowrap;
+}
+
+/* Greeting bar — slim strip below */
+.header-greeting-bar {
+    border-top: 1px solid rgba(255,255,255,0.07);
+    padding: var(--space-2) 0 var(--space-2);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 2rem;
 }
 
 .greeting {
     font-family: var(--font-display);
-    font-size: var(--text-sm);
+    font-size: 0.78rem;
     font-style: italic;
-    color: rgba(232, 244, 230, 0.85);
-    line-height: 1.5;
+    color: rgba(200, 230, 195, 0.68);
+    line-height: 1;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-/* Icon buttons */
+/* Specialty pill */
+.specialty-pill {
+    font-size: 0.62rem;
+    font-weight: 700;
+    font-family: var(--font-body);
+    color: rgba(180, 220, 170, 0.85);
+    background: rgba(122, 175, 110, 0.15);
+    border: 1px solid rgba(122, 175, 110, 0.3);
+    border-radius: var(--radius-full);
+    padding: 0.22em 0.6em;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+/* Icon buttons — unified glassmorphic style */
 .icon-btn,
 .theme-toggle {
-    background: rgba(255,255,255,0.09);
-    border: 1px solid rgba(255,255,255,0.16);
-    color: var(--text-on-dark);
-    width: var(--touch-target);
-    height: var(--touch-target);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.13);
+    color: rgba(255,255,255,0.9);
+    width: 2.25rem;
+    height: 2.25rem;
     border-radius: var(--radius-lg);
     cursor: pointer;
     display: flex;
@@ -378,28 +462,50 @@ header {
     transition:
         background var(--t-base),
         border-color var(--t-base),
-        transform var(--t-fast);
+        transform var(--t-fast),
+        box-shadow var(--t-fast);
     flex-shrink: 0;
     position: relative;
+    -webkit-tap-highlight-color: transparent;
 }
-
 
 .icon-btn:hover,
 .theme-toggle:hover {
-    background: rgba(255,255,255,0.18);
-    border-color: rgba(255,255,255,0.28);
-    transform: scale(1.06);
+    background: rgba(255,255,255,0.16);
+    border-color: rgba(255,255,255,0.25);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
 }
-
 
 .icon-btn:active,
 .theme-toggle:active {
-    transform: scale(0.94);
-    background: rgba(255,255,255,0.24);
+    transform: scale(0.93) translateY(0);
+    background: rgba(255,255,255,0.22);
+    box-shadow: none;
 }
 
 .icon-btn svg,
-.theme-toggle svg { width: 1.125rem; height: 1.125rem; }
+.theme-toggle svg { width: 1rem; height: 1rem; }
+
+/* ── MOBILE HEADER BREAKPOINTS ── */
+
+/* Hide date on small screens to keep clock compact */
+@media (max-width: 480px) {
+    .clock-sep,
+    .clock-date { display: none; }
+    .header-divider { display: none; }
+    .clock-widget { padding: 0.35rem 0.6rem; }
+    .specialty-pill { display: none; }
+    .greeting { font-size: 0.74rem; }
+    .header-content { padding: 0 var(--space-4); }
+    .header-branding h1 { font-size: 1.35rem; }
+    .subtitle { font-size: 0.68rem; }
+    .icon-btn, .theme-toggle { width: 2rem; height: 2rem; }
+    .header-controls { gap: var(--space-1); }
+}
+
+/* Compact header patch override */
+header { padding: 0 !important; }
 
 /* ==================== CONTAINER ==================== */
 .container { max-width: 1200px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
@@ -1619,10 +1725,9 @@ footer {
     .form-row { grid-template-columns: 1fr; }
     .calc-card { padding: var(--space-6); }
     .container { padding: var(--space-6) var(--space-4); }
-    header { padding: var(--space-5) var(--space-4); }
-    .header-top { flex-direction: column; gap: var(--space-4); }
-    .header-controls { width: 100%; justify-content: flex-end; }
-    .clock-widget { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; }
+    /* Header: hide date at 768 to give more breathing room */
+    .clock-sep { display: none; }
+    .clock-date { display: none; }
     .dashboard-row { grid-template-columns: 1fr; }
     .pin-grid { grid-template-columns: 1fr; }
     .drug-search-row { grid-template-columns: 1fr; }
@@ -1670,18 +1775,6 @@ footer {
     .btn-primary { border-width: 3px; }
 }
 /* ==================== IMPROVEMENTS PATCH ==================== */
-
-/* Compact header */
-header {
-    padding: var(--space-3) var(--space-6);
-}
-.header-top {
-    margin-bottom: var(--space-2);
-}
-.greeting {
-    margin-top: 0;
-    font-size: var(--text-2xs);
-}
 
 /* Offline badge */
 .offline-badge {
@@ -1990,9 +2083,14 @@ header {
 }
 
 /* Responsive: mobile header */
-@media (max-width: 768px) {
-    .offline-badge .offline-label { display: none; }
-    .offline-badge { padding: 0.3rem 0.4rem; }
+@media (max-width: 480px) {
+    .specialty-pill { display: none; }
+    .greeting { font-size: 0.72rem; }
+    /* Hide theme toggle and online badge on mobile — moved into settings */
+    .theme-toggle { display: none; }
+    .offline-badge { display: none; }
+    /* Tighten controls gap */
+    .header-controls { gap: var(--space-2); }
 }
 
 
@@ -2276,16 +2374,34 @@ select:focus {
     <div class="header-content">
         <div class="header-top">
             <div class="header-branding">
-                <h1>MedConvert</h1>
-                <p class="subtitle" id="subtitle-text">An Offline Tool for Abigail</p>
+                <!-- Logo tile -->
+                <span class="brand-logo" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                        <rect width="64" height="64" rx="14" fill="#1e3d1b"/>
+                        <!-- Cross vertical bar -->
+                        <rect x="28" y="10" width="8" height="44" rx="4" fill="#2d5a27"/>
+                        <!-- Cross horizontal bar -->
+                        <rect x="10" y="28" width="44" height="8" rx="4" fill="#2d5a27"/>
+                        <!-- ECG pulse through horizontal bar -->
+                        <polyline points="12,32 21,32 24,24 28,40 32,16 36,32 40,32 52,32" fill="none" stroke="#9dc990" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+
+                <!-- Wordmark + subtitle stacked -->
+                <div class="brand-text">
+                    <h1>MedConvert</h1>
+                    <p class="subtitle" id="subtitle-text">An Offline Tool For Abigail</p>
+                </div>
             </div>
             <div class="header-controls">
-                <div class="clock-widget">
+                <div class="clock-widget" aria-label="Current time">
                     <div class="clock-time" id="clock-time">12:00 PM</div>
+                    <div class="clock-sep" aria-hidden="true"></div>
                     <div class="clock-date" id="clock-date">Mon, Jan 1</div>
                 </div>
+                <div class="header-divider" aria-hidden="true"></div>
                 <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode" aria-label="Toggle dark mode">
-                    <svg><use href="#icon-moon"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
                 </button>
                 <div class="offline-badge" id="offline-badge" title="Connectivity status" aria-live="polite">
                     <span class="offline-dot"></span><span class="offline-label">Online</span>
@@ -2300,7 +2416,10 @@ select:focus {
                 </button>
             </div>
         </div>
-        <p class="greeting" id="greeting" style="margin-top:0">Good day — ready for your shift?</p>
+        <div class="header-greeting-bar">
+            <p class="greeting" id="greeting">Good day — ready for your shift?</p>
+            <span class="specialty-pill" id="specialty-pill">Night Shift</span>
+        </div>
     </div>
 </header>
 
@@ -3248,6 +3367,8 @@ function checkOnboarding() {
 function buildOnboardingHTML(profile) {
     const p = profile || {};
     const isEdit = !!profile;
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const isOnline = navigator.onLine;
     const iconSVG = isEdit
         ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>'
         : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><path d="M9 22V12h6v10"/><path d="M12 8v4M10 10h4"/></svg>';
@@ -3256,6 +3377,30 @@ function buildOnboardingHTML(profile) {
             <div class="onboarding-logo">${iconSVG}</div>
             <h2 class="onboarding-title">${isEdit ? 'Your Settings' : 'Welcome to MedConvert'}</h2>
             <p class="onboarding-subtitle">${isEdit ? 'Update your profile anytime.' : "Let's personalise your experience — it only takes a moment."}</p>
+
+            ${isEdit ? `
+            <div class="onboarding-field settings-mobile-row">
+                <label>Appearance</label>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);">
+                    <button type="button" id="settings-theme-btn" onclick="settingsToggleTheme(this)"
+                        style="flex:1;min-height:2.75rem;display:flex;align-items:center;justify-content:center;gap:0.5rem;
+                               background:var(--bg-input);border:2px solid var(--border);border-radius:var(--radius-lg);
+                               font-family:var(--font-body);font-size:var(--text-sm);font-weight:700;color:var(--text-primary);cursor:pointer;">
+                        ${currentTheme === 'dark'
+                            ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg> Light Mode'
+                            : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> Dark Mode'
+                        }
+                    </button>
+                    <div style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.85rem;
+                                background:var(--bg-input);border:2px solid var(--border);border-radius:var(--radius-lg);
+                                font-family:var(--font-body);font-size:var(--text-sm);font-weight:700;color:var(--text-primary);
+                                flex-shrink:0;">
+                        <span style="width:0.5rem;height:0.5rem;border-radius:50%;background:${isOnline ? '#6ee48a' : 'var(--dusty-rose)'};
+                                     box-shadow:0 0 5px ${isOnline ? '#6ee48a' : 'var(--dusty-rose)'};flex-shrink:0;"></span>
+                        ${isOnline ? 'Online' : 'Offline'}
+                    </div>
+                </div>
+            </div>` : ''}
 
             <div class="onboarding-field">
                 <label>Unit / Specialty</label>
@@ -3290,6 +3435,17 @@ function buildOnboardingHTML(profile) {
             }
         </div>`;
 }
+
+window.settingsToggleTheme = function(btn) {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('medconvert_theme', next);
+    // Update button label
+    btn.innerHTML = next === 'dark'
+        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg> Light Mode'
+        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> Dark Mode';
+};
 
 function showOnboarding() {
     saveProfile({ name: 'Abigail', specialty: 'General', shift: 'Night', shiftStart: '21:00', shiftEnd: '06:00' });
@@ -3334,6 +3490,12 @@ window.submitOnboarding = function () {
 function applyProfileData() {
     const el = document.getElementById('subtitle-text');
     if (el) el.textContent = 'An Offline Tool For Abigail';
+    const pill = document.getElementById('specialty-pill');
+    if (pill) {
+        const p = getProfile();
+        const shiftLabel = p?.shift ? p.shift + ' Shift' : 'Night Shift';
+        pill.textContent = shiftLabel;
+    }
 }
 
 /* ==================== SHIFT COUNTDOWN ==================== */
