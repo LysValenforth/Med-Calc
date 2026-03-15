@@ -10,12 +10,13 @@
     <meta name="description" content="Comprehensive offline medical calculator toolkit — dosage, IV drip, vitals, pediatric, and lab reference.">
     <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
     <link rel="apple-touch-icon" href="image/favicon.svg">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2d5a27" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0d1a0f" media="(prefers-color-scheme: dark)">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-
-@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700;800&display=swap');
 
 :root {
     /* Color Palette */
@@ -2261,7 +2262,401 @@ select:focus {
     position: relative;
     z-index: 2;
 }
+
+/* ==================== DYNAMICALLY INJECTED STYLES (moved from JS) ==================== */
+
+/* -- addDashboardToggleStyles -- */
+
+.dashboard-collapse-wrap {
+    margin-bottom: var(--space-8);
+}
+.dashboard-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: var(--space-3) var(--space-5);
+    background: var(--bg-card);
+    border: var(--outline-card);
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    transition: all var(--t-smooth);
+    min-height: 2.75rem;
+}
+.dashboard-toggle:hover {
+    border-color: var(--border-medium);
+    color: var(--text-secondary);
+}
+.dashboard-toggle[aria-expanded="true"] {
+    border-radius: var(--radius-xl) var(--radius-xl) var(--radius-md) var(--radius-md);
+    border-bottom-color: transparent;
+}
+.dashboard-toggle-icon {
+    width: 1rem;
+    height: 1rem;
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+    flex-shrink: 0;
+}
+.dashboard-toggle[aria-expanded="true"] .dashboard-toggle-icon {
+    transform: rotate(180deg);
+}
+.dashboard-row {
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    margin-top: 0;
+}
+
+/* Timer label field */
+.timer-label-wrap {
+    margin-bottom: var(--space-4);
+}
+.timer-label-field {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: var(--space-3) var(--space-4);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    background: var(--chalk);
+    color: var(--text-primary);
+    text-align: center;
+    transition: border-color var(--t-smooth), box-shadow var(--t-smooth);
+    outline: none;
+    -webkit-tap-highlight-color: rgba(157,201,144,0.18);
+}
+.timer-label-field:focus {
+    border-color: var(--border-focus);
+    box-shadow: var(--focus-ring);
+}
+.timer-label-field::placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
+    font-size: var(--text-xs);
+}
+
+/* Drug favorites */
+.drug-fav-btn {
+    background: transparent;
+    border: none;
+    padding: 0.25rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    transition: color var(--t-fast), transform var(--t-bounce);
+    -webkit-tap-highlight-color: transparent;
+    min-width: 2rem;
+    min-height: 2rem;
+}
+.drug-fav-btn svg { width: 1rem; height: 1rem; }
+.drug-fav-btn:hover { color: var(--amber); transform: scale(1.15); }
+.drug-fav-btn.is-fav { color: var(--amber); }
+.drug-fav-btn.is-fav:hover { transform: scale(1.2) rotate(-5deg); }
+.drug-fav-active { border-color: var(--amber) !important; }
+.drug-section-label {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    font-family: var(--font-body);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--space-3);
+}
+
+/* Font fallback */
+.fonts-fallback h1, .fonts-fallback h2, .fonts-fallback h3,
+.fonts-fallback h4, .fonts-fallback .card-title,
+.fonts-fallback .result-value, .fonts-fallback .daily-message {
+    font-family: Georgia, 'Times New Roman', serif;
+}
+.fonts-fallback body, .fonts-fallback .btn, .fonts-fallback input,
+.fonts-fallback select, .fonts-fallback textarea {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Auto-calculate visual cue - pulse the result when it updates live */
+@keyframes liveUpdate {
+    0%   { opacity: 0.6; transform: scale(0.99); }
+    100% { opacity: 1;   transform: scale(1); }
+}
+.result-live-update {
+    animation: liveUpdate 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* -- addPack3Styles -- */
+
+/* Global search */
+.calc-search-wrap {
+    margin: 0 0 var(--space-6);
+    position: relative;
+}
+.calc-search-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 0 var(--space-4);
+    transition: border-color var(--t-smooth), box-shadow var(--t-smooth);
+}
+.calc-search-wrap:focus-within .calc-search-inner {
+    border-color: var(--border-focus);
+    box-shadow: var(--focus-ring);
+}
+.calc-search-icon { color: var(--text-muted); flex-shrink: 0; width: 1rem; height: 1rem; }
+.calc-search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    padding: var(--space-3) 0;
+    outline: none;
+    min-height: 2.75rem;
+    -webkit-appearance: none;
+    appearance: none;
+}
+/* Hide browser search decorations */
+.calc-search-input::-webkit-search-decoration,
+.calc-search-input::-webkit-search-cancel-button,
+.calc-search-input::-webkit-search-results-button,
+.calc-search-input::-webkit-search-results-decoration,
+.calc-search-input::-webkit-contacts-auto-fill-button,
+.calc-search-input::-webkit-credentials-auto-fill-button {
+    display: none !important;
+    -webkit-appearance: none;
+}
+.calc-search-input::placeholder { color: var(--text-muted); }
+.calc-search-clear {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted); padding: var(--space-1);
+    border-radius: var(--radius-sm); display: flex;
+    align-items: center; justify-content: center;
+    transition: color var(--t-fast);
+    -webkit-tap-highlight-color: transparent;
+}
+.calc-search-clear:hover { color: var(--text-primary); }
+.calc-search-results {
+    position: absolute; top: calc(100% + 0.5rem);
+    left: 0; right: 0;
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    z-index: 100;
+    overflow: hidden;
+    animation: panelIn 0.25s cubic-bezier(0.16,1,0.3,1) both;
+}
+.calc-search-result-item {
+    display: flex; align-items: center; gap: var(--space-3);
+    width: 100%; padding: var(--space-3) var(--space-5);
+    background: none; border: none; border-bottom: 1px solid var(--border);
+    font-family: var(--font-body); font-size: var(--text-sm);
+    font-weight: 500; color: var(--text-primary);
+    cursor: pointer; text-align: left;
+    transition: background var(--t-fast);
+    -webkit-tap-highlight-color: rgba(157,201,144,0.18);
+}
+.calc-search-result-item:last-child { border-bottom: none; }
+.calc-search-result-item:hover { background: var(--moss); }
+.calc-search-result-item svg { color: var(--sage); flex-shrink: 0; }
+.calc-search-empty {
+    padding: var(--space-5); text-align: center;
+    font-size: var(--text-sm); color: var(--text-muted);
+}
+
+/* ==================== RICH TEXT NOTES ==================== */
+.notes-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-input);
+    border: 2px solid var(--border);
+    border-bottom: none;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    flex-wrap: wrap;
+    row-gap: var(--space-2);
+}
+.notes-toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+.notes-toolbar-sep {
+    width: 1px;
+    height: 1.4rem;
+    background: var(--border);
+    margin: 0 var(--space-1);
+    flex-shrink: 0;
+}
+.notes-fmt-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 0.3rem 0.45rem;
+    background: transparent;
+    border: 1.5px solid transparent;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
+    white-space: nowrap;
+    min-height: 1.9rem;
+    min-width: 1.9rem;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.notes-fmt-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-medium);
+    color: var(--forest);
+}
+.notes-fmt-btn.active {
+    background: var(--moss);
+    border-color: var(--sage);
+    color: var(--forest);
+}
+[data-theme="dark"] .notes-fmt-btn.active {
+    background: rgba(122,175,110,0.22);
+    border-color: var(--sage);
+    color: var(--fern);
+}
+/* Highlight swatches */
+.notes-highlight-btn { padding: 0.25rem 0.4rem; }
+.highlight-swatch {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 3px;
+    border: 1.5px solid rgba(0,0,0,0.15);
+    flex-shrink: 0;
+}
+.notes-toolbar-spacer { flex: 1; min-width: var(--space-2); }
+.notes-char-count {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    white-space: nowrap;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* Rich text editor */
+.notes-editor {
+    min-height: 340px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding: var(--space-5);
+    border: 2px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    font-weight: 400;
+    line-height: 1.85;
+    color: var(--text-primary);
+    background: var(--chalk);
+    outline: none;
+    transition: border-color var(--t-smooth), box-shadow var(--t-smooth);
+    word-break: break-word;
+    -webkit-user-modify: read-write-plaintext-only; /* iOS fallback */
+}
+.notes-editor:focus {
+    border-color: var(--border-focus);
+    box-shadow: var(--focus-ring);
+    background: var(--bg-card);
+}
+/* Placeholder */
+.notes-editor:empty::before {
+    content: attr(data-placeholder);
+    color: var(--text-muted);
+    font-weight: 400;
+    pointer-events: none;
+    white-space: pre-line;
+}
+/* Editor typography */
+.notes-editor b, .notes-editor strong { font-weight: 700; }
+.notes-editor i, .notes-editor em { font-style: italic; }
+.notes-editor u { text-decoration: underline; text-underline-offset: 2px; }
+.notes-editor s { text-decoration: line-through; }
+.notes-editor ul {
+    padding-left: 1.4rem;
+    margin: 0.3rem 0;
+    list-style-type: disc;
+}
+.notes-editor ol {
+    padding-left: 1.4rem;
+    margin: 0.3rem 0;
+    list-style-type: decimal;
+}
+.notes-editor li { margin: 0.15rem 0; }
+.notes-editor hr {
+    border: none;
+    border-top: 2px solid var(--border-medium);
+    margin: var(--space-4) 0;
+}
+/* Highlight colours */
+.notes-editor [style*="background-color"] {
+    padding: 0.05em 0.2em;
+    border-radius: 3px;
+}
+/* Scrollbar */
+.notes-editor::-webkit-scrollbar { width: 5px; }
+.notes-editor::-webkit-scrollbar-track { background: transparent; }
+.notes-editor::-webkit-scrollbar-thumb { background: var(--linen); border-radius: 99px; }
+
+/* Drug calc button */
+.drug-calc-btn {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    margin-top: var(--space-3);
+    padding: var(--space-2) var(--space-4);
+    background: var(--moss); border: 1.5px solid var(--fern);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body); font-size: var(--text-xs);
+    font-weight: 700; color: var(--forest);
+    cursor: pointer; transition: all var(--t-smooth);
+    -webkit-tap-highlight-color: transparent;
+}
+.drug-calc-btn:hover { background: var(--fern); color: var(--text-on-dark); }
+
+/* -- ripple -- */
+@keyframes ripple { to { transform: scale(2.5); opacity: 0; } }
+
 </style>
+    <script>
+    // Font load detection — apply fallback class if fonts unavailable (offline first load)
+    if ('fonts' in document) {
+        Promise.race([
+            Promise.all([
+                document.fonts.load('400 1em Lora'),
+                document.fonts.load('400 1em Nunito')
+            ]),
+            new Promise(resolve => setTimeout(resolve, 2500))
+        ]).then(result => {
+            const loaded = Array.isArray(result) && result.every(Boolean);
+            if (!loaded) document.documentElement.classList.add('fonts-fallback');
+        });
+    }
+    </script>
 </head>
 <body>
 
@@ -3236,30 +3631,130 @@ select:focus {
         <div class="card-header">
             <div class="card-header-icon"><svg><use href="#icon-notes"/></svg></div>
             <div>
-                <h2 class="card-title">Quick Notes</h2>
-                <p class="card-subtitle">Saved automatically, stays on your device</p>
+                <h2 class="card-title">Shift Notes</h2>
+                <p class="card-subtitle">Rich text notepad — auto-saved, stays on your device</p>
             </div>
         </div>
 
-        <div class="notes-toolbar">
-            <button class="notes-fmt-btn" onclick="notesInsert('bold')" title="Bold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg></button>
-            <button class="notes-fmt-btn" onclick="notesInsert('bullet')" title="Bullet point">&#8226; List</button>
-            <button class="notes-fmt-btn" onclick="notesInsert('timestamp')" title="Insert timestamp">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg> Now
-            </button>
-            <button class="notes-fmt-btn" onclick="notesInsert('divider')" title="Divider">— Line</button>
+        <!-- Rich text toolbar -->
+        <div class="notes-toolbar" role="toolbar" aria-label="Text formatting">
+
+            <!-- Format group -->
+            <div class="notes-toolbar-group">
+                <button class="notes-fmt-btn" id="notes-btn-bold"
+                        onclick="notesExecCmd('bold')" title="Bold (Ctrl+B)" aria-label="Bold">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>
+                </button>
+                <button class="notes-fmt-btn" id="notes-btn-italic"
+                        onclick="notesExecCmd('italic')" title="Italic (Ctrl+I)" aria-label="Italic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
+                </button>
+                <button class="notes-fmt-btn" id="notes-btn-underline"
+                        onclick="notesExecCmd('underline')" title="Underline (Ctrl+U)" aria-label="Underline">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M6 3v7a6 6 0 0 0 12 0V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
+                </button>
+                <button class="notes-fmt-btn" id="notes-btn-strikeThrough"
+                        onclick="notesExecCmd('strikeThrough')" title="Strikethrough" aria-label="Strikethrough">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="4" y1="12" x2="20" y2="12"/><path d="M17.5 7C17.5 5.07 15.38 4 12 4c-3.5 0-5.5 1.5-5.5 4 0 1.5.8 2.6 2 3.2"/><path d="M6.5 17c0 2 2 3 5.5 3s5.5-1 5.5-3c0-1.3-.7-2.3-2-2.9"/></svg>
+                </button>
+            </div>
+
+            <div class="notes-toolbar-sep"></div>
+
+            <!-- Highlight group -->
+            <div class="notes-toolbar-group">
+                <button class="notes-fmt-btn notes-highlight-btn" id="notes-btn-highlight-yellow"
+                        onclick="notesHighlight('#fff176')" title="Highlight yellow" aria-label="Highlight yellow">
+                    <span class="highlight-swatch" style="background:#fff176"></span>
+                </button>
+                <button class="notes-fmt-btn notes-highlight-btn" id="notes-btn-highlight-green"
+                        onclick="notesHighlight('#c8f7c5')" title="Highlight green" aria-label="Highlight green">
+                    <span class="highlight-swatch" style="background:#c8f7c5"></span>
+                </button>
+                <button class="notes-fmt-btn notes-highlight-btn" id="notes-btn-highlight-red"
+                        onclick="notesHighlight('#ffc8c8')" title="Highlight red / urgent" aria-label="Highlight red">
+                    <span class="highlight-swatch" style="background:#ffc8c8"></span>
+                </button>
+                <button class="notes-fmt-btn notes-highlight-btn" id="notes-btn-highlight-blue"
+                        onclick="notesHighlight('#c8e6ff')" title="Highlight blue" aria-label="Highlight blue">
+                    <span class="highlight-swatch" style="background:#c8e6ff"></span>
+                </button>
+                <button class="notes-fmt-btn" onclick="notesRemoveHighlight()" title="Remove highlight" aria-label="Remove highlight" style="font-size:0.65rem;padding:0 0.4rem;">
+                    ✕HL
+                </button>
+            </div>
+
+            <div class="notes-toolbar-sep"></div>
+
+            <!-- List group -->
+            <div class="notes-toolbar-group">
+                <button class="notes-fmt-btn" onclick="notesExecCmd('insertUnorderedList')"
+                        title="Bullet list" aria-label="Bullet list">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
+                </button>
+                <button class="notes-fmt-btn" onclick="notesExecCmd('insertOrderedList')"
+                        title="Numbered list" aria-label="Numbered list">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+                </button>
+                <button class="notes-fmt-btn" onclick="notesIndent(true)" title="Indent" aria-label="Indent">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="3" y1="6" x2="21" y2="6"/><polyline points="9 12 13 12"/><polyline points="11 9 15 12 11 15"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <button class="notes-fmt-btn" onclick="notesIndent(false)" title="Outdent" aria-label="Outdent">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="3" y1="6" x2="21" y2="6"/><polyline points="15 12 11 12"/><polyline points="13 9 9 12 13 15"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+
+            <div class="notes-toolbar-sep"></div>
+
+            <!-- Insert group -->
+            <div class="notes-toolbar-group">
+                <button class="notes-fmt-btn" onclick="notesInsertTimestamp()"
+                        title="Insert timestamp" aria-label="Insert timestamp">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg>
+                    <span>Now</span>
+                </button>
+                <button class="notes-fmt-btn" onclick="notesInsertDivider()"
+                        title="Insert divider" aria-label="Insert divider">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="3" y1="12" x2="21" y2="12"/></svg>
+                    <span>Line</span>
+                </button>
+            </div>
+
+            <div class="notes-toolbar-sep"></div>
+
+            <!-- Undo/Redo -->
+            <div class="notes-toolbar-group">
+                <button class="notes-fmt-btn" onclick="notesExecCmd('undo')" title="Undo (Ctrl+Z)" aria-label="Undo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+                </button>
+                <button class="notes-fmt-btn" onclick="notesExecCmd('redo')" title="Redo (Ctrl+Y)" aria-label="Redo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-4.5"/></svg>
+                </button>
+            </div>
+
             <div class="notes-toolbar-spacer"></div>
-            <span class="notes-char-count" id="notes-char-count">0 chars</span>
+            <span class="notes-char-count" id="notes-char-count" aria-live="polite">0 words</span>
         </div>
 
-        <textarea id="shift-notes" placeholder="Start typing your shift notes..."></textarea>
+        <!-- Rich text editor (contenteditable) -->
+        <div id="shift-notes"
+             class="notes-editor"
+             contenteditable="true"
+             role="textbox"
+             aria-multiline="true"
+             aria-label="Shift notes editor"
+             spellcheck="true"
+             data-placeholder="Start typing your shift notes...&#10;&#10;Tip: Select text, then tap Bold / Italic / Highlight to format it."></div>
 
         <div class="btn-group mt-lg">
             <button class="btn btn-secondary" onclick="copyNotes()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy All
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy
             </button>
             <button class="btn btn-secondary" onclick="exportNotes()">
                 <svg><use href="#icon-download"/></svg> Export
+            </button>
+            <button class="btn btn-secondary" onclick="printNotes()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Print
             </button>
             <button class="btn btn-accent" onclick="clearNotes()">
                 <svg><use href="#icon-trash"/></svg> Clear
@@ -4108,40 +4603,88 @@ function initializeConverters() {
 
 /* ==================== NOTES ==================== */
 function loadNotes() {
-    const ta = document.getElementById('shift-notes');
-    if (!ta) return;
-    try { const saved = localStorage.getItem('medconvert_notes'); if (saved) ta.value = saved; } catch {}
+    const editor = document.getElementById('shift-notes');
+    if (!editor) return;
+    try {
+        const saved = localStorage.getItem('medconvert_notes_html');
+        if (saved) editor.innerHTML = saved;
+    } catch {}
     let saveTimeout;
-    ta.addEventListener('input', e => {
+    const save = () => {
         clearTimeout(saveTimeout);
         saveTimeout = setTimeout(() => {
-            try { localStorage.setItem('medconvert_notes', e.target.value); showToast('Notes saved', 'success'); } catch {}
-        }, 800);
+            try { localStorage.setItem('medconvert_notes_html', editor.innerHTML); } catch {}
+            updateNotesWordCount();
+        }, 600);
+    };
+    editor.addEventListener('input', save);
+    editor.addEventListener('keydown', e => {
+        // Keyboard shortcuts
+        if (e.ctrlKey || e.metaKey) {
+            if (e.key === 'b') { e.preventDefault(); notesExecCmd('bold'); }
+            if (e.key === 'i') { e.preventDefault(); notesExecCmd('italic'); }
+            if (e.key === 'u') { e.preventDefault(); notesExecCmd('underline'); }
+        }
     });
+    updateNotesWordCount();
+}
+
+function updateNotesWordCount() {
+    const editor = document.getElementById('shift-notes');
+    const counter = document.getElementById('notes-char-count');
+    if (!editor || !counter) return;
+    const text = editor.innerText || '';
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    const chars = text.replace(/\s/g, '').length;
+    counter.textContent = `${words} word${words !== 1 ? 's' : ''} · ${chars} chars`;
 }
 
 window.clearNotes = function () {
-    if (confirm('Clear all notes? This action cannot be undone.')) {
-        document.getElementById('shift-notes').value = '';
-        try { localStorage.removeItem('medconvert_notes'); } catch {}
+    showConfirmModal(() => {
+        const editor = document.getElementById('shift-notes');
+        if (editor) editor.innerHTML = '';
+        try {
+            localStorage.removeItem('medconvert_notes_html');
+            localStorage.removeItem('medconvert_notes'); // legacy key
+        } catch {}
+        updateNotesWordCount();
         showToast('Notes cleared', 'info');
-    }
+    });
 };
 
 window.exportNotes = function () {
-    const notes = document.getElementById('shift-notes').value;
-    if (!notes.trim()) { showToast('No notes to export', 'warning'); return; }
+    const editor = document.getElementById('shift-notes');
+    if (!editor || !editor.innerText.trim()) { showToast('No notes to export', 'warning'); return; }
     const date = new Date().toISOString().split('T')[0];
-    const blob = new Blob([notes], { type: 'text/plain' });
+    const time = new Date().toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
+    const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MedConvert Notes — ${date}</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; max-width: 780px; margin: 2rem auto; padding: 0 1.5rem; color: #2a2018; line-height: 1.85; font-size: 15px; }
+  h1   { font-size: 1.1rem; color: #2d5a27; border-bottom: 2px solid #cfc7b4; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+  ul, ol { padding-left: 1.4rem; }
+  hr { border: none; border-top: 2px solid #cfc7b4; margin: 1rem 0; }
+  @media print { body { margin: 0; padding: 1cm; } }
+</style>
+</head>
+<body>
+<h1>MedConvert Shift Notes &mdash; ${date} ${time}</h1>
+${editor.innerHTML}
+</body>
+</html>`;
+    const blob = new Blob([htmlContent], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `MedConvert_Notes_${date}.txt`;
+    a.download = `MedConvert_Notes_${date}.html`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast('Notes exported', 'success');
+    showToast('Notes exported as HTML', 'success');
 };
 
 /* ==================== DRUG REFERENCE ==================== */
@@ -4261,7 +4804,6 @@ document.addEventListener('keydown', e => {
     }
 });
 
-console.log('MedConvert — Ghibli Edition loaded. Built with care.');
 
 /* ==========================================
    HCI ENHANCEMENT LAYER
@@ -4428,13 +4970,6 @@ function hci_initButtonFeedback() {
         });
     });
 
-    // Inject ripple keyframes once
-    if (!document.getElementById('hci-ripple-style')) {
-        const style = document.createElement('style');
-        style.id = 'hci-ripple-style';
-        style.textContent = `@keyframes ripple { to { transform: scale(2.5); opacity: 0; } }`;
-        document.head.appendChild(style);
-    }
 }
 
 /* Keyboard navigation */
@@ -4845,7 +5380,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 })();
 
-console.log('MedConvert HCI layer loaded — 8 principles applied.');
 /* Improvement patch */
 
 /* Offline indicator */
@@ -5150,14 +5684,7 @@ function initConfirmModal() {
         if (e.key === 'Escape' && modal.classList.contains('visible')) closeConfirmModal();
     });
 
-    // Override clearNotes
-    window.clearNotes = function() {
-        showConfirmModal(() => {
-            document.getElementById('shift-notes').value = '';
-            try { localStorage.removeItem('medconvert_notes'); } catch {}
-            showToast('Notes cleared', 'info');
-        });
-    };
+    // clearNotes is already defined with rich text support above — no override needed here
 }
 
 function showConfirmModal(onConfirm) {
@@ -5308,7 +5835,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-console.log('MedConvert Improvements Patch loaded.');
 
 
 /* Improvement pack 2 */
@@ -5544,138 +6070,7 @@ function initFontFallback() {
 }
 
 /* Dashboard toggle styles */
-(function addDashboardToggleStyles() {
-    const style = document.createElement('style');
-    style.textContent = `
-        .dashboard-collapse-wrap {
-            margin-bottom: var(--space-8);
-        }
-        .dashboard-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            padding: var(--space-3) var(--space-5);
-            background: var(--bg-card);
-            border: var(--outline-card);
-            border-radius: var(--radius-xl);
-            cursor: pointer;
-            font-family: var(--font-body);
-            font-size: var(--text-xs);
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
-            transition: all var(--t-smooth);
-            min-height: 2.75rem;
-        }
-        .dashboard-toggle:hover {
-            border-color: var(--border-medium);
-            color: var(--text-secondary);
-        }
-        .dashboard-toggle[aria-expanded="true"] {
-            border-radius: var(--radius-xl) var(--radius-xl) var(--radius-md) var(--radius-md);
-            border-bottom-color: transparent;
-        }
-        .dashboard-toggle-icon {
-            width: 1rem;
-            height: 1rem;
-            transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
-            flex-shrink: 0;
-        }
-        .dashboard-toggle[aria-expanded="true"] .dashboard-toggle-icon {
-            transform: rotate(180deg);
-        }
-        .dashboard-row {
-            border-radius: 0 0 var(--radius-xl) var(--radius-xl);
-            margin-top: 0;
-        }
-
-        /* Timer label field */
-        .timer-label-wrap {
-            margin-bottom: var(--space-4);
-        }
-        .timer-label-field {
-            width: 100%;
-            min-height: 2.75rem;
-            padding: var(--space-3) var(--space-4);
-            border: 2px solid var(--border);
-            border-radius: var(--radius-lg);
-            font-family: var(--font-body);
-            font-size: var(--text-sm);
-            font-weight: 500;
-            background: var(--chalk);
-            color: var(--text-primary);
-            text-align: center;
-            transition: border-color var(--t-smooth), box-shadow var(--t-smooth);
-            outline: none;
-            -webkit-tap-highlight-color: rgba(157,201,144,0.18);
-        }
-        .timer-label-field:focus {
-            border-color: var(--border-focus);
-            box-shadow: var(--focus-ring);
-        }
-        .timer-label-field::placeholder {
-            color: var(--text-muted);
-            font-weight: 400;
-            font-size: var(--text-xs);
-        }
-
-        /* Drug favorites */
-        .drug-fav-btn {
-            background: transparent;
-            border: none;
-            padding: 0.25rem;
-            cursor: pointer;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: var(--radius-sm);
-            transition: color var(--t-fast), transform var(--t-bounce);
-            -webkit-tap-highlight-color: transparent;
-            min-width: 2rem;
-            min-height: 2rem;
-        }
-        .drug-fav-btn svg { width: 1rem; height: 1rem; }
-        .drug-fav-btn:hover { color: var(--amber); transform: scale(1.15); }
-        .drug-fav-btn.is-fav { color: var(--amber); }
-        .drug-fav-btn.is-fav:hover { transform: scale(1.2) rotate(-5deg); }
-        .drug-fav-active { border-color: var(--amber) !important; }
-        .drug-section-label {
-            font-size: var(--text-xs);
-            font-weight: 700;
-            font-family: var(--font-body);
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            padding: var(--space-2) 0;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: var(--space-3);
-        }
-
-        /* Font fallback */
-        .fonts-fallback h1, .fonts-fallback h2, .fonts-fallback h3,
-        .fonts-fallback h4, .fonts-fallback .card-title,
-        .fonts-fallback .result-value, .fonts-fallback .daily-message {
-            font-family: Georgia, 'Times New Roman', serif;
-        }
-        .fonts-fallback body, .fonts-fallback .btn, .fonts-fallback input,
-        .fonts-fallback select, .fonts-fallback textarea {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
-
-        /* Auto-calculate visual cue - pulse the result when it updates live */
-        @keyframes liveUpdate {
-            0%   { opacity: 0.6; transform: scale(0.99); }
-            100% { opacity: 1;   transform: scale(1); }
-        }
-        .result-live-update {
-            animation: liveUpdate 0.3s cubic-bezier(0.16,1,0.3,1);
-        }
-    `;
-    document.head.appendChild(style);
-})();
+/* addDashboardToggleStyles — styles moved to <style> block */
 
 /* Init */
 document.addEventListener('DOMContentLoaded', () => {
@@ -5703,7 +6098,6 @@ if (origShowResult2) {
     };
 }
 
-console.log('Improvement Pack 2 loaded — all 8 fixes active.');
 
 
 
@@ -5800,45 +6194,112 @@ window.drugGoToCalc = function(drugName) {
     showToast(`Switched to Weight-Based Dosage for ${drugName}`, 'success');
 };
 
-/* Notes formatting toolbar */
-window.notesInsert = function(type) {
-    const ta = document.getElementById('shift-notes');
-    if (!ta) return;
-    const start = ta.selectionStart;
-    const end = ta.selectionEnd;
-    const val = ta.value;
-    const selected = val.slice(start, end);
-    let insert = '';
+/* ==================== RICH TEXT NOTES ENGINE ==================== */
+
+/* execCommand wrapper — keeps toolbar button states in sync */
+window.notesExecCmd = function(cmd) {
+    const editor = document.getElementById('shift-notes');
+    if (!editor) return;
+    editor.focus();
+    document.execCommand(cmd, false, null);
+    updateNotesToolbarState();
+    editor.dispatchEvent(new Event('input'));
+};
+
+/* Highlight selected text with a background colour */
+window.notesHighlight = function(colour) {
+    const editor = document.getElementById('shift-notes');
+    if (!editor) return;
+    editor.focus();
+    document.execCommand('hiliteColor', false, colour);
+    editor.dispatchEvent(new Event('input'));
+};
+
+/* Remove highlight from selected text */
+window.notesRemoveHighlight = function() {
+    const editor = document.getElementById('shift-notes');
+    if (!editor) return;
+    editor.focus();
+    document.execCommand('hiliteColor', false, 'transparent');
+    document.execCommand('removeFormat', false, null);
+    editor.dispatchEvent(new Event('input'));
+};
+
+/* Indent / outdent */
+window.notesIndent = function(indent) {
+    const editor = document.getElementById('shift-notes');
+    if (!editor) return;
+    editor.focus();
+    document.execCommand(indent ? 'indent' : 'outdent', false, null);
+    editor.dispatchEvent(new Event('input'));
+};
+
+/* Insert timestamp as a styled span */
+window.notesInsertTimestamp = function() {
+    const editor = document.getElementById('shift-notes');
+    if (!editor) return;
+    editor.focus();
     const now = new Date();
     const time = now.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit', hour12: true });
     const date = now.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' });
-
-    if (type === 'bold') insert = `**${selected || 'bold text'}**`;
-    else if (type === 'bullet') insert = (start === 0 || val[start-1] === '\n' ? '' : '\n') + '• ' + (selected || '');
-    else if (type === 'timestamp') insert = `[${date} ${time}] `;
-    else if (type === 'divider') insert = '\n────────────────────\n';
-
-    ta.value = val.slice(0, start) + insert + val.slice(end);
-    ta.selectionStart = ta.selectionEnd = start + insert.length;
-    ta.focus();
-    ta.dispatchEvent(new Event('input'));
+    const stamp = `<span style="font-size:0.78em;font-weight:700;color:var(--text-muted);background:var(--parchment);padding:0.1em 0.45em;border-radius:4px;letter-spacing:0.03em;">[${date} ${time}]</span>&nbsp;`;
+    document.execCommand('insertHTML', false, stamp);
+    editor.dispatchEvent(new Event('input'));
 };
 
-/* Notes char counter */
-function initNotesToolbar() {
-    const ta = document.getElementById('shift-notes');
-    const counter = document.getElementById('notes-char-count');
-    if (!ta || !counter) return;
-    const update = () => { counter.textContent = ta.value.length.toLocaleString() + ' chars'; };
-    ta.addEventListener('input', update);
-    update();
+/* Insert a visual divider */
+window.notesInsertDivider = function() {
+    const editor = document.getElementById('shift-notes');
+    if (!editor) return;
+    editor.focus();
+    document.execCommand('insertHTML', false, '<hr><p><br></p>');
+    editor.dispatchEvent(new Event('input'));
+};
+
+/* Keep toolbar buttons visually active when cursor is inside formatted text */
+function updateNotesToolbarState() {
+    const cmds = ['bold', 'italic', 'underline', 'strikeThrough'];
+    cmds.forEach(cmd => {
+        const btn = document.getElementById(`notes-btn-${cmd}`);
+        if (btn) btn.classList.toggle('active', document.queryCommandState(cmd));
+    });
 }
 
-/* Copy all notes */
+/* Toolbar init — attach selection listener */
+function initNotesToolbar() {
+    const editor = document.getElementById('shift-notes');
+    if (!editor) return;
+    document.addEventListener('selectionchange', () => {
+        if (document.activeElement === editor || editor.contains(document.getSelection().anchorNode)) {
+            updateNotesToolbarState();
+        }
+    });
+    updateNotesWordCount();
+}
+
+/* Copy as plain text */
 window.copyNotes = function() {
-    const ta = document.getElementById('shift-notes');
-    if (!ta || !ta.value.trim()) { showToast('No notes to copy', 'warning'); return; }
-    navigator.clipboard.writeText(ta.value).then(() => showToast('Notes copied to clipboard', 'success'));
+    const editor = document.getElementById('shift-notes');
+    if (!editor || !editor.innerText.trim()) { showToast('No notes to copy', 'warning'); return; }
+    navigator.clipboard.writeText(editor.innerText)
+        .then(() => showToast('Notes copied to clipboard', 'success'))
+        .catch(() => showToast('Could not access clipboard', 'danger'));
+};
+
+/* Print */
+window.printNotes = function() {
+    const editor = document.getElementById('shift-notes');
+    if (!editor || !editor.innerText.trim()) { showToast('No notes to print', 'warning'); return; }
+    const date = new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+    const w = window.open('', '_blank');
+    w.document.write(`<!DOCTYPE html><html><head><title>MedConvert Notes</title>
+    <style>body{font-family:'Segoe UI',sans-serif;max-width:780px;margin:2rem auto;padding:0 1.5rem;color:#2a2018;line-height:1.85;font-size:15px;}
+    h1{font-size:1rem;color:#2d5a27;border-bottom:2px solid #cfc7b4;padding-bottom:.4rem;margin-bottom:1.2rem;}
+    ul,ol{padding-left:1.4rem;}hr{border:none;border-top:2px solid #cfc7b4;margin:1rem 0;}</style>
+    </head><body><h1>MedConvert Shift Notes &mdash; ${date}</h1>${editor.innerHTML}</body></html>`);
+    w.document.close();
+    w.focus();
+    setTimeout(() => { w.print(); w.close(); }, 300);
 };
 
 /* Share/export calculation result */
@@ -5889,164 +6350,31 @@ function initTimerPersistence() {
         }
     }
 
-    // Patch startTimer to persist state
+    // Patch startTimer to persist state using a state variable, not DOM scraping
     const origStart = window.startTimer;
     if (origStart) {
         window.startTimer = function(seconds) {
             origStart.apply(this, arguments);
             const lbl = document.getElementById('timer-label-input');
             saveTimerState(seconds, seconds, lbl ? lbl.value : '', true);
-            // Update storage every second
+            // Track remaining seconds in a module-level variable, not via DOM parsing
+            let _remaining = seconds;
+            const _startedAt = Date.now();
             const interval = setInterval(() => {
-                const disp = document.getElementById('timer-countdown');
-                if (!disp) { clearInterval(interval); return; }
-                const parts = disp.textContent.split(':');
-                if (parts.length === 2) {
-                    const secs = parseInt(parts[0])*60 + parseInt(parts[1]);
-                    if (secs <= 0) { clearInterval(interval); saveTimerState(0, seconds, '', false); return; }
-                    const lbl = document.getElementById('timer-label-input');
-                    saveTimerState(secs, seconds, lbl ? lbl.value : '', true);
+                _remaining = Math.max(0, seconds - Math.floor((Date.now() - _startedAt) / 1000));
+                const lbl = document.getElementById('timer-label-input');
+                if (_remaining <= 0) {
+                    clearInterval(interval);
+                    saveTimerState(0, seconds, lbl ? lbl.value : '', false);
+                    return;
                 }
+                saveTimerState(_remaining, seconds, lbl ? lbl.value : '', true);
             }, 1000);
         };
     }
 }
 
-/* ── Search + notes toolbar CSS ── */
-(function addPack3Styles() {
-    const style = document.createElement('style');
-    style.textContent = `
-        /* Global search */
-        .calc-search-wrap {
-            margin: 0 0 var(--space-6);
-            position: relative;
-        }
-        .calc-search-inner {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            background: var(--bg-card);
-            border: 2px solid var(--border);
-            border-radius: var(--radius-xl);
-            padding: 0 var(--space-4);
-            transition: border-color var(--t-smooth), box-shadow var(--t-smooth);
-        }
-        .calc-search-wrap:focus-within .calc-search-inner {
-            border-color: var(--border-focus);
-            box-shadow: var(--focus-ring);
-        }
-        .calc-search-icon { color: var(--text-muted); flex-shrink: 0; width: 1rem; height: 1rem; }
-        .calc-search-input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            font-family: var(--font-body);
-            font-size: var(--text-sm);
-            color: var(--text-primary);
-            padding: var(--space-3) 0;
-            outline: none;
-            min-height: 2.75rem;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-        /* Hide browser search decorations */
-        .calc-search-input::-webkit-search-decoration,
-        .calc-search-input::-webkit-search-cancel-button,
-        .calc-search-input::-webkit-search-results-button,
-        .calc-search-input::-webkit-search-results-decoration,
-        .calc-search-input::-webkit-contacts-auto-fill-button,
-        .calc-search-input::-webkit-credentials-auto-fill-button {
-            display: none !important;
-            -webkit-appearance: none;
-        }
-        .calc-search-input::placeholder { color: var(--text-muted); }
-        .calc-search-clear {
-            background: none; border: none; cursor: pointer;
-            color: var(--text-muted); padding: var(--space-1);
-            border-radius: var(--radius-sm); display: flex;
-            align-items: center; justify-content: center;
-            transition: color var(--t-fast);
-            -webkit-tap-highlight-color: transparent;
-        }
-        .calc-search-clear:hover { color: var(--text-primary); }
-        .calc-search-results {
-            position: absolute; top: calc(100% + 0.5rem);
-            left: 0; right: 0;
-            background: var(--bg-card);
-            border: 2px solid var(--border);
-            border-radius: var(--radius-xl);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-            z-index: 100;
-            overflow: hidden;
-            animation: panelIn 0.25s cubic-bezier(0.16,1,0.3,1) both;
-        }
-        .calc-search-result-item {
-            display: flex; align-items: center; gap: var(--space-3);
-            width: 100%; padding: var(--space-3) var(--space-5);
-            background: none; border: none; border-bottom: 1px solid var(--border);
-            font-family: var(--font-body); font-size: var(--text-sm);
-            font-weight: 500; color: var(--text-primary);
-            cursor: pointer; text-align: left;
-            transition: background var(--t-fast);
-            -webkit-tap-highlight-color: rgba(157,201,144,0.18);
-        }
-        .calc-search-result-item:last-child { border-bottom: none; }
-        .calc-search-result-item:hover { background: var(--moss); }
-        .calc-search-result-item svg { color: var(--sage); flex-shrink: 0; }
-        .calc-search-empty {
-            padding: var(--space-5); text-align: center;
-            font-size: var(--text-sm); color: var(--text-muted);
-        }
 
-        /* Notes toolbar */
-        .notes-toolbar {
-            display: flex; align-items: center; gap: var(--space-2);
-            padding: var(--space-2) var(--space-3);
-            background: var(--bg-input);
-            border: 2px solid var(--border);
-            border-bottom: none;
-            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-            flex-wrap: wrap;
-        }
-        .notes-fmt-btn {
-            display: inline-flex; align-items: center; gap: var(--space-1);
-            padding: var(--space-1) var(--space-3);
-            background: var(--bg-card); border: 1.5px solid var(--border);
-            border-radius: var(--radius-md);
-            font-family: var(--font-body); font-size: var(--text-xs);
-            font-weight: 600; color: var(--text-secondary);
-            cursor: pointer; transition: all var(--t-fast);
-            white-space: nowrap; min-height: 2rem;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .notes-fmt-btn:hover { border-color: var(--sage); color: var(--forest); background: var(--moss); }
-        .notes-toolbar-spacer { flex: 1; }
-        .notes-char-count {
-            font-size: var(--text-xs); color: var(--text-muted);
-            font-family: var(--font-body); white-space: nowrap;
-        }
-        /* Textarea connects to toolbar */
-        #panel-notes #shift-notes {
-            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-            border-top: none;
-        }
-
-        /* Drug calc button */
-        .drug-calc-btn {
-            display: inline-flex; align-items: center; gap: var(--space-2);
-            margin-top: var(--space-3);
-            padding: var(--space-2) var(--space-4);
-            background: var(--moss); border: 1.5px solid var(--fern);
-            border-radius: var(--radius-md);
-            font-family: var(--font-body); font-size: var(--text-xs);
-            font-weight: 700; color: var(--forest);
-            cursor: pointer; transition: all var(--t-smooth);
-            -webkit-tap-highlight-color: transparent;
-        }
-        .drug-calc-btn:hover { background: var(--fern); color: var(--text-on-dark); }
-    `;
-    document.head.appendChild(style);
-})();
 
 /* Init pack 3 */
 document.addEventListener('DOMContentLoaded', () => {
@@ -6055,7 +6383,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initTimerPersistence();
 });
 
-console.log('Pack 3 loaded — search, notes toolbar, drug calc, timer persistence');
 
 </script>
 
