@@ -1,19 +1,11 @@
-/* MedConvert Service Worker — Cache-First Strategy
- * Changes from v2:
- *  - BUILD_TS is stamped at deploy time; bump it to bust the cache automatically
- *    instead of editing CACHE_NAME by hand.
- *  - Google Fonts CSS + woff2 files are now cached (external URLs were previously
- *    filtered out, leaving users with no fonts on offline first-load).
- *  - install catch() now logs the error instead of swallowing it silently.
- *  - Offline fallback returns a real HTML shell instead of a plain-text "Offline".
- */
 'use strict';
 
 /* ── Cache identity ──────────────────────────────────────────────────────── */
-// Bump BUILD_TS at deploy time (e.g. via a build script: sed -i "s/BUILD_TS/$(date +%s)/" sw.js)
-// This avoids the "forgot to update CACHE_NAME" problem entirely.
-const BUILD_TS   = 'BUILD_TS';          // replaced at deploy; falls back gracefully if not
-const CACHE_NAME = `medconvert-v3-${BUILD_TS}`;
+const BUILD_TS_RAW = 'BUILD_TS';
+// Guard: if the deploy-time sed replacement never ran, fall back to a timestamp
+// so at least the string is unique and won't forever match an old cache.
+const BUILD_TS   = BUILD_TS_RAW === 'BUILD_TS' ? 'fallback-' + Date.now() : BUILD_TS_RAW;
+const CACHE_NAME = `medconvert-v4-${BUILD_TS}`;
 
 /* ── Core assets to precache ─────────────────────────────────────────────── */
 const PRECACHE_ASSETS = [
@@ -21,12 +13,6 @@ const PRECACHE_ASSETS = [
     '/index.html',
     '/manifest.json',
 ];
-
-/* ── Google Fonts URLs to cache ─────────────────────────────────────────── */
-// We cache these separately with a network-first + fallback strategy so that
-// on first offline visit the fonts degrade gracefully to the system stack
-// rather than causing CORS failures that pollute the error log.
-const FONT_CSS_URL = 'https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700;800&display=swap';
 
 /* ── Offline fallback HTML ───────────────────────────────────────────────── */
 const OFFLINE_HTML = `<!DOCTYPE html>
@@ -89,11 +75,9 @@ self.addEventListener('install', event => {
         caches.open(CACHE_NAME)
             .then(cache => cache.addAll(PRECACHE_ASSETS))
             .catch(err => {
-                // Log clearly — silent swallowing makes debugging precache failures very hard
                 console.error('[MedConvert SW] Precache failed:', err);
             })
     );
-    // Activate immediately — don't wait for existing tabs to close
     self.skipWaiting();
 });
 
@@ -111,7 +95,6 @@ self.addEventListener('activate', event => {
             )
         )
     );
-    // Take control of all open clients immediately
     self.clients.claim();
 });
 
@@ -121,38 +104,43 @@ self.addEventListener('fetch', event => {
 
     const url = new URL(event.request.url);
 
-    // ── Font CSS: network-first, cache fallback ──
-    // Fonts may update their woff2 URLs; always try network first so we get
-    // the freshest descriptor file, but serve from cache when offline.
+    // Font CSS: network-first with timeout, cache fallback
     if (url.hostname === 'fonts.googleapis.com') {
         event.respondWith(networkFirstWithCache(event.request));
         return;
     }
 
-    // ── Font files (woff2 etc): cache-first, long-lived ──
+    // Font files (woff2 etc): cache-first, long-lived
     if (url.hostname === 'fonts.gstatic.com') {
         event.respondWith(cacheFirstWithNetwork(event.request));
         return;
     }
 
-    // ── App shell & all other same-origin assets: cache-first ──
+    // App shell & same-origin assets: cache-first
     event.respondWith(cacheFirstWithNetwork(event.request));
 });
 
-/* ── Strategy helpers ────────────────────────────────────────────────────── */
+/* ── Fetch helpers ───────────────────────────────────────────────────────── */
+
+/** Create an AbortController that fires after `ms` milliseconds */
+function fetchWithTimeout(request, ms = 6000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), ms);
+    return fetch(request, { signal: controller.signal })
+        .finally(() => clearTimeout(timeoutId));
+}
 
 /**
- * Cache-first: serve from cache immediately; update cache in the background.
- * Falls back to the offline HTML shell for navigation requests.
+ * Cache-first: serve from cache; fetch+update in background on miss.
+ * Falls back to offline shell for navigation requests.
  */
 async function cacheFirstWithNetwork(request) {
     const cached = await caches.match(request);
     if (cached) return cached;
 
     try {
-        const response = await fetch(request);
+        const response = await fetchWithTimeout(request);
         if (response && response.status === 200) {
-            // Only cache same-origin and CORS-ok responses
             if (response.type === 'basic' || response.type === 'cors') {
                 const cache = await caches.open(CACHE_NAME);
                 cache.put(request, response.clone());
@@ -160,24 +148,22 @@ async function cacheFirstWithNetwork(request) {
         }
         return response;
     } catch {
-        // Navigation request and we have nothing cached — show offline shell
         if (request.mode === 'navigate') {
             return new Response(OFFLINE_HTML, {
                 status: 503,
                 headers: { 'Content-Type': 'text/html; charset=utf-8' },
             });
         }
-        // Non-navigation (CSS, JS, image) — return empty 503
         return new Response('Offline', { status: 503 });
     }
 }
 
 /**
- * Network-first: try network, cache the result; fall back to cache if offline.
+ * Network-first: try network with timeout; fall back to cache.
  */
 async function networkFirstWithCache(request) {
     try {
-        const response = await fetch(request);
+        const response = await fetchWithTimeout(request);
         if (response && response.status === 200) {
             const cache = await caches.open(CACHE_NAME);
             cache.put(request, response.clone());

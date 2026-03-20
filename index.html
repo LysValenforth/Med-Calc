@@ -120,26 +120,32 @@
 
 /* ==================== DARK THEME ==================== */
 [data-theme="dark"] {
-    --bg-main:        #18231a;
-    --bg-card:        #1f2e22;
-    --bg-input:       #1a2a1c;
-    --bg-hover:       #253328;
-    --text-primary:   #e6e0d2;
-    --text-secondary: #b0a490;
+    /* True deep dark — easy on eyes at 3 AM */
+    --bg-main:        #0f1a10;
+    --bg-card:        #162018;
+    --bg-input:       #111d13;
+    --bg-hover:       #1c2e1e;
+    --text-primary:   #eae5d5;
+    --text-secondary: #b8ad97;
     --text-muted:     #7a7060;
-    --text-on-dark:   #e6e0d2;
-    --border:         #344838;
-    --border-medium:  #445a48;
-    --border-strong:  #607a64;
+    --text-on-dark:   #eae5d5;
+    --border:         #263328;
+    --border-medium:  #344838;
+    --border-strong:  #4d6650;
     --border-focus:   #7aaf6e;
-    --parchment:      #1a2a1c;
-    --linen:          #344838;
-    --chalk:          #1f2e22;
+    --parchment:      #131e14;
+    --linen:          #263328;
+    --chalk:          #162018;
+    --cream:          #0f1a10;
     --focus-ring:     0 0 0 3px rgba(122, 175, 110, 0.45);
-    --success-bg:     #122a12;
-    --warning-bg:     #261e0c;
-    --danger-bg:      #281610;
+    --success-bg:     #0a1f0a;
+    --warning-bg:     #1e1608;
+    --danger-bg:      #1e0f0c;
     --dusty-rose:     #c47a6a;
+    --forest:         #3a7030;
+    --sage:           #6aaa5e;
+    --moss:           #3a5c38;
+    --fern:           #8dc880;
 }
 
 /* ==================== RESET ==================== */
@@ -280,7 +286,7 @@ header {
     align-items: center;
     justify-content: space-between;
     gap: var(--space-3);
-    padding: var(--space-2) 0;
+    padding: var(--space-3) 0;
     min-height: 0;
 }
 
@@ -376,9 +382,16 @@ header {
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: var(--radius-lg);
     padding: 0.35rem var(--space-3);
-    cursor: default;
+    cursor: pointer;
     flex-shrink: 0;
+    transition: background var(--t-fast), border-color var(--t-fast);
+    -webkit-tap-highlight-color: transparent;
 }
+.clock-widget:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.2);
+}
+.clock-widget:active { background: rgba(255,255,255,0.18); }
 
 .clock-time {
     font-family: var(--font-display);
@@ -410,12 +423,12 @@ header {
 
 /* Greeting bar — slim strip below */
 .header-greeting-bar {
-    border-top: 1px solid rgba(255,255,255,0.07);
-    padding: var(--space-2) 0 var(--space-2);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: var(--space-3) 0 var(--space-3);
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    min-height: 2rem;
+    min-height: 2.25rem;
 }
 
 .greeting {
@@ -606,9 +619,8 @@ header { padding: 0 !important; }
     scrollbar-color: var(--linen) transparent;
 }
 
-.tab-nav::-webkit-scrollbar { height: 3px; }
-.tab-nav::-webkit-scrollbar-track { background: transparent; }
-.tab-nav::-webkit-scrollbar-thumb { background: var(--linen); border-radius: var(--radius-full); }
+.tab-nav::-webkit-scrollbar { display: none; }
+.tab-nav { -ms-overflow-style: none; scrollbar-width: none; }
 
 .tab-btn {
     min-height: var(--touch-target);
@@ -771,7 +783,7 @@ input[type="time"],
 select {
     width: 100%;
     min-height: var(--touch-target);
-    padding: var(--space-3) var(--space-10) var(--space-3) var(--space-4);
+    padding: var(--space-3) var(--space-4);
     border: 2px solid var(--border);
     border-radius: var(--radius-lg);
     font-family: var(--font-body);
@@ -788,14 +800,11 @@ select {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23718f6a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.85rem center;
     background-size: 1rem;
-    cursor: pointer;
     box-sizing: border-box;
     max-width: 100%;
-    /* Prevent layout shift when dropdown opens */
     will-change: auto;
     transform: translateZ(0);
 }
@@ -849,7 +858,7 @@ input[type="number"] { -moz-appearance: textfield; }
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 
-/* Select chevron */
+/* Select chevron — only on <select> elements */
 select {
     cursor: pointer;
     appearance: none;
@@ -862,6 +871,16 @@ select {
 
 [data-theme="dark"] select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23b0a490' d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+}
+
+/* Inputs — no chevron */
+input[type="number"],
+input[type="text"],
+input[type="time"],
+input[type="date"],
+input[type="search"] {
+    background-image: none;
+    cursor: text;
 }
 
 textarea {
@@ -1095,19 +1114,60 @@ input, select, textarea, button {
 
 
 .timer-btn {
-    min-height: var(--touch-target);
+    min-height: 3.5rem;
     padding: var(--space-4) var(--space-3);
     background: var(--bg-card);
-    border: var(--outline-card);
+    border: 2px solid var(--border);
     border-radius: var(--radius-lg);
     cursor: pointer;
     transition: all var(--t-base);
     text-align: center;
     font-family: var(--font-body);
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.timer-btn:hover { border-color: var(--sage); background: var(--moss); transform: translateY(-2px); }
-.timer-btn:active { transform: translateY(0) scale(0.97); }
+.timer-btn:hover {
+    border-color: var(--sage);
+    background: rgba(157,201,144,0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.timer-btn:active { transform: scale(0.96); }
+
+.timer-btn.active {
+    background: var(--forest);
+    border-color: var(--forest);
+    box-shadow: 0 4px 16px rgba(45,90,39,0.35);
+    transform: translateY(-1px);
+}
+.timer-btn.active .timer-time { color: #fff; }
+.timer-btn.active .timer-desc { color: rgba(255,255,255,0.75); }
+[data-theme="dark"] .timer-btn.active { background: var(--sage); border-color: var(--sage); }
+
+.timer-time {
+    display: block;
+    font-size: var(--text-lg);
+    font-weight: 800;
+    color: var(--forest);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    line-height: 1.1;
+    margin-bottom: 0.2rem;
+}
+[data-theme="dark"] .timer-time { color: var(--fern); }
+
+.timer-desc {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    line-height: 1;
+}
 
 .timer-time {
     font-family: var(--font-display);
@@ -1161,6 +1221,8 @@ input, select, textarea, button {
     line-height: 1.15;
     word-break: break-word;
     font-variant-numeric: tabular-nums;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
 }
 
 .result-note { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.65; margin-top: var(--space-3); font-weight: 500; }
@@ -1599,8 +1661,8 @@ input, select, textarea, button {
     position: fixed;
     bottom: 2rem;
     right: 2rem;
-    width: 3.25rem;
-    height: 3.25rem;
+    width: 3rem;
+    height: 3rem;
     background: var(--forest);
     color: var(--text-on-dark);
     border: 2px solid var(--sage);
@@ -1609,7 +1671,7 @@ input, select, textarea, button {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 300;
+    z-index: 290;
     opacity: 0;
     transform: translateY(12px) scale(0.85);
     pointer-events: none;
@@ -1630,7 +1692,17 @@ input, select, textarea, button {
 }
 
 .back-to-top:active { transform: translateY(0) scale(0.95); }
-.back-to-top svg { width: 1.25rem; height: 1.25rem; }
+.back-to-top svg { width: 1.1rem; height: 1.1rem; }
+
+/* Desktop: position back-to-top to the left of the glove FAB */
+@media (min-width: 641px) {
+    .back-to-top {
+        right: 1.25rem;                           /* same column as glove FAB */
+        bottom: calc(5.5rem - 3.25rem - 0.5rem);  /* 1.75rem — directly below FAB */
+        width: 3.25rem;                            /* same size as FAB */
+        height: 3.25rem;
+    }
+}
 
 /* ==================== FOOTER ==================== */
 footer {
@@ -1737,7 +1809,7 @@ footer {
     .time-sep { padding: 0; display: none; }
     .timer-presets { grid-template-columns: repeat(2, 1fr); }
     .quick-ref-grid { grid-template-columns: repeat(2, 1fr); }
-    .back-to-top { bottom: 1.25rem; right: 1.25rem; width: 3rem; height: 3rem; }
+    .back-to-top { bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px) + 0.75rem); right: 1rem; width: 2.75rem; height: 2.75rem; }
     .tab-btn { padding: var(--space-2) var(--space-3); font-size: 0.72rem; }
     .btn-group { gap: var(--space-3); }
     .card-header { gap: var(--space-3); }
@@ -1817,7 +1889,28 @@ footer {
 /* Tab nav wrapper with fade hint */
 .tab-nav-wrapper {
     position: relative;
-    margin-bottom: var(--space-8);
+    margin-bottom: 0;
+}
+
+/* Sticky nav area — sits directly under the sticky header */
+.sticky-nav-area {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-main);
+    padding-top: var(--space-5);
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-5);
+    /* Subtle bottom shadow to indicate scroll depth */
+    box-shadow: none;
+    transition: box-shadow var(--t-base);
+}
+.sticky-nav-area.scrolled {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 1px 0 var(--border);
+}
+/* Extend bg behind tab fade gradient in sticky mode */
+.sticky-nav-area .tab-fade-right {
+    background: linear-gradient(to right, transparent, var(--bg-main));
 }
 
 .tab-nav-wrapper .tab-nav {
@@ -1877,11 +1970,25 @@ footer {
     position: relative;
     z-index: 1;
     text-align: center;
+    width: 76%;
+    height: 76%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 40% 35%, var(--bg-card) 0%, var(--bg-input) 100%);
+    box-shadow:
+        inset 0 4px 12px rgba(0,0,0,0.10),
+        inset 0 -2px 6px rgba(255,255,255,0.06);
 }
 
 .timer-ring-inner .timer-countdown {
     font-size: clamp(2.25rem, 8vw, 3.25rem);
     margin-bottom: var(--space-1);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    font-feature-settings: "tnum";
 }
 
 .timer-ring-inner .timer-label {
@@ -2268,27 +2375,30 @@ select:focus {
 /* -- addDashboardToggleStyles -- */
 
 .dashboard-collapse-wrap {
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-5);
+    order: 1; /* sits after sticky nav in normal flow */
 }
 .dashboard-toggle {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: var(--space-3) var(--space-5);
-    background: var(--bg-card);
-    border: var(--outline-card);
-    border-radius: var(--radius-xl);
+    padding: var(--space-2) var(--space-4);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
     cursor: pointer;
     font-family: var(--font-body);
     font-size: var(--text-xs);
     font-weight: 700;
-    color: var(--text-muted);
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    letter-spacing: 0.07em;
-    transition: all var(--t-smooth);
-    min-height: 2.75rem;
+    color: var(--text-muted);
+    transition: color var(--t-fast);
+    -webkit-tap-highlight-color: transparent;
 }
+.dashboard-toggle:hover { color: var(--text-secondary); }
+
 .dashboard-toggle:hover {
     border-color: var(--border-medium);
     color: var(--text-secondary);
@@ -2641,6 +2751,640 @@ select:focus {
 /* -- ripple -- */
 @keyframes ripple { to { transform: scale(2.5); opacity: 0; } }
 
+
+/* ==================== DESIGN IMPROVEMENTS ==================== */
+
+/* Auto-save indicator for notes */
+.notes-save-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-family: var(--font-body);
+    color: var(--text-muted);
+    transition: color var(--t-base), opacity var(--t-base);
+    opacity: 0;
+    letter-spacing: 0.02em;
+}
+.notes-save-indicator.saving { opacity: 1; color: var(--warning); }
+.notes-save-indicator.saved  { opacity: 1; color: var(--success); }
+.notes-save-indicator svg { width: 0.8rem; height: 0.8rem; }
+
+/* Mobile-first bottom navigation for quick tab access */
+@media (max-width: 640px) {
+    .mobile-quick-tabs {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--bg-card);
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0.35rem 0 max(0.35rem, env(safe-area-inset-bottom));
+        z-index: 150;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+    }
+    .mobile-quick-tab-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.2rem;
+        padding: 0.35rem 0.5rem;
+        min-width: 3.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-muted);
+        font-family: var(--font-body);
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        transition: color var(--t-fast);
+        -webkit-tap-highlight-color: transparent;
+    }
+    .mobile-quick-tab-btn svg { width: 1.3rem; height: 1.3rem; }
+    .mobile-quick-tab-btn.active { color: var(--forest); }
+    .mobile-quick-tab-btn.active svg { stroke: var(--forest); }
+    [data-theme="dark"] .mobile-quick-tab-btn.active { color: var(--fern); }
+    /* Pad main content above the nav bar */
+    body { padding-bottom: 4.5rem; }
+}
+@media (min-width: 641px) {
+    .mobile-quick-tabs { display: none; }
+}
+
+/* Enhanced result display */
+.result-display {
+    position: relative;
+}
+.result-display::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: 4px 0 0 4px;
+    background: var(--border);
+    transition: background var(--t-base);
+}
+.result-display.result-normal::before  { background: var(--success); }
+.result-display.result-warning::before { background: var(--warning); }
+.result-display.result-danger::before  { background: var(--danger); }
+.result-display.result-neutral::before { background: var(--sage); }
+
+/* Keyboard shortcut chips */
+.kbd-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-weight: 600;
+}
+.kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.1em 0.4em;
+    background: var(--bg-input);
+    border: 1px solid var(--border-medium);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    font-family: var(--font-body);
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Drug favorite button */
+.drug-fav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 0.25rem;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    transition: color var(--t-fast), transform var(--t-fast);
+}
+.drug-fav-btn svg { width: 1rem; height: 1rem; }
+.drug-fav-btn:hover { color: var(--amber); transform: scale(1.15); }
+.drug-fav-btn.is-fav { color: var(--amber); }
+.drug-fav-btn.is-fav svg { fill: var(--amber); }
+
+/* Drug calc link button */
+.drug-calc-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: var(--space-3);
+    padding: 0.4rem 0.85rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    font-family: var(--font-body);
+    color: var(--forest);
+    cursor: pointer;
+    transition: all var(--t-fast);
+}
+.drug-calc-btn:hover { background: var(--moss); border-color: var(--sage); }
+[data-theme="dark"] .drug-calc-btn { color: var(--fern); }
+
+/* Improved sub-tabs on mobile */
+@media (max-width: 480px) {
+    .sub-tabs {
+        gap: var(--space-1);
+    }
+    .sub-tab {
+        font-size: 0.72rem;
+        padding: var(--space-2) var(--space-2);
+        min-width: auto;
+    }
+}
+
+/* Section heading inside panels */
+.section-heading {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border);
+}
+
+/* Opioid warning box */
+.warning-box {
+    background: var(--warning-bg);
+    border: 1px solid rgba(138, 92, 24, 0.3);
+    border-left: 4px solid var(--warning);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    font-size: var(--text-sm);
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    line-height: 1.65;
+}
+[data-theme="dark"] .warning-box { background: var(--warning-bg); border-color: rgba(138,92,24,0.5); }
+
+/* Subtle gradient on calc-card */
+.calc-card {
+    background: linear-gradient(to bottom, var(--bg-card), var(--chalk));
+}
+[data-theme="dark"] .calc-card {
+    background: linear-gradient(to bottom, var(--bg-card), var(--bg-main));
+}
+
+/* Date input styling */
+input[type="date"] {
+    width: 100%;
+    min-height: var(--touch-target);
+    padding: var(--space-3) var(--space-4);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    font-weight: 500;
+    background: var(--chalk);
+    color: var(--text-primary);
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: border-color var(--t-smooth), box-shadow var(--t-smooth);
+    -webkit-appearance: none;
+}
+input[type="date"]:focus {
+    border-color: var(--border-focus);
+    box-shadow: var(--focus-ring);
+    outline: none;
+}
+[data-theme="dark"] input[type="date"] {
+    color-scheme: dark;
+}
+
+/* Confirm modal style improvements */
+.confirm-overlay.visible {
+    animation: none;
+}
+.confirm-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-8);
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+    border: 1px solid var(--border);
+}
+
+/* Improved toast stacking */
+.mc-toast {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+/* Skeleton loading for drug cards */
+@keyframes skeleton-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* Enhanced focus styles for checkboxes */
+input[type="checkbox"]:focus-visible {
+    outline: 3px solid var(--border-focus);
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+/* Pill badges for scores */
+.score-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: 800;
+    font-family: var(--font-display);
+    background: var(--moss);
+    color: var(--forest);
+    flex-shrink: 0;
+}
+
+/* Make form-row better on tablet */
+@media (min-width: 481px) and (max-width: 768px) {
+    .form-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Smooth tab indicator underline */
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2px;
+    background: var(--moss);
+    border-radius: var(--radius-full);
+    opacity: 0.6;
+}
+
+/* Better card hover */
+.calc-card {
+    transition: box-shadow var(--t-base);
+}
+
+/* Notes toolbar improvements */
+.notes-toolbar {
+    flex-wrap: wrap;
+}
+
+/* INR result colours */
+.result-display.show.result-normal .result-value  { color: var(--success); }
+.result-display.show.result-warning .result-value { color: var(--warning); }
+.result-display.show.result-danger .result-value  { color: var(--danger); }
+
+/* EDD trimester badge */
+#edd-trimester strong {
+    display: inline-block;
+    padding: 0.15em 0.6em;
+    background: var(--moss);
+    color: var(--forest);
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+[data-theme="dark"] #edd-trimester strong { background: rgba(122,175,110,0.2); color: var(--fern); }
+
+
+@keyframes result-appear {
+    0%   { opacity: 0; transform: translateY(6px) scale(0.99); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.result-display.show {
+    animation: result-appear 0.3s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+
+[data-theme="dark"] .calc-search-inner {
+    background: var(--bg-card);
+    border-color: var(--border);
+}
+[data-theme="dark"] .calc-search-input {
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+
+/* ==================== GLOVE SCRATCHPAD ==================== */
+.glove-fab {
+    position: fixed;
+    bottom: 5.5rem;
+    right: 1.25rem;
+    width: 3.25rem;
+    height: 3.25rem;
+    background: var(--forest);
+    color: #fff;
+    border: 2px solid var(--sage);
+    border-radius: var(--radius-full);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 501;
+    transition: transform var(--t-spring), background var(--t-base), box-shadow var(--t-fast);
+    -webkit-tap-highlight-color: transparent;
+}
+.glove-fab:hover { transform: scale(1.08) translateY(-2px); background: var(--sage); box-shadow: 0 8px 28px rgba(0,0,0,0.3); }
+.glove-fab:active { transform: scale(0.94); }
+.glove-fab svg { width: 1.25rem; height: 1.25rem; }
+[data-theme="dark"] .glove-fab { background: var(--sage); border-color: var(--fern); }
+
+/* Notification dot on FAB when has content */
+.glove-fab .glove-dot {
+    position: absolute;
+    top: -3px; right: -3px;
+    width: 12px; height: 12px;
+    background: var(--dusty-rose);
+    border-radius: 50%;
+    border: 2px solid var(--bg-main);
+    display: none;
+}
+.glove-fab .glove-dot.visible { display: block; }
+
+.glove-panel {
+    position: fixed;
+    bottom: 9.5rem;
+    right: 1.25rem;
+    width: min(380px, calc(100vw - 2.5rem));
+    background: var(--bg-card);
+    border: 2px solid var(--border-medium);
+    border-radius: var(--radius-2xl);
+    box-shadow: 0 12px 48px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 500;
+    overflow: hidden;
+    transform: scale(0.9) translateY(12px);
+    transform-origin: bottom right;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform var(--t-spring), opacity var(--t-base);
+    max-height: calc(100dvh - 12rem);
+}
+.glove-panel.open {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.glove-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border);
+    background: var(--forest);
+    color: #fff;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+.glove-title {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.glove-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-shrink: 0;
+}
+.glove-header-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: var(--radius-md);
+    color: rgba(255,255,255,0.9);
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: background var(--t-fast);
+    -webkit-tap-highlight-color: transparent;
+}
+.glove-header-btn:hover { background: rgba(255,255,255,0.25); }
+.glove-timer-bar {
+    height: 3px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+}
+.glove-timer-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sage), var(--moss));
+    border-radius: 0 2px 2px 0;
+    transition: width 1s linear;
+}
+.glove-timer-fill.ending { background: linear-gradient(90deg, var(--dusty-rose), #f0a090); }
+.glove-body {
+    padding: var(--space-4) var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    overflow-y: auto;
+}
+.glove-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+.glove-field-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+}
+.glove-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--space-2);
+}
+.glove-input {
+    width: 100%;
+    padding: 0.6rem 0.4rem;
+    min-height: 2.75rem;
+    background: var(--bg-input);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+    transition: border-color var(--t-fast), background var(--t-fast);
+    outline: none;
+    text-align: center;
+    -webkit-appearance: none;
+}
+.glove-input:focus { border-color: var(--border-focus); background: var(--bg-card); box-shadow: var(--focus-ring); }
+.glove-input::placeholder { font-weight: 400; color: var(--text-muted); font-size: 0.75rem; }
+.glove-textarea {
+    width: 100%;
+    resize: none;
+    height: 5rem;
+    padding: var(--space-3);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    outline: none;
+    line-height: 1.5;
+    transition: border-color var(--t-fast);
+}
+.glove-textarea:focus { border-color: var(--border-focus); box-shadow: var(--focus-ring); }
+.glove-footer {
+    padding: var(--space-3) var(--space-5);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+.glove-expiry {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.glove-expiry svg { width: 0.75rem; height: 0.75rem; flex-shrink: 0; }
+.glove-expiry.expiring { color: var(--dusty-rose); }
+.glove-send-btn {
+    padding: 0.4rem 1rem;
+    background: var(--forest);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background var(--t-fast), transform var(--t-fast);
+    -webkit-tap-highlight-color: transparent;
+}
+.glove-send-btn:hover { background: var(--sage); transform: translateY(-1px); }
+.glove-send-btn:active { transform: scale(0.96); }
+[data-theme="dark"] .glove-send-btn { background: var(--sage); }
+
+/* ── Glove: mobile (≤640px) — above bottom nav ── */
+@media (max-width: 640px) {
+    .glove-fab {
+        bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px) + 0.6rem);
+        right: 1rem;
+        width: 3rem;
+        height: 3rem;
+    }
+    .glove-panel {
+        /* Full-width, centered, grows upward from just above FAB */
+        left: 0.75rem;
+        right: 0.75rem;
+        bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px) + 4.25rem);
+        width: auto;
+        max-height: calc(100dvh - 4.5rem - env(safe-area-inset-bottom, 0px) - 5rem - env(safe-area-inset-top, 0px));
+        border-radius: var(--radius-xl);
+    }
+    .glove-body {
+        overflow-y: auto;
+        max-height: calc(100dvh - 4.5rem - 10rem - env(safe-area-inset-bottom, 0px));
+    }
+}
+
+
+/* ==================== DOSE SAFETY GUARDRAILS ==================== */
+.dose-warning {
+    display: none;
+    margin-top: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-lg);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    line-height: 1.6;
+    border: 2px solid;
+    align-items: flex-start;
+    gap: var(--space-3);
+}
+.dose-warning.show { display: flex; }
+.dose-warning svg { width: 1.1rem; height: 1.1rem; flex-shrink: 0; margin-top: 0.1em; }
+.dose-warning.warn-amber { background: var(--warning-bg); border-color: rgba(138,92,24,0.5); color: var(--warning); }
+.dose-warning.warn-red   { background: var(--danger-bg);  border-color: rgba(122,42,34,0.6); color: var(--danger); }
+
+/* Result display: amber/red outline on danger */
+.result-display.result-warning { border-color: var(--warning) !important; }
+.result-display.result-danger  { border-color: var(--danger)  !important; }
+.result-display.result-warning::before { background: var(--warning); }
+.result-display.result-danger::before  { background: var(--danger); }
+
+
+/* Timer complete pulse */
+@keyframes timer-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(193,122,106,0.7); }
+    70%  { box-shadow: 0 0 0 18px rgba(193,122,106,0); }
+    100% { box-shadow: 0 0 0 0 rgba(193,122,106,0); }
+}
+.timer-ring-wrap.complete {
+    animation: timer-pulse 1.2s ease-out infinite;
+    border-radius: 50%;
+}
+.timer-ring-fill.complete { stroke: var(--dusty-rose); }
+
+/* Timer active glow */
+.timer-ring-wrap.running {
+    filter: drop-shadow(0 0 8px rgba(92,138,82,0.3));
+}
+
+
+/* Glove panel: short landscape screens */
+@media (max-height: 500px) {
+    .glove-panel {
+        max-height: calc(100dvh - 3rem);
+        bottom: 0.5rem;
+        border-radius: var(--radius-lg);
+    }
+    .glove-fab { bottom: 0.5rem; }
+}
+
 </style>
     <script>
     // Font load detection — apply fallback class if fonts unavailable (offline first load)
@@ -2661,6 +3405,30 @@ select:focus {
 <body>
 
 <a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- Mobile bottom navigation -->
+<nav class="mobile-quick-tabs" aria-label="Quick navigation" id="mobile-bottom-nav">
+    <button class="mobile-quick-tab-btn active" data-tab="timer" onclick="switchToTab('timer');updateMobileNav('timer')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6M12 5v-3"/></svg>
+        Timer
+    </button>
+    <button class="mobile-quick-tab-btn" data-tab="dosage" onclick="switchToTab('dosage');updateMobileNav('dosage')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="10" width="18" height="8" rx="4"/><path d="M12 10V18"/></svg>
+        Dosage
+    </button>
+    <button class="mobile-quick-tab-btn" data-tab="iv" onclick="switchToTab('iv');updateMobileNav('iv')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C12 2 7 9 7 14a5 5 0 0 0 10 0c0-5-5-12-5-12z"/></svg>
+        IV/Drip
+    </button>
+    <button class="mobile-quick-tab-btn" data-tab="drugs" onclick="switchToTab('drugs');updateMobileNav('drugs')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2l4 4-10 10H8v-4L18 2z"/><path d="M5 15l-3 3 2 2 3-3M9 9l5 5"/></svg>
+        Drugs
+    </button>
+    <button class="mobile-quick-tab-btn" data-tab="notes" onclick="switchToTab('notes');updateMobileNav('notes')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4a2 2 0 0 1 2-2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+        Notes
+    </button>
+</nav>
 
 <div id="hci-live-region" role="status" aria-live="polite" aria-atomic="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;"></div>
 
@@ -2789,11 +3557,11 @@ select:focus {
                 </div>
             </div>
             <div class="header-controls">
-                <div class="clock-widget" aria-label="Current time">
+                <button class="clock-widget" id="clock-widget" aria-label="Current time — click to toggle 24-hour format" title="Click to toggle military time" onclick="toggleClockFormat()" style="background:none;border:none;cursor:pointer;padding:0;font:inherit;-webkit-tap-highlight-color:transparent;">
                     <div class="clock-time" id="clock-time">12:00 PM</div>
                     <div class="clock-sep" aria-hidden="true"></div>
                     <div class="clock-date" id="clock-date">Mon, Jan 1</div>
-                </div>
+                </button>
                 <div class="header-divider" aria-hidden="true"></div>
                 <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode" aria-label="Toggle dark mode">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -2825,27 +3593,10 @@ select:focus {
     <!-- Shift Countdown -->
     <div id="shift-countdown" class="shift-countdown"></div>
 
-    <!-- Dashboard Row -->
-    <div class="dashboard-collapse-wrap reveal">
-        <button class="dashboard-toggle" id="dashboard-toggle" aria-expanded="false" aria-controls="dashboard-row">
-            <span class="dashboard-toggle-label">Quick Access &amp; Recent</span>
-            <svg class="dashboard-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="dashboard-row" id="dashboard-row" aria-hidden="true">
-            <div class="dashboard-widget">
-                <div class="widget-title">
-                    Quick Access
-                    <button class="pin-manage-btn" onclick="openPinManager()">+ Manage</button>
-                </div>
-                <div id="pinned-tools"></div>
-            </div>
-            <div class="dashboard-widget">
-                <div class="widget-title">Recent Calculations</div>
-                <div id="calc-history"></div>
-            </div>
-        </div>
     </div>
 
+    <!-- Sticky Tab + Search Area -->
+    <div class="sticky-nav-area" id="sticky-nav-area">
     <!-- Tab Navigation -->
     <div class="tab-nav-wrapper"><nav class="tab-nav reveal" role="tablist" aria-label="Calculator sections">
         <button class="tab-btn active" data-tab="timer" role="tab" aria-selected="true" aria-controls="panel-timer" id="tab-timer" tabindex="0">
@@ -2894,6 +3645,27 @@ select:focus {
         </div>
         <div class="calc-search-results" id="calc-search-results" aria-live="polite"></div>
     </div>
+    </div><!-- /sticky-nav-area -->
+
+    <!-- Dashboard Row -->
+    <div class="dashboard-collapse-wrap reveal">
+        <button class="dashboard-toggle" id="dashboard-toggle" aria-expanded="false" aria-controls="dashboard-row">
+            <span class="dashboard-toggle-label">Quick Access &amp; Recent</span>
+            <svg class="dashboard-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="dashboard-row" id="dashboard-row" aria-hidden="true">
+            <div class="dashboard-widget">
+                <div class="widget-title">
+                    Quick Access
+                    <button class="pin-manage-btn" onclick="openPinManager()">+ Manage</button>
+                </div>
+                <div id="pinned-tools"></div>
+            </div>
+            <div class="dashboard-widget">
+                <div class="widget-title">Recent Calculations</div>
+                <div id="calc-history"></div>
+            </div>
+        </div>
 
     <!-- ==================== TIMER PANEL ==================== -->
     <div id="panel-timer" class="calc-card active" role="tabpanel">
@@ -2947,6 +3719,11 @@ select:focus {
             <button class="btn btn-secondary" onclick="resetTimer()">
                 <svg><use href="#icon-cancel"/></svg> Reset
             </button>
+            <button class="btn btn-secondary" id="timer-sound-btn" onclick="toggleTimerSound()" title="Toggle sound on completion" aria-label="Toggle sound">
+                <svg id="timer-sound-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                </svg>
+            </button>
         </div>
     </div>
 
@@ -2989,6 +3766,10 @@ select:focus {
                 <div class="result-value" id="dosage-result-value">0 mL</div>
                 <div class="result-note">Double-check using the five rights before administration.</div>
             </div>
+            <div class="dose-warning" id="dosage-warning">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span id="dosage-warning-text"></span>
+            </div>
             <div class="info-box">
                 <p><strong>Formula:</strong> Volume = (Desired Dose ÷ Dose on Hand) × Quantity</p>
                 <p style="margin-top:0.5rem;">Verify the drug concentration on the medication label before calculating.</p>
@@ -3029,6 +3810,10 @@ select:focus {
                 <div class="result-label">Dose per Administration</div>
                 <div class="result-value" id="weight-dose-value">0 mg</div>
                 <div class="result-note" id="weight-dose-note"></div>
+            </div>
+            <div class="dose-warning" id="weight-dose-warning">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span id="weight-dose-warning-text"></span>
             </div>
         </div>
 
@@ -3231,7 +4016,7 @@ select:focus {
             <div class="card-header-icon"><svg><use href="#icon-chart"/></svg></div>
             <div>
                 <h2 class="card-title">Clinical Assessment</h2>
-                <p class="card-subtitle">GCS, BMI, eGFR, and Wells DVT score</p>
+                <p class="card-subtitle">GCS, BMI, eGFR, Wells DVT, CURB-65, and Parkland burn formula</p>
             </div>
         </div>
         <div class="sub-tabs">
@@ -3239,6 +4024,8 @@ select:focus {
             <button class="sub-tab" onclick="showSubPanel('bmi')">BMI</button>
             <button class="sub-tab" onclick="showSubPanel('egfr')">eGFR</button>
             <button class="sub-tab" onclick="showSubPanel('wells')">Wells DVT</button>
+            <button class="sub-tab" onclick="showSubPanel('curb65')">CURB-65</button>
+            <button class="sub-tab" onclick="showSubPanel('parkland')">Parkland</button>
         </div>
 
         <div id="sub-gcs" class="sub-panel active">
@@ -3349,6 +4136,63 @@ select:focus {
                 <div class="result-interpretation" id="wells-interpretation"></div>
             </div>
         </div>
+
+        <!-- CURB-65 Pneumonia Severity -->
+        <div id="sub-curb65" class="sub-panel">
+            <h3 class="card-subtitle mb-md" style="color:var(--text-primary);font-weight:600;margin-bottom:var(--space-5);">CURB-65 Pneumonia Severity Score</h3>
+            <div class="form-group">
+                <label style="margin-bottom:var(--space-4);">Check all that apply:</label>
+                <div style="display:flex;flex-direction:column;gap:var(--space-3);">
+                    <label style="text-transform:none;letter-spacing:0;font-weight:500;font-size:var(--text-sm);display:flex;align-items:center;cursor:pointer;gap:var(--space-3);"><input type="checkbox" id="curb-c" onchange="calculateCURB65()" value="1"> <span><strong>C</strong> — Confusion (new onset)</span></label>
+                    <label style="text-transform:none;letter-spacing:0;font-weight:500;font-size:var(--text-sm);display:flex;align-items:center;cursor:pointer;gap:var(--space-3);"><input type="checkbox" id="curb-u" onchange="calculateCURB65()" value="1"> <span><strong>U</strong> — Urea &gt;7 mmol/L (BUN &gt;19 mg/dL)</span></label>
+                    <label style="text-transform:none;letter-spacing:0;font-weight:500;font-size:var(--text-sm);display:flex;align-items:center;cursor:pointer;gap:var(--space-3);"><input type="checkbox" id="curb-r" onchange="calculateCURB65()" value="1"> <span><strong>R</strong> — Respiratory rate ≥30/min</span></label>
+                    <label style="text-transform:none;letter-spacing:0;font-weight:500;font-size:var(--text-sm);display:flex;align-items:center;cursor:pointer;gap:var(--space-3);"><input type="checkbox" id="curb-b" onchange="calculateCURB65()" value="1"> <span><strong>B</strong> — BP: Systolic &lt;90 or Diastolic ≤60 mmHg</span></label>
+                    <label style="text-transform:none;letter-spacing:0;font-weight:500;font-size:var(--text-sm);display:flex;align-items:center;cursor:pointer;gap:var(--space-3);"><input type="checkbox" id="curb-65" onchange="calculateCURB65()" value="1"> <span><strong>65</strong> — Age ≥65 years</span></label>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="calculateCURB65()" style="margin-top:var(--space-5);">Calculate CURB-65</button>
+            <div class="result-display" id="curb65-result">
+                <div class="result-label">CURB-65 Score</div>
+                <div class="result-value" id="curb65-value">0 / 5</div>
+                <div class="result-interpretation" id="curb65-interp"></div>
+            </div>
+            <div class="info-box" style="margin-top:var(--space-5);">
+                <p><strong>Risk Stratification:</strong><br>
+                0–1: Low risk (~1.5% mortality) — consider home treatment<br>
+                2: Moderate risk (~9.2%) — hospital admission recommended<br>
+                3–5: High risk (&gt;22%) — ICU assessment; consider intensive care</p>
+            </div>
+        </div>
+
+        <!-- Parkland Burn Formula -->
+        <div id="sub-parkland" class="sub-panel">
+            <h3 class="card-subtitle mb-md" style="color:var(--text-primary);font-weight:600;margin-bottom:var(--space-5);">Parkland Formula — Burn Fluid Resuscitation</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Patient Weight (kg)</label>
+                    <input type="number" inputmode="decimal" id="parkland-weight" placeholder="e.g., 70" step="0.1" min="1">
+                </div>
+                <div class="form-group">
+                    <label>% Total Body Surface Area Burned (%TBSA)</label>
+                    <input type="number" inputmode="decimal" id="parkland-tbsa" placeholder="e.g., 30" step="1" min="1" max="100">
+                </div>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="calculateParkland()">Calculate Fluid Requirement</button>
+            <div class="result-display" id="parkland-result">
+                <div class="result-label">Total Fluid (First 24 hrs)</div>
+                <div class="result-value" id="parkland-value">— mL</div>
+                <div class="result-note" id="parkland-note"></div>
+                <div class="result-interpretation" id="parkland-schedule"></div>
+            </div>
+            <div class="info-box" style="margin-top:var(--space-5);">
+                <p><strong>Parkland Formula:</strong> 4 mL × weight (kg) × %TBSA burned<br><br>
+                <strong>Administration schedule:</strong><br>
+                • First 8 hrs (from time of burn): give 50% of total<br>
+                • Next 16 hrs: give remaining 50%<br><br>
+                <strong>Fluid:</strong> Lactated Ringer's solution preferred. For burns &gt;50% TBSA, cap at 50% in calculations.</p>
+            </div>
+        </div>
+
     </div>
 
     <!-- ==================== PEDIATRIC PANEL ==================== -->
@@ -3367,18 +4211,27 @@ select:focus {
         </div>
 
         <div id="sub-peds-weight" class="sub-panel active">
-            <h3 class="card-subtitle mb-md" style="color:var(--text-primary);font-weight:600;margin-bottom:var(--space-5);">Weight Estimation (1–10 yrs)</h3>
-            <div class="form-group">
-                <label>Age (years)</label>
-                <input type="number" inputmode="decimal" id="peds-age" placeholder="e.g., 5" min="1" max="10" step="1">
+            <h3 class="card-subtitle mb-md" style="color:var(--text-primary);font-weight:600;margin-bottom:var(--space-5);">Weight Estimation</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" inputmode="decimal" id="peds-age" placeholder="e.g., 5" min="0.1" max="12" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Unit</label>
+                    <select id="peds-age-unit">
+                        <option value="years">Years (1–10 yrs)</option>
+                        <option value="months">Months (1–12 mos)</option>
+                    </select>
+                </div>
             </div>
             <button class="btn btn-primary btn-full" onclick="calculatePedsWeight()">Estimate Weight</button>
             <div class="result-display" id="peds-weight-result">
                 <div class="result-label">Estimated Weight</div>
-                <div class="result-value" id="peds-weight-value">0 kg</div>
-                <div class="result-note">Broselow tape or actual weight preferred when available.</div>
+                <div class="result-value" id="peds-weight-value">— kg</div>
+                <div class="result-note" id="peds-weight-note">Broselow tape or actual weight preferred when available.</div>
             </div>
-            <div class="info-box"><p><strong>Formula:</strong> Weight (kg) = (Age × 2) + 8</p></div>
+            <div class="info-box"><p id="peds-weight-formula"><strong>Formula (1–10 yrs):</strong> Weight (kg) = (Age × 2) + 8<br><strong>Infant formula (1–12 mos):</strong> Weight (kg) = (Age_months ÷ 2) + 4</p></div>
         </div>
 
         <div id="sub-peds-dose" class="sub-panel">
@@ -3529,12 +4382,15 @@ select:focus {
             <div class="card-header-icon"><svg><use href="#icon-book"/></svg></div>
             <div>
                 <h2 class="card-title">Quick Reference</h2>
-                <p class="card-subtitle">Normal lab values, ABG interpretation, and clinical reference</p>
+                <p class="card-subtitle">Normal lab values, ABG guide, opioid conversion, EDD, and INR checker</p>
             </div>
         </div>
         <div class="sub-tabs">
             <button class="sub-tab active" onclick="showSubPanel('ref-labs')">Lab Normals</button>
             <button class="sub-tab" onclick="showSubPanel('ref-abg')">ABG Guide</button>
+            <button class="sub-tab" onclick="showSubPanel('ref-opioid')">Opioid Equiv.</button>
+            <button class="sub-tab" onclick="showSubPanel('ref-edd')">EDD / GA</button>
+            <button class="sub-tab" onclick="showSubPanel('ref-inr')">INR / Warfarin</button>
         </div>
 
         <div id="sub-ref-labs" class="sub-panel active">
@@ -3588,6 +4444,136 @@ select:focus {
                 </p>
             </div>
         </div>
+
+        <!-- Opioid Equianalgesic Converter -->
+        <div id="sub-ref-opioid" class="sub-panel">
+            <h3 style="color:var(--text-primary);font-weight:600;margin-bottom:var(--space-5);">Opioid Equianalgesic Converter</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>From Opioid</label>
+                    <select id="opioid-from">
+                        <option value="morphine_oral">Morphine (PO)</option>
+                        <option value="morphine_iv">Morphine (IV/IM/SC)</option>
+                        <option value="oxycodone_oral">Oxycodone (PO)</option>
+                        <option value="hydromorphone_oral">Hydromorphone (PO)</option>
+                        <option value="hydromorphone_iv">Hydromorphone (IV)</option>
+                        <option value="fentanyl_iv">Fentanyl (IV mcg)</option>
+                        <option value="codeine_oral">Codeine (PO)</option>
+                        <option value="tramadol_oral">Tramadol (PO)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Dose (mg, or mcg for Fentanyl IV)</label>
+                    <input type="number" inputmode="decimal" id="opioid-dose" placeholder="e.g., 10" step="0.5" min="0.1">
+                </div>
+                <div class="form-group">
+                    <label>To Opioid</label>
+                    <select id="opioid-to">
+                        <option value="morphine_oral">Morphine (PO)</option>
+                        <option value="morphine_iv" selected>Morphine (IV/IM/SC)</option>
+                        <option value="oxycodone_oral">Oxycodone (PO)</option>
+                        <option value="hydromorphone_oral">Hydromorphone (PO)</option>
+                        <option value="hydromorphone_iv">Hydromorphone (IV)</option>
+                        <option value="fentanyl_iv">Fentanyl (IV mcg)</option>
+                        <option value="codeine_oral">Codeine (PO)</option>
+                        <option value="tramadol_oral">Tramadol (PO)</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="convertOpioid()">Convert Dose</button>
+            <div class="result-display" id="opioid-result">
+                <div class="result-label">Equianalgesic Dose</div>
+                <div class="result-value" id="opioid-value">—</div>
+                <div class="result-note" id="opioid-note"></div>
+            </div>
+            <div class="info-box" style="margin-top:var(--space-5);">
+                <p>⚠️ <strong>Clinical Warning:</strong> Equianalgesic conversions are estimates. Always reduce the calculated dose by 25–50% when rotating opioids to account for incomplete cross-tolerance. Titrate carefully and reassess frequently.</p>
+            </div>
+        </div>
+
+        <!-- EDD / Gestational Age -->
+        <div id="sub-ref-edd" class="sub-panel">
+            <h3 style="color:var(--text-primary);font-weight:600;margin-bottom:var(--space-5);">EDD &amp; Gestational Age Calculator</h3>
+            <div class="sub-tabs" style="margin-bottom:var(--space-5);background:var(--bg-input);">
+                <button class="sub-tab active" onclick="showEDDMode(this,'lmp')">From LMP</button>
+                <button class="sub-tab" onclick="showEDDMode(this,'us')">From Ultrasound GA</button>
+            </div>
+            <div id="edd-lmp-mode">
+                <div class="form-group">
+                    <label>First Day of Last Menstrual Period (LMP)</label>
+                    <input type="date" id="edd-lmp-date" onchange="calculateEDD()">
+                </div>
+            </div>
+            <div id="edd-us-mode" style="display:none;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ultrasound Date</label>
+                        <input type="date" id="edd-us-date" onchange="calculateEDDfromUS()">
+                    </div>
+                    <div class="form-group">
+                        <label>GA at Ultrasound (weeks)</label>
+                        <input type="number" inputmode="decimal" id="edd-us-weeks" placeholder="e.g., 12" step="1" min="4" max="40" onchange="calculateEDDfromUS()">
+                    </div>
+                    <div class="form-group">
+                        <label>GA at Ultrasound (days)</label>
+                        <input type="number" inputmode="decimal" id="edd-us-days" placeholder="e.g., 3" step="1" min="0" max="6" onchange="calculateEDDfromUS()">
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="document.getElementById('edd-lmp-mode').style.display!='none'?calculateEDD():calculateEDDfromUS()" style="margin-top:var(--space-4);">Calculate</button>
+            <div class="result-display" id="edd-result">
+                <div class="result-label">Estimated Due Date</div>
+                <div class="result-value" id="edd-value">—</div>
+                <div class="result-note" id="edd-ga"></div>
+                <div class="result-interpretation" id="edd-trimester"></div>
+            </div>
+            <div class="info-box" style="margin-top:var(--space-5);">
+                <p><strong>Naegele's Rule:</strong> EDD = LMP + 280 days (40 weeks)<br><br>
+                Trimester 1: Weeks 1–12 · Trimester 2: Weeks 13–26 · Trimester 3: Weeks 27–40</p>
+            </div>
+        </div>
+
+        <!-- INR / Warfarin Reference -->
+        <div id="sub-ref-inr" class="sub-panel">
+            <h3 style="color:var(--text-primary);font-weight:600;margin-bottom:var(--space-5);">INR Therapeutic Range Checker</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Patient INR</label>
+                    <input type="number" inputmode="decimal" id="inr-value" placeholder="e.g., 2.5" step="0.1" min="0.5" max="15">
+                </div>
+                <div class="form-group">
+                    <label>Clinical Indication</label>
+                    <select id="inr-indication">
+                        <option value="afib">Atrial Fibrillation</option>
+                        <option value="dvt_pe">DVT / PE Treatment</option>
+                        <option value="dvt_prevention">DVT Prevention</option>
+                        <option value="mvr_tissue">Mechanical Valve (low-risk)</option>
+                        <option value="mvr_mech">Mechanical Valve (high-risk / mitral)</option>
+                        <option value="antiphospholipid">Antiphospholipid Syndrome</option>
+                        <option value="none">No anticoagulation / normal check</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="checkINR()">Check INR Range</button>
+            <div class="result-display" id="inr-result">
+                <div class="result-label">INR Assessment</div>
+                <div class="result-value" id="inr-result-value">—</div>
+                <div class="result-note" id="inr-note"></div>
+            </div>
+            <div class="info-box" style="margin-top:var(--space-5);">
+                <table class="reference-table">
+                    <thead><tr><th>Indication</th><th>Target INR</th></tr></thead>
+                    <tbody>
+                        <tr><td>Atrial Fibrillation</td><td>2.0–3.0</td></tr>
+                        <tr><td>DVT / PE</td><td>2.0–3.0</td></tr>
+                        <tr><td>Mech. Valve (low-risk)</td><td>2.0–3.0</td></tr>
+                        <tr><td>Mech. Valve (mitral/high)</td><td>2.5–3.5</td></tr>
+                        <tr><td>Antiphospholipid Syndrome</td><td>2.5–3.5</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     <!-- ==================== DRUG REFERENCE PANEL ==================== -->
@@ -3596,12 +4582,12 @@ select:focus {
             <div class="card-header-icon"><svg><use href="#icon-syringe"/></svg></div>
             <div>
                 <h2 class="card-title">Drug Reference</h2>
-                <p class="card-subtitle">Quick-lookup for 26 common medications — doses, routes, onset, and clinical notes</p>
+                <p class="card-subtitle">Quick-lookup for 36 common medications — doses, routes, onset, and clinical notes</p>
             </div>
         </div>
 
         <div class="drug-search-row">
-            <input type="text" id="drug-search" placeholder="Search by name, category, or keyword..." oninput="searchDrugs()">
+            <input type="text" id="drug-search" placeholder="Search by name, class, or indication…" oninput="searchDrugs()">
             <button class="btn btn-secondary" onclick="clearDrugSearch()">
                 <svg><use href="#icon-cancel"/></svg> Clear
             </button>
@@ -3611,7 +4597,13 @@ select:focus {
             <select id="drug-category-filter" onchange="searchDrugs()">
                 <option value="">All Categories</option>
             </select>
-            <span class="drug-count" id="drug-count" aria-live="polite">26 drugs</span>
+            <div style="display:flex;align-items:center;gap:var(--space-3);">
+                <button class="btn btn-secondary" id="drug-fav-toggle" onclick="toggleFavFilter(this)" title="Show favorites only" style="padding:0.4rem 0.75rem;min-height:auto;font-size:var(--text-xs);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    Favs
+                </button>
+                <span class="drug-count" id="drug-count" aria-live="polite">36 drugs</span>
+            </div>
         </div>
 
         <div id="drug-results">
@@ -3636,25 +4628,33 @@ select:focus {
             </div>
         </div>
 
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-3);margin-bottom:var(--space-4);">
+            <div style="display:flex;align-items:center;gap:var(--space-3);">
+                <span id="notes-save-indicator" class="notes-save-indicator" aria-live="polite">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Saved
+                </span>
+            </div>
+        </div>
         <!-- Rich text toolbar -->
         <div class="notes-toolbar" role="toolbar" aria-label="Text formatting">
 
             <!-- Format group -->
             <div class="notes-toolbar-group">
                 <button class="notes-fmt-btn" id="notes-btn-bold"
-                        onclick="notesExecCmd('bold')" title="Bold (Ctrl+B)" aria-label="Bold">
+                        onclick="notesExecCmd('bold')" title="Bold (Ctrl+B)" aria-label="Bold" onmousedown="event.preventDefault()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>
                 </button>
                 <button class="notes-fmt-btn" id="notes-btn-italic"
-                        onclick="notesExecCmd('italic')" title="Italic (Ctrl+I)" aria-label="Italic">
+                        onclick="notesExecCmd('italic')" title="Italic (Ctrl+I)" aria-label="Italic" onmousedown="event.preventDefault()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
                 </button>
                 <button class="notes-fmt-btn" id="notes-btn-underline"
-                        onclick="notesExecCmd('underline')" title="Underline (Ctrl+U)" aria-label="Underline">
+                        onclick="notesExecCmd('underline')" title="Underline (Ctrl+U)" aria-label="Underline" onmousedown="event.preventDefault()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M6 3v7a6 6 0 0 0 12 0V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
                 </button>
                 <button class="notes-fmt-btn" id="notes-btn-strikeThrough"
-                        onclick="notesExecCmd('strikeThrough')" title="Strikethrough" aria-label="Strikethrough">
+                        onclick="notesExecCmd('strikeThrough')" title="Strikethrough" aria-label="Strikethrough" onmousedown="event.preventDefault()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="4" y1="12" x2="20" y2="12"/><path d="M17.5 7C17.5 5.07 15.38 4 12 4c-3.5 0-5.5 1.5-5.5 4 0 1.5.8 2.6 2 3.2"/><path d="M6.5 17c0 2 2 3 5.5 3s5.5-1 5.5-3c0-1.3-.7-2.3-2-2.9"/></svg>
                 </button>
             </div>
@@ -3664,22 +4664,22 @@ select:focus {
             <!-- Highlight group -->
             <div class="notes-toolbar-group">
                 <button class="notes-fmt-btn notes-highlight-btn" id="notes-btn-highlight-yellow"
-                        onclick="notesHighlight('#fff176')" title="Highlight yellow" aria-label="Highlight yellow">
+                        onclick="notesHighlight('#fff176')" title="Highlight yellow" aria-label="Highlight yellow" onmousedown="event.preventDefault()">
                     <span class="highlight-swatch" style="background:#fff176"></span>
                 </button>
                 <button class="notes-fmt-btn notes-highlight-btn" id="notes-btn-highlight-green"
-                        onclick="notesHighlight('#c8f7c5')" title="Highlight green" aria-label="Highlight green">
+                        onclick="notesHighlight('#c8f7c5')" title="Highlight green" aria-label="Highlight green" onmousedown="event.preventDefault()">
                     <span class="highlight-swatch" style="background:#c8f7c5"></span>
                 </button>
                 <button class="notes-fmt-btn notes-highlight-btn" id="notes-btn-highlight-red"
-                        onclick="notesHighlight('#ffc8c8')" title="Highlight red / urgent" aria-label="Highlight red">
+                        onclick="notesHighlight('#ffc8c8')" title="Highlight red / urgent" aria-label="Highlight red" onmousedown="event.preventDefault()">
                     <span class="highlight-swatch" style="background:#ffc8c8"></span>
                 </button>
                 <button class="notes-fmt-btn notes-highlight-btn" id="notes-btn-highlight-blue"
-                        onclick="notesHighlight('#c8e6ff')" title="Highlight blue" aria-label="Highlight blue">
+                        onclick="notesHighlight('#c8e6ff')" title="Highlight blue" aria-label="Highlight blue" onmousedown="event.preventDefault()">
                     <span class="highlight-swatch" style="background:#c8e6ff"></span>
                 </button>
-                <button class="notes-fmt-btn" onclick="notesRemoveHighlight()" title="Remove highlight" aria-label="Remove highlight" style="font-size:0.65rem;padding:0 0.4rem;">
+                <button class="notes-fmt-btn" onclick="notesRemoveHighlight()" title="Remove highlight" aria-label="Remove highlight" style="font-size:0.65rem;padding:0 0.4rem;" onmousedown="event.preventDefault()">
                     ✕HL
                 </button>
             </div>
@@ -3689,17 +4689,17 @@ select:focus {
             <!-- List group -->
             <div class="notes-toolbar-group">
                 <button class="notes-fmt-btn" onclick="notesExecCmd('insertUnorderedList')"
-                        title="Bullet list" aria-label="Bullet list">
+                        title="Bullet list" aria-label="Bullet list" onmousedown="event.preventDefault()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
                 </button>
                 <button class="notes-fmt-btn" onclick="notesExecCmd('insertOrderedList')"
-                        title="Numbered list" aria-label="Numbered list">
+                        title="Numbered list" aria-label="Numbered list" onmousedown="event.preventDefault()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
                 </button>
-                <button class="notes-fmt-btn" onclick="notesIndent(true)" title="Indent" aria-label="Indent">
+                <button class="notes-fmt-btn" onclick="notesIndent(true)" title="Indent" aria-label="Indent" onmousedown="event.preventDefault()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="3" y1="6" x2="21" y2="6"/><polyline points="9 12 13 12"/><polyline points="11 9 15 12 11 15"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                 </button>
-                <button class="notes-fmt-btn" onclick="notesIndent(false)" title="Outdent" aria-label="Outdent">
+                <button class="notes-fmt-btn" onclick="notesIndent(false)" title="Outdent" aria-label="Outdent" onmousedown="event.preventDefault()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="3" y1="6" x2="21" y2="6"/><polyline points="15 12 11 12"/><polyline points="13 9 9 12 13 15"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                 </button>
             </div>
@@ -3709,12 +4709,12 @@ select:focus {
             <!-- Insert group -->
             <div class="notes-toolbar-group">
                 <button class="notes-fmt-btn" onclick="notesInsertTimestamp()"
-                        title="Insert timestamp" aria-label="Insert timestamp">
+                        title="Insert timestamp" aria-label="Insert timestamp" onmousedown="event.preventDefault()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg>
                     <span>Now</span>
                 </button>
                 <button class="notes-fmt-btn" onclick="notesInsertDivider()"
-                        title="Insert divider" aria-label="Insert divider">
+                        title="Insert divider" aria-label="Insert divider" onmousedown="event.preventDefault()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="3" y1="12" x2="21" y2="12"/></svg>
                     <span>Line</span>
                 </button>
@@ -3724,10 +4724,10 @@ select:focus {
 
             <!-- Undo/Redo -->
             <div class="notes-toolbar-group">
-                <button class="notes-fmt-btn" onclick="notesExecCmd('undo')" title="Undo (Ctrl+Z)" aria-label="Undo">
+                <button class="notes-fmt-btn" onclick="notesExecCmd('undo')" title="Undo (Ctrl+Z)" aria-label="Undo" onmousedown="event.preventDefault()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
                 </button>
-                <button class="notes-fmt-btn" onclick="notesExecCmd('redo')" title="Redo (Ctrl+Y)" aria-label="Redo">
+                <button class="notes-fmt-btn" onclick="notesExecCmd('redo')" title="Redo (Ctrl+Y)" aria-label="Redo" onmousedown="event.preventDefault()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-4.5"/></svg>
                 </button>
             </div>
@@ -3844,11 +4844,27 @@ function initializeTheme() {
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     const btn = document.getElementById('theme-toggle');
-    if (!btn) return;
-    btn.innerHTML = theme === 'dark'
-        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
-        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
-    btn.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+    if (btn) {
+        btn.innerHTML = theme === 'dark'
+            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+        btn.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+        btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    }
+    // Specialty pill: dark mode → Night Shift (moon), light mode → Day Shift (sun)
+    const pill = document.getElementById('specialty-pill');
+    if (pill) {
+        const p = typeof getProfile === 'function' ? getProfile() : null;
+        const savedShift = p?.shift;
+        // If user has a saved shift preference use it, otherwise infer from theme
+        if (savedShift && savedShift !== 'Rotating') {
+            pill.textContent = savedShift + ' Shift';
+        } else {
+            pill.innerHTML = theme === 'dark'
+                ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:3px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>Night Shift'
+                : '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:3px;"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>Day Shift';
+        }
+    }
 }
 
 /* ==================== ONBOARDING ==================== */
@@ -4175,29 +5191,60 @@ function showResult(resultElId, valueElId, displayValue, status, note, noteElId,
 }
 
 /* ==================== CLOCK & GREETING ==================== */
+let _use24h = false;
+
 function initializeClock() {
+    // Restore user preference
+    _use24h = localStorage.getItem('mc_24h') === '1';
     const t = document.getElementById('clock-time'), d = document.getElementById('clock-date');
     function update() {
         const now = new Date();
-        if (t) t.textContent = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        if (t) t.textContent = _use24h
+            ? now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false })
+            : now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
         if (d) d.textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     }
     update();
     setInterval(update, 1000);
+    _clockUpdateFn = update;
 }
 
+let _clockUpdateFn = null;
+
+window.toggleClockFormat = function() {
+    _use24h = !_use24h;
+    localStorage.setItem('mc_24h', _use24h ? '1' : '0');
+    if (_clockUpdateFn) _clockUpdateFn();
+    // Brief visual flash on the clock
+    const w = document.getElementById('clock-widget');
+    if (w) {
+        w.style.transition = 'background 0.15s';
+        w.style.background = 'rgba(255,255,255,0.15)';
+        setTimeout(() => { w.style.background = ''; }, 180);
+    }
+    showToast(_use24h ? '24-hour (military) time on' : '12-hour time on', 'info');
+};
+
 function setGreeting() {
-    const h = new Date().getHours(), name = getName(), el = document.getElementById('greeting');
+    const h = new Date().getHours(), el = document.getElementById('greeting');
     if (!el) return;
+    // Shift-aware, nurse-specific messages keyed to the clock
     const msgs = [
-        [0, 5, `Still up, baby? I'm proud of you. Go rest soon.`],
-        [5, 12, `Good morning, baby. I hope today is kind to you.`],
-        [12, 14, `Good afternoon, baby. Have you eaten? Please eat.`],
-        [14, 18, `Hey baby, I'm thinking of you. You're doing so well.`],
-        [18, 22, `Good evening, baby. Almost through it — I'm waiting for you.`],
-        [22, 24, `Night shift again, baby. I made sure this works offline for you.`]
+        [0,  2,  `Still up, baby? I'm proud of you. The hardest part of the night is almost over.`],
+        [2,  4,  `Mid-shift slump — take a breath. You're doing so well and I'm right here with you.`],
+        [4,  5,  `Almost through it. The sun is coming up soon. You've got this, my love.`],
+        [5,  6,  `Morning soon! So close to going home. I'm already waiting for you.`],
+        [6,  7,  `Last stretch of the night shift — you made it. Go rest well when you're home.`],
+        [7,  10, `Good morning, baby. I hope your handover goes smoothly.`],
+        [10, 12, `Morning! Almost lunchtime — please actually eat something today.`],
+        [12, 14, `Good afternoon. Have you eaten? No, seriously — please eat.`],
+        [14, 17, `Hey baby, I'm thinking of you this afternoon. You're doing so well.`],
+        [17, 19, `Evening already. You've had a long day — I hope it was a good one.`],
+        [19, 21, `Have a great shift tonight, my love. You've got this — I believe in you.`],
+        [21, 22, `Night shift starting — I made sure this works even in hospital dead zones.`],
+        [22, 24, `Night shift in full swing. Take it one patient at a time. I'm proud of you.`],
     ];
-    el.textContent = (msgs.find(([s, e]) => h >= s && h < e) || msgs[5])[2];
+    el.textContent = (msgs.find(([s, e]) => h >= s && h < e) || msgs[msgs.length-1])[2];
 }
 
 function setDailyFooterMessage() {
@@ -4471,9 +5518,11 @@ window.calculateEGFR = function () {
     const sex = document.getElementById('egfr-sex').value;
     const cr = parseFloat(document.getElementById('egfr-cr').value);
     if (!age || !cr) { showToast('Please enter age and creatinine', 'warning'); return; }
-    const kappa = sex === 'female' ? 0.7 : 0.9, alpha = sex === 'female' ? -0.329 : -0.411;
-    const sf = sex === 'female' ? 1.018 : 1.0;
-    const egfr = Math.round(141 * Math.pow(Math.min(cr / kappa, 1), alpha) * Math.pow(Math.max(cr / kappa, 1), -1.209) * Math.pow(0.993, age) * sf);
+    // 2021 CKD-EPI Creatinine Equation (race-neutral, KDIGO recommended)
+    const kappa = sex === 'female' ? 0.7 : 0.9;
+    const alpha = sex === 'female' ? -0.241 : -0.302;
+    const sf    = sex === 'female' ? 1.012 : 1.0;
+    const egfr = Math.round(142 * Math.pow(Math.min(cr / kappa, 1), alpha) * Math.pow(Math.max(cr / kappa, 1), -1.200) * Math.pow(0.9938, age) * sf);
     const display = `${egfr} mL/min/1.73m²`;
     let status = egfr >= 60 ? 'normal' : egfr >= 30 ? 'warning' : 'danger';
     let stage = egfr >= 90 ? '<strong>Stage 1:</strong> Normal or high' : egfr >= 60 ? '<strong>Stage 2:</strong> Mildly decreased' : egfr >= 45 ? '<strong>Stage 3a:</strong> Mild-to-moderate decrease' : egfr >= 30 ? '<strong>Stage 3b:</strong> Moderate-to-severe decrease' : egfr >= 15 ? '<strong>Stage 4:</strong> Severely decreased' : '<strong>Stage 5:</strong> Kidney failure';
@@ -4488,22 +5537,44 @@ window.calculateWells = function () {
         if (cb && cb.checked) score += parseInt(cb.value);
     }
     const display = `${score} points`;
-    let status = score <= 0 ? 'normal' : score <= 2 ? 'warning' : 'danger';
-    let interp = score <= 0
-        ? '<strong>Low Risk:</strong> ~5% probability — D-dimer recommended'
-        : score <= 2
-            ? '<strong>Moderate Risk:</strong> ~17% probability — D-dimer recommended'
-            : '<strong>High Risk:</strong> 17–53% probability — Consider duplex ultrasound';
+    // Wells DVT: ≤1 = Low, 2 = Moderate, ≥3 = High
+    let status = score <= 1 ? 'normal' : score === 2 ? 'warning' : 'danger';
+    let interp = score <= 1
+        ? '<strong>Low Probability:</strong> Score ≤1 · ~5% prevalence — obtain D-dimer; if negative, DVT excluded'
+        : score === 2
+            ? '<strong>Moderate Probability:</strong> Score 2 · ~17% prevalence — D-dimer or proximal duplex ultrasound'
+            : '<strong>High Probability:</strong> Score ≥3 · Up to 53% prevalence — proximal duplex ultrasound; anticoagulation if positive';
     showResult('wells-result', 'wells-value', display, status, null, null, 'wells-interpretation', interp);
     addToHistory('Assessment', 'Wells DVT', display);
 };
 
 /* ==================== PEDIATRIC ==================== */
 window.calculatePedsWeight = function () {
-    const age = parseInt(document.getElementById('peds-age').value);
-    if (!age || age < 1 || age > 10) { showToast('Enter age between 1 and 10 years', 'warning'); return; }
-    const display = `${(age * 2) + 8} kg`;
-    showResult('peds-weight-result', 'peds-weight-value', display, 'neutral');
+    const ageInput = document.getElementById('peds-age');
+    const ageUnit  = document.getElementById('peds-age-unit') ? document.getElementById('peds-age-unit').value : 'years';
+    const rawAge   = parseFloat(ageInput.value);
+    if (!rawAge || rawAge <= 0) { showToast('Enter a valid age', 'warning'); return; }
+
+    let weightKg, formula, note;
+
+    if (ageUnit === 'months') {
+        // Infant formula (1–12 months)
+        if (rawAge < 1 || rawAge > 12) { showToast('For months: enter 1–12', 'warning'); return; }
+        weightKg = (rawAge / 2) + 4;
+        formula  = `(Age_months ÷ 2) + 4`;
+        note     = 'Infant formula (1–12 months). Use Broselow tape or actual weight when available.';
+    } else {
+        // Broselow (1–10 years)
+        const ageYr = Math.round(rawAge);
+        if (ageYr < 1 || ageYr > 10) { showToast('For years: enter 1–10', 'warning'); return; }
+        weightKg = (ageYr * 2) + 8;
+        formula  = `(Age_years × 2) + 8`;
+        note     = `Broselow formula · age ${ageYr} yr. Actual weight preferred when available.`;
+    }
+
+    const display = `${weightKg.toFixed(1)} kg`;
+    showResult('peds-weight-result', 'peds-weight-value', display, 'neutral', note, 'peds-weight-note');
+    document.getElementById('peds-weight-formula') && (document.getElementById('peds-weight-formula').textContent = `Formula: ${formula}`);
     addToHistory('Pediatric', 'Weight Est.', display);
 };
 
@@ -4714,7 +5785,16 @@ const DRUG_DB = [
     { name: 'Ondansetron', category: 'Antiemetic', route: 'IV/PO/IM', dose: '4 mg IV over 2–5 min q4-8h', onset: '<5 min IV', peak: '30 min', notes: 'QT prolongation risk at high doses. Safe in pregnancy.' },
     { name: 'Potassium Chloride', category: 'Electrolyte', route: 'IV/PO', dose: 'IV: max 10–20 mEq/hr (peripheral)', onset: 'During infusion', peak: 'N/A', notes: 'NEVER IV push. Monitor ECG continuously. Dilute appropriately.' },
     { name: 'Propofol', category: 'Sedative', route: 'IV infusion', dose: 'ICU sedation: 5–50 mcg/kg/min', onset: '<1 min', peak: '1–2 min', notes: 'Propofol infusion syndrome risk with high or prolonged doses.' },
-    { name: 'Vancomycin', category: 'Antibiotic', route: 'IV', dose: '15–20 mg/kg q8-12h (max 3 g/dose)', onset: '30–60 min', peak: '1–2 hrs post-infusion', notes: 'Infuse over at least 60 min. Red Man Syndrome risk with rapid infusion. Monitor AUC/MIC.' }
+    { name: 'Vancomycin', category: 'Antibiotic', route: 'IV', dose: '15–20 mg/kg q8-12h (max 3 g/dose)', onset: '30–60 min', peak: '1–2 hrs post-infusion', notes: 'Infuse over at least 60 min. Red Man Syndrome risk with rapid infusion. Monitor AUC/MIC.' },
+    { name: 'Acetaminophen', category: 'Analgesic', route: 'IV/PO/PR', dose: '500–1000 mg q4-6h (max 4 g/day; 2 g/day in liver disease)', onset: '5–10 min IV', peak: '1 hr IV', notes: 'Hepatotoxic in overdose or chronic alcohol use. Max 4 g/day — reduce in renal/hepatic impairment.' },
+    { name: 'Ceftriaxone', category: 'Antibiotic', route: 'IV/IM', dose: '1–2 g q12-24h; meningitis: 2 g q12h', onset: '30–60 min', peak: '2–3 hrs', notes: '3rd-gen cephalosporin. Long half-life allows once-daily dosing. Avoid with calcium in neonates (precipitate risk).' },
+    { name: 'Dexamethasone', category: 'Corticosteroid', route: 'IV/IM/PO', dose: 'Anti-inflammatory: 0.5–9 mg/day; Cerebral edema: 10 mg loading', onset: '1 hr IM', peak: '1–2 hrs', notes: 'High potency, minimal mineralocorticoid activity. Monitor glucose. COVID-19: 6 mg daily x10 days.' },
+    { name: 'Enoxaparin', category: 'Anticoagulant', route: 'SubQ', dose: 'Treatment DVT/PE: 1 mg/kg q12h or 1.5 mg/kg daily', onset: '3–5 hrs', peak: '3–5 hrs', notes: 'Monitor anti-Xa in obesity, renal impairment, pregnancy. Adjust dose for CrCl <30 mL/min.' },
+    { name: 'Fentanyl', category: 'Opioid Analgesic', route: 'IV/IM/Transdermal/IN', dose: 'Pain: 25–100 mcg IV q1-2h PRN; infusion: 12.5–200 mcg/hr', onset: '<1 min IV', peak: '3–5 min IV', notes: '100× more potent than morphine (mcg not mg). Short duration IV. Antidote: Naloxone. Monitor respirations.' },
+    { name: 'Meropenem', category: 'Antibiotic', route: 'IV', dose: '500 mg–1 g q8h; meningitis/resistant: 2 g q8h', onset: '30–60 min', peak: '30 min post-infusion', notes: 'Broad-spectrum carbapenem. Reserve for resistant infections. Extended infusion (over 3 hrs) optimises PK/PD.' },
+    { name: 'Metformin', category: 'Antidiabetic', route: 'PO', dose: '500 mg BID to 1000 mg BID (max 2550 mg/day)', onset: '1–3 hrs', peak: '2.5 hrs', notes: 'Hold 48 hrs before/after contrast media. Contraindicated if eGFR <30. Lactic acidosis risk in hypoxaemia.' },
+    { name: 'Piperacillin-Tazobactam', category: 'Antibiotic', route: 'IV', dose: '3.375 g q6h; severe infections/Pseudomonas: 4.5 g q6h', onset: '30–60 min', peak: '30 min post-infusion', notes: 'Extended infusion (4 hrs at 4.5g) improves outcomes in severe infections. Monitor renal function.' },
+    { name: 'Tranexamic Acid', category: 'Haemostatic', route: 'IV/PO', dose: 'Trauma: 1 g IV over 10 min, then 1 g over 8 hrs (within 3 hrs of injury)', onset: '5–15 min IV', peak: '1 hr', notes: 'Best within 3 hrs of injury. Reduces mortality in major trauma and PPH. Not for late-presenting haemorrhage.' }
 ];
 
 const DRUG_CATEGORIES = [...new Set(DRUG_DB.map(d => d.category))].sort();
@@ -5389,16 +6469,37 @@ function initOfflineIndicator() {
     const dot = badge.querySelector('.offline-dot');
     const label = badge.querySelector('.offline-label');
 
+    let _swReady = false;
+    // Check if SW is controlling the page (PWA cached and ready)
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        _swReady = true;
+    }
+
     function update() {
         const online = navigator.onLine;
         badge.classList.toggle('is-offline', !online);
-        label.textContent = online ? 'Online' : 'Offline';
-        badge.title = online ? 'Connected' : 'No internet — using cached data';
+        if (online && _swReady) {
+            label.textContent = 'Ready Offline';
+            badge.title = 'Connected — app is cached and works without internet';
+            dot.style.background = '#6ee48a';
+        } else if (online && !_swReady) {
+            label.textContent = 'Online';
+            badge.title = 'Connected to internet';
+            dot.style.background = '#6ee48a';
+        } else {
+            label.textContent = 'Offline Mode';
+            badge.title = 'No internet — using cached data. All calculations still work.';
+            dot.style.background = 'var(--dusty-rose)';
+        }
     }
 
     update();
-    window.addEventListener('online', () => { update(); showToast('Back online', 'success'); });
-    window.addEventListener('offline', () => { update(); showToast('Working offline — all features still available', 'info'); });
+    window.addEventListener('online',  () => { update(); showToast('Connection restored', 'success'); });
+    window.addEventListener('offline', () => { update(); showToast('Offline — all tools still available', 'info'); });
+    // After SW registers and takes control
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(() => { _swReady = true; update(); }).catch(() => {});
+    }
 }
 
 /* Enter to calculate */
@@ -6200,8 +7301,35 @@ window.drugGoToCalc = function(drugName) {
 window.notesExecCmd = function(cmd) {
     const editor = document.getElementById('shift-notes');
     if (!editor) return;
+    // Restore focus to editor (mousedown is already prevented by toolbar buttons)
     editor.focus();
-    document.execCommand(cmd, false, null);
+    try {
+        const success = document.execCommand(cmd, false, null);
+        if (!success) throw new Error('execCommand returned false');
+    } catch(e) {
+        // Modern fallback using Selection API
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0) {
+            const range = sel.getRangeAt(0);
+            if (!sel.isCollapsed) {
+                const tagMap = { bold: 'strong', italic: 'em', underline: 'u', strikeThrough: 's' };
+                const tag = tagMap[cmd];
+                if (tag) {
+                    try {
+                        const el = document.createElement(tag);
+                        range.surroundContents(el);
+                    } catch(e2) {
+                        // surroundContents fails on partial selections across elements
+                        // Extract and wrap contents manually
+                        const frag = range.extractContents();
+                        const el = document.createElement(tag);
+                        el.appendChild(frag);
+                        range.insertNode(el);
+                    }
+                }
+            }
+        }
+    }
     updateNotesToolbarState();
     editor.dispatchEvent(new Event('input'));
 };
@@ -6211,7 +7339,9 @@ window.notesHighlight = function(colour) {
     const editor = document.getElementById('shift-notes');
     if (!editor) return;
     editor.focus();
-    document.execCommand('hiliteColor', false, colour);
+    try { document.execCommand('hiliteColor', false, colour); } catch(e) {
+        try { document.execCommand('backColor', false, colour); } catch(e2) {}
+    }
     editor.dispatchEvent(new Event('input'));
 };
 
@@ -6312,7 +7442,7 @@ window.shareResult = function(label, value, note) {
     }
 };
 
-/* Timer persistence */
+/* Timer persistence — fixed (no double-interval) */
 function saveTimerState(secondsLeft, total, label, running) {
     try {
         localStorage.setItem('mc_timer', JSON.stringify({
@@ -6344,36 +7474,187 @@ function initTimerPersistence() {
         }
         if (saved.running) {
             setTimeout(() => {
-                if (window.startTimer) window.startTimer(saved.secondsLeft);
-                showToast('Timer restored', 'info');
-            }, 300);
+                if (window.startTimer) {
+                    window.startTimer(saved.secondsLeft);
+                    showToast('Timer restored', 'info');
+                }
+            }, 400);
         }
     }
-
-    // Patch startTimer to persist state using a state variable, not DOM scraping
-    const origStart = window.startTimer;
-    if (origStart) {
-        window.startTimer = function(seconds) {
-            origStart.apply(this, arguments);
-            const lbl = document.getElementById('timer-label-input');
-            saveTimerState(seconds, seconds, lbl ? lbl.value : '', true);
-            // Track remaining seconds in a module-level variable, not via DOM parsing
-            let _remaining = seconds;
-            const _startedAt = Date.now();
-            const interval = setInterval(() => {
-                _remaining = Math.max(0, seconds - Math.floor((Date.now() - _startedAt) / 1000));
-                const lbl = document.getElementById('timer-label-input');
-                if (_remaining <= 0) {
-                    clearInterval(interval);
-                    saveTimerState(0, seconds, lbl ? lbl.value : '', false);
-                    return;
-                }
-                saveTimerState(_remaining, seconds, lbl ? lbl.value : '', true);
-            }, 1000);
-        };
-    }
+    // Persistence is now handled by the central timer in the startTimer patch below
+    // (no second setInterval is created here)
 }
 
+
+
+
+/* ==================== CURB-65 ==================== */
+window.calculateCURB65 = function() {
+    const ids = ['curb-c','curb-u','curb-r','curb-b','curb-65'];
+    const score = ids.reduce((s,id) => {
+        const cb = document.getElementById(id);
+        return s + (cb && cb.checked ? 1 : 0);
+    }, 0);
+    let status, interp, mort;
+    if (score <= 1) {
+        status = 'normal';
+        mort = '~1.5%';
+        interp = '<strong>Low Severity:</strong> Consider community treatment (outpatient). Reassess if condition changes.';
+    } else if (score === 2) {
+        status = 'warning';
+        mort = '~9.2%';
+        interp = '<strong>Moderate Severity:</strong> Short-term hospital admission or close supervised outpatient care.';
+    } else {
+        status = 'danger';
+        mort = score >= 4 ? '~27–57%' : '~22%';
+        interp = '<strong>Severe Pneumonia:</strong> Urgent hospital admission. Score ≥4 — consider ICU assessment.';
+    }
+    showResult('curb65-result','curb65-value',`${score} / 5`,status,null,null,'curb65-interp',`${interp} <span style="margin-left:0.5em;opacity:0.75;">30-day mortality: ${mort}</span>`);
+    addToHistory('Assessment','CURB-65',`${score}/5`);
+};
+
+/* ==================== PARKLAND FORMULA ==================== */
+window.calculateParkland = function() {
+    const weight = parseFloat(document.getElementById('parkland-weight').value);
+    const tbsa   = parseFloat(document.getElementById('parkland-tbsa').value);
+    if (!weight || !tbsa) { showToast('Enter weight and %TBSA', 'warning'); return; }
+    if (tbsa < 1 || tbsa > 100) { showToast('%TBSA must be between 1 and 100', 'warning'); return; }
+    // Cap at 50% as per Parkland convention for very large burns
+    const effectiveTBSA = Math.min(tbsa, 50);
+    const total = 4 * weight * effectiveTBSA;
+    const first8h  = total / 2;
+    const next16h  = total / 2;
+    const rateFirst = first8h / 8;
+    const rateNext  = next16h / 16;
+    const display = `${Math.round(total).toLocaleString()} mL`;
+    const note = tbsa > 50 ? `%TBSA capped at 50% per convention (actual: ${tbsa}%)` : `4 mL × ${weight} kg × ${tbsa}% TBSA`;
+    const schedule = `<div style="margin-top:0.5rem;font-size:var(--text-sm);line-height:1.8;">
+        <strong>First 8 hrs from burn:</strong> ${Math.round(first8h).toLocaleString()} mL (${Math.round(rateFirst)} mL/hr)<br>
+        <strong>Next 16 hrs:</strong> ${Math.round(next16h).toLocaleString()} mL (${Math.round(rateNext)} mL/hr)<br>
+        <em>Fluid: Lactated Ringer's — titrate to UO 0.5–1 mL/kg/hr</em>
+    </div>`;
+    showResult('parkland-result','parkland-value',display,'neutral',note,'parkland-note','parkland-schedule',schedule);
+    addToHistory('Assessment','Parkland',display);
+};
+
+/* ==================== OPIOID EQUIANALGESIC ==================== */
+// All values in oral morphine equivalents (OME mg), except fentanyl_iv in mcg
+const OPIOID_TABLE = {
+    morphine_oral:       { ome: 1,    unit: 'mg',  label: 'Morphine PO' },
+    morphine_iv:         { ome: 3,    unit: 'mg',  label: 'Morphine IV/SC' },
+    oxycodone_oral:      { ome: 1.5,  unit: 'mg',  label: 'Oxycodone PO' },
+    hydromorphone_oral:  { ome: 5,    unit: 'mg',  label: 'Hydromorphone PO' },
+    hydromorphone_iv:    { ome: 20,   unit: 'mg',  label: 'Hydromorphone IV' },
+    fentanyl_iv:         { ome: 100,  unit: 'mcg', label: 'Fentanyl IV (mcg)' }, // 100 mcg IV ≈ 30 mg oral morphine
+    codeine_oral:        { ome: 0.15, unit: 'mg',  label: 'Codeine PO' },
+    tramadol_oral:       { ome: 0.1,  unit: 'mg',  label: 'Tramadol PO' },
+};
+
+window.convertOpioid = function() {
+    const fromKey = document.getElementById('opioid-from').value;
+    const toKey   = document.getElementById('opioid-to').value;
+    const dose    = parseFloat(document.getElementById('opioid-dose').value);
+    if (!dose || dose <= 0) { showToast('Enter a valid dose', 'warning'); return; }
+    const from = OPIOID_TABLE[fromKey], to = OPIOID_TABLE[toKey];
+    if (!from || !to) return;
+    // Convert to OME first then to target
+    const omeTotal = dose * from.ome;
+    const converted = omeTotal / to.ome;
+    const display = `${converted.toFixed(2)} ${to.unit}`;
+    const note = `${dose} ${from.unit} ${from.label} ≈ ${converted.toFixed(2)} ${to.unit} ${to.label}  (≈ ${Math.round(omeTotal)} mg OME)`;
+    showResult('opioid-result','opioid-value',display,'neutral',note,'opioid-note');
+    addToHistory('Reference','Opioid Equiv.',display);
+};
+
+/* ==================== EDD / GESTATIONAL AGE ==================== */
+window.showEDDMode = function(btn, mode) {
+    document.querySelectorAll('#sub-ref-edd .sub-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('edd-lmp-mode').style.display = mode === 'lmp' ? '' : 'none';
+    document.getElementById('edd-us-mode').style.display  = mode === 'us'  ? '' : 'none';
+};
+
+window.calculateEDD = function() {
+    const lmpVal = document.getElementById('edd-lmp-date').value;
+    if (!lmpVal) { showToast('Please select LMP date', 'warning'); return; }
+    const lmp = new Date(lmpVal);
+    const edd = new Date(lmp.getTime() + 280 * 86400000);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const diffDays = Math.floor((today - lmp) / 86400000);
+    const gaWeeks = Math.floor(diffDays / 7);
+    const gaDays  = diffDays % 7;
+    const daysToEDD = Math.round((edd - today) / 86400000);
+    const eddStr = edd.toLocaleDateString('en-PH', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    let trimester = gaWeeks < 13 ? 'First Trimester' : gaWeeks < 27 ? 'Second Trimester' : 'Third Trimester';
+    let status = gaWeeks > 40 ? 'warning' : 'normal';
+    const gaStr = diffDays >= 0 ? `${gaWeeks} weeks ${gaDays} days (${trimester})` : 'Upcoming — not yet at LMP';
+    const daysStr = daysToEDD > 0 ? `${daysToEDD} days until EDD` : daysToEDD === 0 ? 'EDD is today!' : `${Math.abs(daysToEDD)} days past EDD`;
+    showResult('edd-result','edd-value',eddStr,status,gaStr,'edd-ga','edd-trimester',`<strong>${daysStr}</strong>`);
+    addToHistory('Reference','EDD',eddStr);
+};
+
+window.calculateEDDfromUS = function() {
+    const usDate  = document.getElementById('edd-us-date').value;
+    const usWeeks = parseInt(document.getElementById('edd-us-weeks').value) || 0;
+    const usDays  = parseInt(document.getElementById('edd-us-days').value) || 0;
+    if (!usDate || !usWeeks) { showToast('Enter ultrasound date and weeks GA', 'warning'); return; }
+    const us = new Date(usDate);
+    const gaAtUSDays = usWeeks * 7 + usDays;
+    const lmpEquiv = new Date(us.getTime() - gaAtUSDays * 86400000);
+    const edd = new Date(lmpEquiv.getTime() + 280 * 86400000);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const diffDays = Math.floor((today - lmpEquiv) / 86400000);
+    const gaWeeks = Math.floor(diffDays / 7);
+    const gaDays  = diffDays % 7;
+    const daysToEDD = Math.round((edd - today) / 86400000);
+    const eddStr = edd.toLocaleDateString('en-PH', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    let trimester = gaWeeks < 13 ? 'First Trimester' : gaWeeks < 27 ? 'Second Trimester' : 'Third Trimester';
+    const gaStr = `${gaWeeks} weeks ${gaDays} days today (${trimester})`;
+    const daysStr = daysToEDD > 0 ? `${daysToEDD} days until EDD` : `${Math.abs(daysToEDD)} days past EDD`;
+    showResult('edd-result','edd-value',eddStr,'normal',gaStr,'edd-ga','edd-trimester',`<strong>${daysStr}</strong>`);
+    addToHistory('Reference','EDD (US)',eddStr);
+};
+
+/* ==================== INR / WARFARIN ==================== */
+const INR_TARGETS = {
+    afib:            { min: 2.0, max: 3.0, label: 'Atrial Fibrillation' },
+    dvt_pe:          { min: 2.0, max: 3.0, label: 'DVT / PE Treatment' },
+    dvt_prevention:  { min: 1.5, max: 2.0, label: 'DVT Prevention' },
+    mvr_tissue:      { min: 2.0, max: 3.0, label: 'Mechanical Valve (low-risk)' },
+    mvr_mech:        { min: 2.5, max: 3.5, label: 'Mechanical Valve (mitral/high-risk)' },
+    antiphospholipid:{ min: 2.5, max: 3.5, label: 'Antiphospholipid Syndrome' },
+    none:            { min: 0.8, max: 1.2, label: 'Normal (no anticoagulation)' },
+};
+
+window.checkINR = function() {
+    const inr   = parseFloat(document.getElementById('inr-value').value);
+    const key   = document.getElementById('inr-indication').value;
+    if (!inr || inr <= 0) { showToast('Enter a valid INR value', 'warning'); return; }
+    const target = INR_TARGETS[key];
+    const display = inr.toFixed(1);
+    let status, note;
+    if (inr < target.min - 0.2) {
+        status = 'warning';
+        note   = `Below therapeutic range (${target.min}–${target.max}) for ${target.label}. Consider dose increase after clinical review.`;
+    } else if (inr < target.min) {
+        status = 'warning';
+        note   = `Slightly below target range (${target.min}–${target.max}) for ${target.label}. Monitor closely.`;
+    } else if (inr <= target.max) {
+        status = 'normal';
+        note   = `Within therapeutic range (${target.min}–${target.max}) for ${target.label}.`;
+    } else if (inr <= target.max + 0.5) {
+        status = 'warning';
+        note   = `Slightly above target (${target.min}–${target.max}) for ${target.label}. Consider dose reduction.`;
+    } else if (inr < 4.5) {
+        status = 'danger';
+        note   = `Supratherapeutic INR. Hold warfarin and reassess. Risk of bleeding.`;
+    } else {
+        status = 'danger';
+        note   = `⚠️ Critically elevated INR (≥4.5). Hold warfarin; consider Vitamin K or reversal. Urgent assessment needed.`;
+    }
+    showResult('inr-result','inr-result-value',display,status,note,'inr-note');
+    addToHistory('Reference','INR Check',`${display} — ${status}`);
+};
 
 
 /* Init pack 3 */
@@ -6384,7 +7665,767 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
+/* ==================== MOBILE NAV SYNC ==================== */
+function updateMobileNav(tabId) {
+    document.querySelectorAll('.mobile-quick-tab-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.tab === tabId);
+    });
+}
+
+// Patch switchToTab to keep mobile nav in sync
+(function() {
+    const _orig = window.switchToTab;
+    window.switchToTab = function(tabId) {
+        _orig.apply(this, arguments);
+        updateMobileNav(tabId);
+        // Scroll to top of main on mobile tab switch
+        if (window.innerWidth <= 640) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+})();
+
+/* ==================== NOTES AUTO-SAVE INDICATOR ==================== */
+(function() {
+    let _saveTimer;
+    const _origLoadNotes = window.loadNotes || function(){};
+
+    function showSaveIndicator(state) {
+        const el = document.getElementById('notes-save-indicator');
+        if (!el) return;
+        el.classList.remove('saving', 'saved');
+        if (state === 'saving') {
+            el.classList.add('saving');
+            el.querySelector('svg').innerHTML = '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>';
+            el.childNodes[el.childNodes.length-1].textContent = ' Saving…';
+        } else if (state === 'saved') {
+            el.classList.add('saved');
+            el.querySelector('svg').innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+            el.childNodes[el.childNodes.length-1].textContent = ' Saved';
+            setTimeout(() => el.classList.remove('saved'), 2500);
+        }
+    }
+
+    // Patch notes loading to hook into auto-save
+    const origLoadNotes = window.loadNotes;
+    if (origLoadNotes) {
+        window.loadNotes = function() {
+            origLoadNotes.apply(this, arguments);
+            const editor = document.getElementById('shift-notes');
+            if (!editor) return;
+            // Enhanced auto-save with indicator
+            editor.addEventListener('input', function() {
+                showSaveIndicator('saving');
+                clearTimeout(_saveTimer);
+                _saveTimer = setTimeout(() => {
+                    try { localStorage.setItem('medconvert_notes_html', editor.innerHTML); } catch {}
+                    showSaveIndicator('saved');
+                    updateNotesWordCount();
+                }, 800);
+            });
+        };
+    }
+})();
+
+/* ==================== KEYBOARD SHORTCUTS ==================== */
+(function() {
+    const TAB_KEYS = {
+        '1': 'timer', '2': 'dosage', '3': 'iv', '4': 'vitals',
+        '5': 'assessment', '6': 'pediatric', '7': 'lab',
+        '8': 'convert', '9': 'reference', '0': 'drugs',
+    };
+
+    document.addEventListener('keydown', function(e) {
+        // Alt+number = switch tab
+        if (e.altKey && !e.ctrlKey && !e.metaKey && TAB_KEYS[e.key]) {
+            const focused = document.activeElement;
+            if (focused && (focused.tagName === 'INPUT' || focused.tagName === 'TEXTAREA' || focused.isContentEditable)) return;
+            e.preventDefault();
+            const tabId = TAB_KEYS[e.key];
+            if (window.switchToTab) window.switchToTab(tabId);
+            showToast(`Switched to ${tabId.charAt(0).toUpperCase()+tabId.slice(1)}`, 'info');
+        }
+        // Alt+/ = focus search
+        if (e.altKey && e.key === '/') {
+            e.preventDefault();
+            const search = document.getElementById('calc-global-search');
+            if (search) { search.focus(); search.select(); }
+        }
+        // Alt+D = toggle dark mode
+        if (e.altKey && e.key === 'd') {
+            e.preventDefault();
+            const btn = document.getElementById('theme-toggle');
+            if (btn) btn.click();
+        }
+    });
+})();
+
+/* ==================== DRUG FAVORITES ==================== */
+function getDrugFavorites() {
+    try { return JSON.parse(localStorage.getItem('mc_drug_favs') || '[]'); } catch { return []; }
+}
+function saveDrugFavorites(favs) {
+    try { localStorage.setItem('mc_drug_favs', JSON.stringify(favs)); } catch {}
+}
+
+window.toggleDrugFav = function(name, btn) {
+    let favs = getDrugFavorites();
+    const isFav = favs.includes(name);
+    if (isFav) {
+        favs = favs.filter(f => f !== name);
+        btn.classList.remove('is-fav');
+        btn.querySelector('svg').setAttribute('fill', 'none');
+        btn.title = 'Add to favorites';
+        showToast(`${name} removed from favorites`, 'info');
+    } else {
+        favs.push(name);
+        btn.classList.add('is-fav');
+        btn.querySelector('svg').setAttribute('fill', 'currentColor');
+        btn.title = 'Remove from favorites';
+        showToast(`${name} added to favorites`, 'success');
+    }
+    saveDrugFavorites(favs);
+    // Re-render to sort favorites to top
+    if (window.renderAllDrugs) window.renderAllDrugs();
+};
+
+/* Sort favorites to top in renderAllDrugs */
+(function(){
+    const _orig = window.renderAllDrugs;
+    if (!_orig) return;
+    window.renderAllDrugs = function() {
+        const el = document.getElementById('drug-results');
+        if (!el || !window.DRUG_DB) return;
+        const favs = getDrugFavorites();
+        const sorted = [
+            ...DRUG_DB.filter(d => favs.includes(d.name)),
+            ...DRUG_DB.filter(d => !favs.includes(d.name))
+        ];
+        const count = document.getElementById('drug-count');
+        if (count) count.textContent = `${DRUG_DB.length} drugs`;
+        el.innerHTML = sorted.map(d => buildDrugCard(d)).join('');
+    };
+})();
+
+/* notesExecCmd defined earlier — duplicate removed */
+
+/* ==================== SERVICE WORKER: fetch timeout ==================== */
+// Add SW registration with better error handling
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/medconvert-sw.js')
+            .then(reg => {
+                console.info('[MedConvert] SW registered:', reg.scope);
+                // Check for updates
+                reg.addEventListener('updatefound', () => {
+                    const newSW = reg.installing;
+                    if (newSW) {
+                        newSW.addEventListener('statechange', () => {
+                            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+                                showToast('App updated — reload to apply', 'info');
+                            }
+                        });
+                    }
+                });
+            })
+            .catch(err => console.warn('[MedConvert] SW registration failed:', err));
+    });
+}
+
+/* ==================== MANIFEST: add id field dynamically ==================== */
+// manifest.json can't be edited at runtime, but we log the missing field
+// (The fix should be applied to manifest.json directly — see updated file)
+
+/* ==================== SEARCH INDEX: add new tools ==================== */
+(function() {
+    const extraIndex = [
+        { keywords: ['curb','curb65','pneumonia','severity','infection'], tab: 'assessment', sub: 'sub-curb65', label: 'CURB-65 Pneumonia Score' },
+        { keywords: ['parkland','burn','tbsa','fluid resuscitation'], tab: 'assessment', sub: 'sub-parkland', label: 'Parkland Burn Formula' },
+        { keywords: ['opioid','morphine','fentanyl','hydromorphone','equianalgesic','convert opioid'], tab: 'reference', sub: 'sub-ref-opioid', label: 'Opioid Equianalgesic' },
+        { keywords: ['edd','gestational age','lmp','due date','pregnancy','obstetric'], tab: 'reference', sub: 'sub-ref-edd', label: 'EDD / Gestational Age' },
+        { keywords: ['inr','warfarin','anticoagulation','coumadin','therapeutic range'], tab: 'reference', sub: 'sub-ref-inr', label: 'INR / Warfarin Checker' },
+    ];
+    if (window.CALC_SEARCH_INDEX) {
+        window.CALC_SEARCH_INDEX.push(...extraIndex);
+    }
+})();
+
+/* ==================== INIT: Run all improvements ==================== */
+document.addEventListener('DOMContentLoaded', function() {
+    // Mobile nav initial state
+    updateMobileNav('timer');
+    
+    // Add keyboard shortcut hint to search placeholder
+    const searchInput = document.getElementById('calc-global-search');
+    if (searchInput) {
+        searchInput.placeholder = 'Search calculators… (Alt+/ to focus, Alt+1–9 for tabs)';
+    }
+
+    // Initialize EDD date to today's date
+    const eddDateInput = document.getElementById('edd-lmp-date');
+    if (eddDateInput && !eddDateInput.value) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth()+1).padStart(2,'0');
+        const dd = String(today.getDate()).padStart(2,'0');
+        eddDateInput.value = `${yyyy}-${mm}-${dd}`;
+    }
+    const eddUSDateInput = document.getElementById('edd-us-date');
+    if (eddUSDateInput && !eddUSDateInput.value) {
+        const today = new Date();
+        eddUSDateInput.value = today.toISOString().split('T')[0];
+    }
+});
+
+
+
+/* ==================== DRUG FAVORITES FILTER ==================== */
+let _showFavsOnly = false;
+
+window.toggleFavFilter = function(btn) {
+    _showFavsOnly = !_showFavsOnly;
+    btn.classList.toggle('btn-primary', _showFavsOnly);
+    btn.classList.toggle('btn-secondary', !_showFavsOnly);
+    btn.querySelector('svg').setAttribute('fill', _showFavsOnly ? 'currentColor' : 'none');
+    if (_showFavsOnly) {
+        const favs = getDrugFavorites();
+        if (favs.length === 0) { showToast('No favorites yet — tap ★ on any drug', 'warning'); _showFavsOnly = false; btn.classList.remove('btn-primary'); btn.classList.add('btn-secondary'); return; }
+        const el = document.getElementById('drug-results');
+        const count = document.getElementById('drug-count');
+        const sorted = DRUG_DB.filter(d => favs.includes(d.name));
+        if (count) count.textContent = `${sorted.length} favorite${sorted.length!==1?'s':''}`;
+        el.innerHTML = sorted.map(d => buildDrugCard(d)).join('');
+        showToast(`Showing ${sorted.length} favorite${sorted.length!==1?'s':''}`, 'info');
+    } else {
+        if (window.renderAllDrugs) window.renderAllDrugs();
+        showToast('Showing all drugs', 'info');
+    }
+};
+
+
+/* ==================== GLOVE SCRATCHPAD ==================== */
+let gloveExpiryTimer = null;
+let gloveExpiryEnd = null;
+let gloveExpiryTotal = null;
+let gloveExpiryInterval = null;
+
+function toggleGlove() {
+    const panel = document.getElementById('glove-panel');
+    if (!panel) return;
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    if (!isOpen) {
+        // Focus first input
+        const first = panel.querySelector('.glove-input');
+        if (first) setTimeout(() => first.focus(), 200);
+        // Load saved state
+        gloveLoadState();
+    }
+}
+
+function gloveLoadState() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('mc_glove') || 'null');
+        if (!saved) return;
+        // Check if expired
+        if (saved.expiry && Date.now() > saved.expiry) {
+            localStorage.removeItem('mc_glove');
+            gloveClearFields();
+            return;
+        }
+        if (saved.bp)    document.getElementById('g-bp').value    = saved.bp;
+        if (saved.hr)    document.getElementById('g-hr').value    = saved.hr;
+        if (saved.spo2)  document.getElementById('g-spo2').value  = saved.spo2;
+        if (saved.temp)  document.getElementById('g-temp').value  = saved.temp;
+        if (saved.rr)    document.getElementById('g-rr').value    = saved.rr;
+        if (saved.pain)  document.getElementById('g-pain').value  = saved.pain;
+        if (saved.notes) document.getElementById('g-notes').value = saved.notes;
+        if (saved.expiry) gloveStartExpiryDisplay(saved.expiry - Date.now());
+        gloveUpdateDot();
+    } catch {}
+}
+
+function gloveSaveState() {
+    const state = {
+        bp:    document.getElementById('g-bp')?.value,
+        hr:    document.getElementById('g-hr')?.value,
+        spo2:  document.getElementById('g-spo2')?.value,
+        temp:  document.getElementById('g-temp')?.value,
+        rr:    document.getElementById('g-rr')?.value,
+        pain:  document.getElementById('g-pain')?.value,
+        notes: document.getElementById('g-notes')?.value,
+        expiry: gloveExpiryEnd || null,
+    };
+    const hasContent = Object.values(state).some(v => v && v !== null);
+    try { if (hasContent) localStorage.setItem('mc_glove', JSON.stringify(state)); }
+    catch {}
+    gloveUpdateDot();
+}
+
+function gloveUpdateDot() {
+    const dot = document.getElementById('glove-dot');
+    if (!dot) return;
+    const hasAny = ['g-bp','g-hr','g-spo2','g-temp','g-rr','g-pain','g-notes'].some(id => {
+        const el = document.getElementById(id);
+        return el && el.value.trim();
+    });
+    dot.classList.toggle('visible', hasAny);
+}
+
+function gloveClearFields() {
+    ['g-bp','g-hr','g-spo2','g-temp','g-rr','g-pain','g-notes'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+}
+
+function gloveClear() {
+    gloveClearFields();
+    localStorage.removeItem('mc_glove');
+    clearTimeout(gloveExpiryTimer);
+    clearInterval(gloveExpiryInterval);
+    gloveExpiryEnd = null;
+    const fill = document.getElementById('glove-timer-fill');
+    if (fill) { fill.style.width = '100%'; fill.classList.remove('ending'); }
+    const expiryText = document.getElementById('glove-expiry-text');
+    if (expiryText) expiryText.textContent = 'No auto-clear set';
+    const expiryEl = document.getElementById('glove-expiry');
+    if (expiryEl) expiryEl.classList.remove('expiring');
+    gloveUpdateDot();
+    showToast('Scratchpad cleared', 'info');
+}
+
+function gloveSetExpiry(minutes) {
+    clearTimeout(gloveExpiryTimer);
+    clearInterval(gloveExpiryInterval);
+    const ms = minutes * 60 * 1000;
+    gloveExpiryEnd = Date.now() + ms;
+    gloveExpiryTotal = ms;
+    gloveStartExpiryDisplay(ms);
+    gloveExpiryTimer = setTimeout(() => {
+        gloveClear();
+        showToast('Scratchpad auto-cleared', 'info');
+        if (navigator.vibrate) navigator.vibrate([30, 20, 30]);
+    }, ms);
+    gloveSaveState();
+    showToast(`Scratchpad clears in ${minutes} min`, 'success');
+}
+
+function gloveStartExpiryDisplay(remainingMs) {
+    clearInterval(gloveExpiryInterval);
+    const fill = document.getElementById('glove-timer-fill');
+    const expiryText = document.getElementById('glove-expiry-text');
+    const expiryEl = document.getElementById('glove-expiry');
+    if (!fill || !expiryText) return;
+
+    function update() {
+        const remaining = gloveExpiryEnd - Date.now();
+        if (remaining <= 0) {
+            fill.style.width = '0%';
+            clearInterval(gloveExpiryInterval);
+            return;
+        }
+        const pct = (remaining / (gloveExpiryTotal || remainingMs)) * 100;
+        fill.style.width = pct + '%';
+        fill.classList.toggle('ending', remaining < 60000);
+        expiryEl && expiryEl.classList.toggle('expiring', remaining < 60000);
+        const mins = Math.floor(remaining / 60000);
+        const secs = Math.floor((remaining % 60000) / 1000);
+        expiryText.textContent = `Clears in ${mins > 0 ? mins + 'm ' : ''}${secs}s`;
+    }
+    update();
+    gloveExpiryInterval = setInterval(update, 1000);
+}
+
+function gloveSendToNotes() {
+    const bp    = document.getElementById('g-bp')?.value.trim();
+    const hr    = document.getElementById('g-hr')?.value.trim();
+    const spo2  = document.getElementById('g-spo2')?.value.trim();
+    const temp  = document.getElementById('g-temp')?.value.trim();
+    const rr    = document.getElementById('g-rr')?.value.trim();
+    const pain  = document.getElementById('g-pain')?.value.trim();
+    const notes = document.getElementById('g-notes')?.value.trim();
+
+    const now = new Date().toLocaleTimeString('en-PH', {hour:'2-digit',minute:'2-digit',hour12:true});
+    const lines = [`[${now}] Quick Vitals:`];
+    if (bp)    lines.push(`  BP: ${bp} mmHg`);
+    if (hr)    lines.push(`  HR: ${hr} bpm`);
+    if (spo2)  lines.push(`  SpO₂: ${spo2}%`);
+    if (temp)  lines.push(`  Temp: ${temp}°C`);
+    if (rr)    lines.push(`  RR: ${rr}/min`);
+    if (pain !== '' && pain !== undefined) lines.push(`  Pain: ${pain}/10`);
+    if (notes) lines.push(`  Note: ${notes}`);
+
+    if (lines.length === 1) { showToast('Nothing to send', 'warning'); return; }
+
+    const editor = document.getElementById('shift-notes');
+    if (!editor) { showToast('Open the Notes tab first', 'warning'); return; }
+
+    const html = `<p style="font-family:monospace;font-size:0.88em;background:var(--parchment);padding:0.5em 0.75em;border-radius:6px;border-left:3px solid var(--sage);margin:0.5em 0;">${lines.join('<br>')}</p>`;
+    editor.focus();
+    const sel = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(editor);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    document.execCommand('insertHTML', false, html);
+    editor.dispatchEvent(new Event('input'));
+
+    // Switch to notes tab
+    if (window.switchToTab) window.switchToTab('notes');
+    showToast('Vitals sent to Notes', 'success');
+    if (navigator.vibrate) navigator.vibrate([10, 10, 30]);
+    toggleGlove();
+}
+
+// Init: attach input listeners for auto-save
+document.addEventListener('DOMContentLoaded', function() {
+    ['g-bp','g-hr','g-spo2','g-temp','g-rr','g-pain','g-notes'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', gloveSaveState);
+    });
+    // Load any existing state
+    gloveLoadState();
+    // Close panel on outside click
+    document.addEventListener('click', function(e) {
+        const panel = document.getElementById('glove-panel');
+        const fab = document.getElementById('glove-fab');
+        if (panel && panel.classList.contains('open') && !panel.contains(e.target) && !fab.contains(e.target)) {
+            panel.classList.remove('open');
+        }
+    });
+});
+
+/* ==================== SCREEN WAKE LOCK ==================== */
+let wakeLock = null;
+
+async function requestWakeLock() {
+    if (!('wakeLock' in navigator)) return;
+    try {
+        wakeLock = await navigator.wakeLock.request('screen');
+        wakeLock.addEventListener('release', () => { wakeLock = null; });
+    } catch (err) {
+        // Permission denied or not available — silently ignore
+    }
+}
+
+function releaseWakeLock() {
+    if (wakeLock) {
+        wakeLock.release().catch(() => {});
+        wakeLock = null;
+    }
+}
+
+// Re-acquire on page visibility change (required by spec)
+document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState === 'visible' && wakeLock === null && timerTotal > 0) {
+        await requestWakeLock();
+    }
+});
+
+/* ==================== TIMER SOUND ==================== */
+let timerSoundEnabled = true;
+let timerAudioCtx = null;
+
+function getAudioCtx() {
+    if (!timerAudioCtx) {
+        try { timerAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        catch { return null; }
+    }
+    return timerAudioCtx;
+}
+
+function playTimerChime() {
+    if (!timerSoundEnabled) return;
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    // Three ascending tones — gentle, professional
+    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+    notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        const t = ctx.currentTime + i * 0.18;
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.18, t + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+        osc.start(t);
+        osc.stop(t + 0.6);
+    });
+}
+
+function playTickSound() {
+    if (!timerSoundEnabled) return;
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.06, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.1);
+}
+
+function toggleTimerSound() {
+    timerSoundEnabled = !timerSoundEnabled;
+    const icon = document.getElementById('timer-sound-icon');
+    const btn = document.getElementById('timer-sound-btn');
+    if (!icon) return;
+    if (timerSoundEnabled) {
+        icon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>';
+        btn && btn.classList.remove('btn-primary');
+        showToast('Sound on', 'success');
+        playTickSound(); // preview
+    } else {
+        icon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>';
+        showToast('Sound off', 'info');
+    }
+}
+
+/* ==================== TIMER PRESET ACTIVE STATE ==================== */
+let activePresetSeconds = null;
+
+(function() {
+    const _orig = window.startTimer;
+    if (!_orig) return;
+    window.startTimer = function(seconds) {
+        // Mark active preset button
+        document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
+        const presetBtns = document.querySelectorAll('.timer-btn');
+        presetBtns.forEach(b => {
+            const onclick = b.getAttribute('onclick') || '';
+            const match = onclick.match(/startTimer\((\d+)\)/);
+            if (match && parseInt(match[1]) === seconds) b.classList.add('active');
+        });
+        activePresetSeconds = seconds;
+        // Wake lock
+        requestWakeLock();
+        // Ring running glow
+        const wrap = document.querySelector('.timer-ring-wrap');
+        if (wrap) { wrap.classList.remove('complete'); wrap.classList.add('running'); }
+        _orig.apply(this, arguments);
+    };
+})();
+
+(function() {
+    const _orig = window.resetTimer;
+    if (!_orig) return;
+    window.resetTimer = function() {
+        document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
+        activePresetSeconds = null;
+        releaseWakeLock();
+        const wrap = document.querySelector('.timer-ring-wrap');
+        if (wrap) { wrap.classList.remove('complete', 'running'); }
+        _orig.apply(this, arguments);
+    };
+})();
+
+/* Hook into timer complete for chime + pulse */
+(function() {
+    const _origUpdateRing = window.updateTimerRing;
+    window.updateTimerRing = function(secondsLeft) {
+        if (_origUpdateRing) _origUpdateRing(secondsLeft);
+        if (secondsLeft === 0) {
+            // Timer finished
+            playTimerChime();
+            releaseWakeLock();
+            const wrap = document.querySelector('.timer-ring-wrap');
+            if (wrap) { wrap.classList.remove('running'); wrap.classList.add('complete'); }
+            document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
+        } else if (secondsLeft <= 3 && secondsLeft > 0) {
+            // Last 3 seconds — tick on each
+            playTickSound();
+        }
+    };
+})();
+
+/* ==================== DOSE SAFETY GUARDRAILS ==================== */
+// Safety thresholds for common single doses
+const DOSE_SAFETY = {
+    // mg/kg limits [cautionMin, cautionMax, dangerMax]
+    acetaminophen: { maxMgKg: 15, maxMgDose: 1000, maxMgDay: 4000, unit: 'mg' },
+    ibuprofen:     { maxMgKg: 10, maxMgDose: 800,  maxMgDay: 3200, unit: 'mg' },
+    morphine:      { maxMgKg: 0.1, maxMgDose: 10,  unit: 'mg' },
+    vancomycin:    { maxMgKg: 25, maxMgDose: 3000, unit: 'mg' },
+};
+
+function showDoseWarning(elementId, textId, message, level) {
+    const el = document.getElementById(elementId);
+    const text = document.getElementById(textId);
+    if (!el || !text) return;
+    if (!message) { el.classList.remove('show','warn-amber','warn-red'); return; }
+    text.textContent = message;
+    el.classList.remove('warn-amber','warn-red');
+    el.classList.add('show', level === 'danger' ? 'warn-red' : 'warn-amber');
+}
+
+// Patch calculateDosage to check for unusually large volumes
+(function() {
+    const _orig = window.calculateDosage;
+    if (!_orig) return;
+    window.calculateDosage = function() {
+        _orig.apply(this, arguments);
+        const Q = parseFloat(document.getElementById('dose-volume').value);
+        const D = parseFloat(document.getElementById('dose-desired').value);
+        const H = parseFloat(document.getElementById('dose-stock').value);
+        if (!D || !H || !Q) return;
+        const result = (D / H) * Q;
+        let warning = null, level = 'warning';
+        if (result > 20) { warning = `Calculated volume is ${result.toFixed(1)} mL — unusually large for a single dose. Verify your values.`; level = 'warning'; }
+        if (result > 50) { warning = `⚠️ ${result.toFixed(1)} mL is a very high volume. Double-check desired dose, stock concentration, and volume.`; level = 'danger'; }
+        if (D / H > 5)   { warning = `Dose requested is ${(D/H).toFixed(1)}× the stock concentration — verify this is intentional.`; level = 'warning'; }
+        showDoseWarning('dosage-warning', 'dosage-warning-text', warning, level);
+    };
+})();
+
+// Patch calculateWeightDose to flag extreme mg/kg doses
+(function() {
+    const _orig = window.calculateWeightDose;
+    if (!_orig) return;
+    window.calculateWeightDose = function() {
+        _orig.apply(this, arguments);
+        const d = parseFloat(document.getElementById('weight-dose-per-kg').value);
+        const w = parseFloat(document.getElementById('weight-dose-kg').value);
+        if (!d || !w) return;
+        let warning = null, level = 'warning';
+        if (d > 50)  { warning = `${d} mg/kg is high — verify this dose is correct for the chosen medication.`; level = 'warning'; }
+        if (d > 100) { warning = `⚠️ ${d} mg/kg is extremely high. Most medications are dosed at 1–30 mg/kg. Please double-check.`; level = 'danger'; }
+        if (w < 1)   { warning = `Weight under 1 kg — confirm this is a premature neonate and doses are appropriate.`; level = 'warning'; }
+        if (w * d > 5000) { warning = `Total dose exceeds 5,000 mg — verify patient weight and dose per kg before administration.`; level = 'danger'; }
+        showDoseWarning('weight-dose-warning', 'weight-dose-warning-text', warning, level);
+    };
+})();
+
+
+/* ==================== STICKY NAV SCROLL SHADOW ==================== */
+(function() {
+    const stickyArea = document.getElementById('sticky-nav-area');
+    if (!stickyArea) return;
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                stickyArea.classList.toggle('scrolled', window.scrollY > 60);
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }, { passive: true });
+})();
+
+/* ==================== LIVE GREETING REFRESH ==================== */
+// Refresh greeting every 5 minutes so it changes at shift transitions
+(function() {
+    // Initial call is done in DOMContentLoaded via setGreeting()
+    setInterval(() => {
+        if (typeof setGreeting === 'function') setGreeting();
+    }, 5 * 60 * 1000);
+})();
+
+/* ==================== CLOCK FORMAT HINT CSS ==================== */
+// Add a subtle tooltip-style indicator on the clock
+(function() {
+    const widget = document.getElementById('clock-widget');
+    if (!widget) return;
+    // Add title attribute dynamically based on current format
+    function updateTitle() {
+        const is24 = localStorage.getItem('mc_24h') === '1';
+        widget.title = is24 ? 'Military time (24h) — tap to switch to 12h' : 'Tap to switch to military time (24h)';
+        widget.setAttribute('aria-label', is24 ? 'Current time in 24-hour format — click to toggle' : 'Current time — click for 24-hour format');
+    }
+    updateTitle();
+    // Refresh title after each toggle
+    const _origToggle = window.toggleClockFormat;
+    window.toggleClockFormat = function() {
+        if (_origToggle) _origToggle.apply(this, arguments);
+        updateTitle();
+    };
+})();
+
 </script>
+
+<!-- ==================== GLOVE SCRATCHPAD ==================== -->
+<!-- Floating Action Button -->
+<button class="glove-fab" id="glove-fab" onclick="toggleGlove()" aria-label="Open Glove Scratchpad" title="Quick vitals scratchpad">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+    </svg>
+    <span class="glove-dot" id="glove-dot"></span>
+</button>
+
+<!-- Scratchpad Panel -->
+<div class="glove-panel" id="glove-panel" aria-label="Glove Scratchpad" role="dialog" aria-modal="false">
+    <div class="glove-header">
+        <div class="glove-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Glove Scratchpad
+        </div>
+        <div class="glove-header-actions">
+            <button class="glove-header-btn" onclick="gloveSetExpiry(5)" title="Auto-clear in 5 minutes">5 min</button>
+            <button class="glove-header-btn" onclick="gloveSetExpiry(15)" title="Auto-clear in 15 minutes">15 min</button>
+            <button class="glove-header-btn" onclick="gloveClear()" title="Clear now" style="background:rgba(193,122,106,0.3);border-color:rgba(193,122,106,0.5);">Clear</button>
+        </div>
+    </div>
+    <div class="glove-timer-bar"><div class="glove-timer-fill" id="glove-timer-fill" style="width:100%"></div></div>
+
+    <div class="glove-body">
+        <!-- Vitals quick row -->
+        <div class="glove-field">
+            <div class="glove-field-label">Quick Vitals</div>
+            <div class="glove-field-row">
+                <div>
+                    <div style="font-size:0.6rem;color:var(--text-muted);font-weight:700;text-align:center;margin-bottom:2px;">BP</div>
+                    <input class="glove-input" id="g-bp" type="text" placeholder="120/80" maxlength="10" autocomplete="off" inputmode="text">
+                </div>
+                <div>
+                    <div style="font-size:0.6rem;color:var(--text-muted);font-weight:700;text-align:center;margin-bottom:2px;">HR</div>
+                    <input class="glove-input" id="g-hr" type="number" placeholder="80" inputmode="numeric" min="20" max="300">
+                </div>
+                <div>
+                    <div style="font-size:0.6rem;color:var(--text-muted);font-weight:700;text-align:center;margin-bottom:2px;">SpO₂ %</div>
+                    <input class="glove-input" id="g-spo2" type="number" placeholder="98" inputmode="numeric" min="50" max="100">
+                </div>
+            </div>
+            <div class="glove-field-row" style="margin-top:var(--space-2);">
+                <div>
+                    <div style="font-size:0.6rem;color:var(--text-muted);font-weight:700;text-align:center;margin-bottom:2px;">Temp °C</div>
+                    <input class="glove-input" id="g-temp" type="number" placeholder="36.8" inputmode="decimal" step="0.1">
+                </div>
+                <div>
+                    <div style="font-size:0.6rem;color:var(--text-muted);font-weight:700;text-align:center;margin-bottom:2px;">RR</div>
+                    <input class="glove-input" id="g-rr" type="number" placeholder="18" inputmode="numeric">
+                </div>
+                <div>
+                    <div style="font-size:0.6rem;color:var(--text-muted);font-weight:700;text-align:center;margin-bottom:2px;">Pain /10</div>
+                    <input class="glove-input" id="g-pain" type="number" placeholder="3" inputmode="numeric" min="0" max="10">
+                </div>
+            </div>
+        </div>
+
+        <!-- Free text scratch -->
+        <div class="glove-field">
+            <div class="glove-field-label">Notes</div>
+            <textarea class="glove-textarea" id="g-notes" placeholder="Bed 4 — warfarin held, check INR AM…" spellcheck="false"></textarea>
+        </div>
+    </div>
+
+    <div class="glove-footer">
+        <div class="glove-expiry" id="glove-expiry">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span id="glove-expiry-text">No auto-clear set</span>
+        </div>
+        <button class="glove-send-btn" onclick="gloveSendToNotes()">→ Send to Notes</button>
+    </div>
+</div>
 
 <!-- ==================== CONFIRM MODAL ==================== -->
 <div id="confirm-modal" class="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-title">

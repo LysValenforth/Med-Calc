@@ -1,14 +1,19 @@
 {
-  "name": "MedConvert — Offline Medical Toolkit",
+  "name": "MedConvert \u2014 Offline Medical Toolkit",
   "short_name": "MedConvert",
-  "description": "Offline medical calculator toolkit — dosage, IV drip, vitals, pediatric, and lab reference.",
+  "id": "/",
+  "description": "Offline medical calculator toolkit \u2014 dosage, IV drip, vitals, pediatric, and lab reference.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#f5f0e8",
   "theme_color": "#2d5a27",
   "lang": "en",
-  "categories": ["medical", "health", "utilities"],
+  "categories": [
+    "medical",
+    "health",
+    "utilities"
+  ],
   "icons": [
     {
       "src": "/image/favicon.svg",
@@ -41,28 +46,48 @@
       "short_name": "Dosage",
       "description": "Weight-based and standard dosage calculations",
       "url": "/?tab=dosage",
-      "icons": [{ "src": "/image/favicon.svg", "sizes": "any" }]
+      "icons": [
+        {
+          "src": "/image/favicon.svg",
+          "sizes": "any"
+        }
+      ]
     },
     {
       "name": "IV & Drip",
       "short_name": "IV Drip",
       "description": "IV drip rate and infusion calculations",
       "url": "/?tab=iv",
-      "icons": [{ "src": "/image/favicon.svg", "sizes": "any" }]
+      "icons": [
+        {
+          "src": "/image/favicon.svg",
+          "sizes": "any"
+        }
+      ]
     },
     {
       "name": "Drug Reference",
       "short_name": "Drugs",
       "description": "Quick reference for 26 common medications",
       "url": "/?tab=drugs",
-      "icons": [{ "src": "/image/favicon.svg", "sizes": "any" }]
+      "icons": [
+        {
+          "src": "/image/favicon.svg",
+          "sizes": "any"
+        }
+      ]
     },
     {
       "name": "Quick Notes",
       "short_name": "Notes",
       "description": "Shift notes saved on your device",
       "url": "/?tab=notes",
-      "icons": [{ "src": "/image/favicon.svg", "sizes": "any" }]
+      "icons": [
+        {
+          "src": "/image/favicon.svg",
+          "sizes": "any"
+        }
+      ]
     }
   ],
   "screenshots": [],
