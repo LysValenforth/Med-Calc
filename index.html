@@ -15,7 +15,7 @@
     <meta name="theme-color" content="#0d1a0f" media="(prefers-color-scheme: dark)">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
 
 :root {
@@ -70,8 +70,8 @@
     --focus-ring: 0 0 0 3px rgba(92, 138, 82, 0.4);
 
     /* Typography */
-    --font-display: 'Lora', Georgia, 'Times New Roman', serif;
-    --font-body:    'Nunito', 'Segoe UI', system-ui, sans-serif;
+    --font-display: 'Lexend', 'DM Sans', system-ui, sans-serif;
+    --font-body:    'DM Sans', 'Lexend', system-ui, sans-serif;
 
     /* Modular type scale (1.25 ratio) */
     --text-2xs:  0.75rem;
@@ -570,30 +570,29 @@ header { padding: 0 !important; }
 [data-theme="dark"] .cd-ending { background: #2a1612; border-color: #8b5045; color: #d4998a; }
 
 .cd-icon { flex-shrink: 0; display: flex; align-items: center; }
-.cd-text { flex: 1; line-height: 1.4; }
+.cd-text {
+    white-space: nowrap;   /* never wraps */
+    line-height: 1;
+    font-size: var(--text-xs);
+    letter-spacing: 0.01em;
+}
 
-.cd-bar {
-    width: 100%;
-    height: 3px;             /* thinner bar */
-    background: rgba(0,0,0,0.1);
-    border-radius: var(--radius-full);
+/* ── Shift progress bar — inline, grows to fill remaining row space ── */
+.cd-ecg {
+    flex: 1;              /* fill remaining space beside text */
+    height: 6px;
+    flex-basis: auto;
+    margin-top: 0;
+    display: block;
     overflow: hidden;
-    flex-basis: 100%;
-    margin-top: var(--space-2);
+    border-radius: 99px;
+    align-self: center;
+    min-width: 60px;
 }
-
-.cd-fill {
-    height: 100%;
-    background: var(--sage);
-    border-radius: var(--radius-full);
-    transition: width 1s ease;
-}
-
-.cd-ending .cd-fill { background: var(--dusty-rose); }
 
 /* ==================== DASHBOARD ROW ==================== */
 .dashboard-row {
-    display: grid;
+    display: none;               /* hidden by default; JS shows it on toggle */
     grid-template-columns: 1fr 1fr;
     gap: var(--space-6);
     margin-bottom: var(--space-8);
@@ -628,7 +627,7 @@ header { padding: 0 !important; }
 .tab-nav {
     display: flex;
     gap: var(--space-2);
-    margin-bottom: var(--space-8);
+    margin-bottom: 0;              /* wrapper / sticky-nav controls spacing */
     background: var(--bg-card);
     padding: var(--space-2);
     border-radius: var(--radius-xl);
@@ -2005,15 +2004,15 @@ footer {
     position: sticky;
     top: 0;
     z-index: 100;
-    background: var(--bg-main);
+    background: transparent;
     padding-top: var(--space-5);
-    padding-bottom: var(--space-3);
-    margin-bottom: var(--space-5);
-    /* Subtle bottom shadow to indicate scroll depth */
+    padding-bottom: 0;            /* no band below search */
+    margin-bottom: 0;             /* no strip between search and dashboard */
     box-shadow: none;
     transition: box-shadow var(--t-base);
 }
 .sticky-nav-area.scrolled {
+    background: var(--bg-main);
     box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 1px 0 var(--border);
 }
 /* Extend bg behind tab fade gradient in sticky mode */
@@ -2396,10 +2395,7 @@ textarea {
         box-shadow   var(--t-smooth);
 }
 
-/* Shift countdown bar smooth */
-.cd-fill {
-    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
-}
+/* cd-fill removed — replaced by ECG SVG */
 
 /* Toast notification spring entrance */
 .mc-toast.visible {
@@ -2483,8 +2479,9 @@ select:focus {
 /* -- addDashboardToggleStyles -- */
 
 .dashboard-collapse-wrap {
-    margin-bottom: var(--space-5);
-    order: 1; /* sits after sticky nav in normal flow */
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-4);
+    order: 1;
 }
 .dashboard-toggle {
     display: flex;
@@ -2616,7 +2613,7 @@ select:focus {
 
 /* Global search */
 .calc-search-wrap {
-    margin: 0 0 var(--space-6);
+    margin: var(--space-3) 0 0;   /* space ABOVE search below tab-nav; nothing below */
     position: relative;
 }
 .calc-search-inner {
@@ -2624,8 +2621,8 @@ select:focus {
     align-items: center;
     gap: var(--space-3);
     background: var(--bg-card);
-    border: 2px solid var(--border);
-    border-radius: var(--radius-xl);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-full);   /* true pill shape */
     padding: 0 var(--space-4);
     transition: border-color var(--t-smooth), box-shadow var(--t-smooth);
 }
@@ -2668,6 +2665,7 @@ select:focus {
 }
 .calc-search-clear:hover { color: var(--text-primary); }
 .calc-search-results {
+    display: none;                /* hidden by default — JS shows it only when there are results */
     position: absolute; top: calc(100% + 0.5rem);
     left: 0; right: 0;
     background: var(--bg-card);
@@ -3131,7 +3129,7 @@ select:focus {
     .tab-nav-wrapper,
     .tab-nav { display: none !important; }
     /* Sticky nav area only needs to show the search bar on mobile */
-    .sticky-nav-area { padding-top: var(--space-3); margin-bottom: var(--space-3); }
+    .sticky-nav-area { padding-top: var(--space-3); padding-bottom: 0; margin-bottom: 0; }
 }
 
 /* Enhanced result display */
@@ -3703,14 +3701,114 @@ input[type="checkbox"]:focus-visible {
     .glove-fab { bottom: 0.5rem; }
 }
 
+
+/* ══════════════════════════════════════════════════════════════
+   SPLASH SCREEN
+   ══════════════════════════════════════════════════════════════ */
+#app-splash {
+    position: fixed;
+    inset: 0;
+    background: #f5f0e8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    z-index: 9999;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+[data-theme="dark"] #app-splash { background: #0f1a10; }
+
+.splash-logo {
+    margin-bottom: 1.25rem;
+    animation: splashPop 0.6s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+    filter: drop-shadow(0 8px 24px rgba(45,90,39,0.25));
+}
+@keyframes splashPop {
+    0%   { opacity: 0; transform: scale(0.7) translateY(12px); }
+    100% { opacity: 1; transform: scale(1)   translateY(0); }
+}
+.splash-name {
+    font-family: 'Lexend', system-ui, sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #2d5a27;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.3rem;
+    animation: splashFade 0.5s 0.15s ease both;
+}
+[data-theme="dark"] .splash-name { color: #7db870; }
+.splash-tagline {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #7a6a58;
+    letter-spacing: 0.02em;
+    margin: 0 0 2.5rem;
+    animation: splashFade 0.5s 0.25s ease both;
+}
+@keyframes splashFade {
+    0%   { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+.splash-bar {
+    width: 6rem;
+    height: 3px;
+    background: rgba(45,90,39,0.12);
+    border-radius: 99px;
+    overflow: hidden;
+    animation: splashFade 0.4s 0.35s ease both;
+}
+.splash-bar-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a27;
+    border-radius: 99px;
+    animation: splashLoad 0.8s 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+@keyframes splashLoad {
+    0%   { width: 0%; }
+    100% { width: 100%; }
+}
+/* Hide on desktop — splash is a mobile experience */
+@media (min-width: 641px) {
+    #app-splash { display: none !important; }
+}
+/* Fade-out state applied by JS */
+#app-splash.splash-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ── Mobile: no strip, no rectangle behind search ── */
+@media (max-width: 640px) {
+    .sticky-nav-area {
+        padding-top: var(--space-3) !important;
+        padding-bottom: 0 !important;
+        margin-bottom: 0 !important;
+    }
+    .calc-search-wrap {
+        margin: var(--space-2) 0 0 !important;
+        padding-bottom: var(--space-3);
+        background: transparent;
+    }
+    .dashboard-collapse-wrap {
+        margin-top: var(--space-3) !important;
+    }
+    .calc-search-inner {
+        background: var(--bg-card);
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-full);
+    }
+}
 </style>
     <script>
     // Font load detection — apply fallback class if fonts unavailable (offline first load)
     if ('fonts' in document) {
         Promise.race([
             Promise.all([
-                document.fonts.load('400 1em Lora'),
-                document.fonts.load('400 1em Nunito')
+                document.fonts.load('400 1em Lexend'),
+                document.fonts.load('400 1em DM Sans')
             ]),
             new Promise(resolve => setTimeout(resolve, 2500))
         ]).then(result => {
@@ -3899,6 +3997,26 @@ input[type="checkbox"]:focus-visible {
 </svg>
 
 <!-- ==================== HEADER ==================== -->
+<!-- ══ SPLASH SCREEN ══ -->
+<div id="app-splash" aria-hidden="true">
+    <div class="splash-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="72" height="72">
+            <rect width="64" height="64" rx="16" fill="#1a3318"/>
+            <rect x="1.5" y="1.5" width="61" height="61" rx="14.5" fill="none" stroke="rgba(125,184,112,0.15)" stroke-width="1.5"/>
+            <rect x="26" y="10" width="12" height="44" rx="6" fill="#4a8c3f"/>
+            <rect x="10" y="26" width="44" height="12" rx="6" fill="#4a8c3f"/>
+            <rect x="30" y="10" width="4" height="44" rx="2" fill="rgba(255,255,255,0.08)"/>
+            <rect x="10" y="30" width="44" height="4" rx="2" fill="rgba(255,255,255,0.08)"/>
+            <polyline points="11,32 20,32 23,26 26,38 32,16 38,38 41,26 44,32 53,32"
+                      fill="none" stroke="#7db870" stroke-width="2.4"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </div>
+    <p class="splash-name">MedConvert</p>
+    <p class="splash-tagline">Built for Abigail</p>
+    <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+</div>
+
 <header role="banner" aria-label="MedConvert application header">
     <div class="header-content">
         <div class="header-top">
@@ -3906,13 +4024,21 @@ input[type="checkbox"]:focus-visible {
                 <!-- Logo tile -->
                 <span class="brand-logo" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-                        <rect width="64" height="64" rx="14" fill="#1e3d1b"/>
-                        <!-- Cross vertical bar -->
-                        <rect x="28" y="10" width="8" height="44" rx="4" fill="#2d5a27"/>
-                        <!-- Cross horizontal bar -->
-                        <rect x="10" y="28" width="44" height="8" rx="4" fill="#2d5a27"/>
-                        <!-- ECG pulse through horizontal bar -->
-                        <polyline points="12,32 21,32 24,24 28,40 32,16 36,32 40,32 52,32" fill="none" stroke="#7db870" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <!-- Deep forest background with smooth corners -->
+                        <rect width="64" height="64" rx="16" fill="#1a3318"/>
+                        <!-- Subtle inner border glow -->
+                        <rect x="1.5" y="1.5" width="61" height="61" rx="14.5" fill="none"
+                              stroke="rgba(125,184,112,0.15)" stroke-width="1.5"/>
+                        <!-- Cross: bright filled arms -->
+                        <rect x="26" y="10" width="12" height="44" rx="6" fill="#4a8c3f"/>
+                        <rect x="10" y="26" width="44" height="12" rx="6" fill="#4a8c3f"/>
+                        <!-- Highlight sheen on cross arms -->
+                        <rect x="30" y="10" width="4" height="44" rx="2" fill="rgba(255,255,255,0.08)"/>
+                        <rect x="10" y="30" width="44" height="4" rx="2" fill="rgba(255,255,255,0.08)"/>
+                        <!-- ECG line: clean sharp spike -->
+                        <polyline points="11,32 20,32 23,26 26,38 32,16 38,38 41,26 44,32 53,32"
+                                  fill="none" stroke="#7db870" stroke-width="2.4"
+                                  stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </span>
 
@@ -5222,6 +5348,21 @@ function initializeApp() {
     initScrollReveal();
     initDrugPanel();
     registerServiceWorker();
+    // Dismiss splash after app is ready
+    dismissSplash();
+}
+
+function dismissSplash() {
+    // Only on mobile
+    if (window.innerWidth >= 641) return;
+    const splash = document.getElementById('app-splash');
+    if (!splash) return;
+    // Wait at minimum 1.1s so the bar animation completes, then fade out
+    const delay = Math.max(0, 1100 - performance.now());
+    setTimeout(() => {
+        splash.classList.add('splash-out');
+        setTimeout(() => { splash.style.display = 'none'; }, 520);
+    }, delay);
 }
 
 /* ==================== PROFILE STORE ==================== */
@@ -5448,10 +5589,21 @@ function initShiftCountdown() {
             const iconPath = ending
                 ? '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>'
                 : '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>';
-            el.innerHTML = `
+            // Simple straight progress line
+            (function buildBar() {
+                const W = 400, H = 6;
+                const clipW = Math.max(0, Math.min(W, (pct / 100) * W));
+                const fill  = ending ? '#9e4f42' : '#2d5a27';
+                const track = ending ? 'rgba(158,79,66,0.2)' : 'rgba(0,0,0,0.12)';
+
+                el.innerHTML = `
                 <span class="cd-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${iconPath}</svg></span>
-                <span class="cd-text"><strong>${hrs}h ${mins}m</strong> remaining in shift</span>
-                <div class="cd-bar"><div class="cd-fill" style="width:${pct}%"></div></div>`;
+                <span class="cd-text"><strong>${hrs}h ${mins}m</strong> left</span>
+                <svg class="cd-ecg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+                  <rect x="0" y="0" width="${W}" height="${H}" rx="3" fill="${track}"/>
+                  <rect x="0" y="0" width="${clipW}" height="${H}" rx="3" fill="${fill}"/>
+                </svg>`;
+            })();
             el.className = `shift-countdown ${ending ? 'cd-ending' : 'cd-active'}`;
         }
         el.style.display = 'flex';
