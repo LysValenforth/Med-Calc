@@ -2748,35 +2748,33 @@ select:focus {
     flex-shrink: 0;
 }
 
-/* ── Mobile: wrap freely so groups stack into tidy rows ── */
+/* ── Mobile toolbar: 3 strict rows, compact spacing ── */
 @media (max-width: 640px) {
     .notes-toolbar {
-        flex-wrap: wrap;           /* groups wrap to next line naturally */
-        gap: var(--space-1);
-        row-gap: var(--space-2);
-        padding: var(--space-3) var(--space-3);
+        flex-direction: column;
+        align-items: stretch;
+        flex-wrap: nowrap;
+        gap: 0;
+        row-gap: 0;
+        padding: var(--space-2) var(--space-2);
     }
-    /* Each row wrapper becomes a full-width flex row on mobile */
     .notes-toolbar-row {
         display: flex;
         align-items: center;
         gap: 2px;
         flex-wrap: nowrap;
-        width: 100%;               /* each row fills full width */
-        min-height: 2.25rem;
+        width: 100%;
+        padding: 3px 0;
     }
-    /* Separator between rows */
     .notes-toolbar-row + .notes-toolbar-row {
         border-top: 1px solid var(--border);
-        padding-top: var(--space-2);
+        padding-top: 3px;
     }
-    /* Slightly bigger tap targets */
     .notes-fmt-btn {
-        min-height: 2.25rem;
-        min-width: 2.25rem;
-        padding: 0.35rem 0.5rem;
+        min-height: 2rem;
+        min-width: 2rem;
+        padding: 0.28rem 0.42rem;
     }
-    /* XHL: icon only on mobile — hide text label */
     .xhl-label { display: none; }
 }
 .notes-fmt-btn {
@@ -2978,6 +2976,11 @@ select:focus {
    MOBILE BOTTOM NAV  —  5-item: 4 core tabs + "More" drawer
    ══════════════════════════════════════════════════════════════ */
 @media (max-width: 640px) {
+
+    /* ── Toast: clear of bottom nav on mobile ── */
+    .mc-toast {
+        bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px) + 0.75rem) !important;
+    }
 
     /* ── Bar ── */
     .mobile-quick-tabs {
@@ -3275,9 +3278,42 @@ select:focus {
     line-height: 1.5;
 }
 
-/* Drug favorite button */
-.drug-fav-btn {
-    background: none;
+/* Theme toggle tile in More sheet */
+.more-sheet-theme-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-2);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    transition: background var(--t-fast), border-color var(--t-fast);
+    -webkit-tap-highlight-color: transparent;
+    text-align: center;
+    line-height: 1.2;
+    min-height: 5rem;
+}
+.more-sheet-theme-tile svg {
+    width: 1.6rem; height: 1.6rem;
+    flex-shrink: 0;
+    stroke: var(--sage);
+}
+.more-sheet-theme-tile:active { transform: scale(0.94); background: var(--bg-hover); }
+
+/* Card padding tighter on very small phones */
+@media (max-width: 360px) {
+    .calc-card { padding: var(--space-4); border-radius: var(--radius-xl); }
+    .container { padding: var(--space-4) var(--space-3) var(--space-3); }
+}
     border: none;
     cursor: pointer;
     color: var(--text-muted);
@@ -3316,12 +3352,31 @@ select:focus {
 @media (max-width: 480px) {
     .sub-tabs {
         gap: var(--space-1);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
     }
+    .sub-tabs::-webkit-scrollbar { display: none; }
     .sub-tab {
         font-size: 0.72rem;
         padding: var(--space-2) var(--space-2);
         min-width: auto;
+        flex-shrink: 0;
     }
+}
+
+/* Notes toolbar: mobile 3-row layout — compact, no excess spacing */
+@media (max-width: 640px) {
+    /* Row 3 (undo/redo) — char count stays inline, never wraps */
+    .notes-toolbar-row:last-child { flex-wrap: nowrap; }
+    .notes-toolbar-row-spacer { display: block; flex: 1; min-width: 4px; }
+    .notes-char-count { white-space: nowrap; flex-shrink: 0; font-size: 0.7rem; }
+
+    /* Notes action row: full width, flush with editor */
+    .notes-action-row { margin-left: 0; margin-right: 0; width: 100%; }
+
+    /* Hide redundant settings button in header on mobile — it's in the More sheet */
+    .settings-btn-header { display: none !important; }
 }
 
 /* Section heading inside panels */
@@ -3741,8 +3796,30 @@ input[type="checkbox"]:focus-visible {
     }
 }
 
+/* Fix glove FAB on very small phones — don't overlap last nav button */
+@media (max-width: 360px) {
+    .glove-fab {
+        right: 0.5rem;
+        width: 2.75rem;
+        height: 2.75rem;
+    }
+}
+
+/* Fix glove panel in landscape (short screens) */
+@media (max-height: 500px) {
+    .glove-panel {
+        max-height: calc(100dvh - 3rem);
+        bottom: 0.5rem;
+        border-radius: var(--radius-lg);
+    }
+    .glove-body {
+        max-height: calc(100dvh - 8rem);
+    }
+    .glove-fab { bottom: 0.5rem; }
+}
 
 /* ==================== DOSE SAFETY GUARDRAILS ==================== */
+}
 .dose-warning {
     display: none;
     margin-top: var(--space-4);
@@ -3987,6 +4064,14 @@ input[type="checkbox"]:focus-visible {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
             Reference
         </button>
+        <button class="more-sheet-item" onclick="moreSheetToggleTheme()" aria-label="Toggle theme" id="more-sheet-theme-btn">
+            <svg id="more-theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <span id="more-theme-label">Dark Mode</span>
+        </button>
+        <button class="more-sheet-item" onclick="openSettings();closeMoreSheet();" aria-label="Settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Settings
+        </button>
     </div>
 </div>
 
@@ -4157,7 +4242,7 @@ input[type="checkbox"]:focus-visible {
                 <div class="offline-badge" id="offline-badge" title="Connectivity status" aria-live="polite">
                     <span class="offline-dot"></span><span class="offline-label">Online</span>
                 </div>
-                <button class="icon-btn" onclick="openSettings()" title="Settings" aria-label="Open settings">
+                <button class="icon-btn settings-btn-header" onclick="openSettings()" title="Settings" aria-label="Open settings">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
                         <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/>
                         <circle cx="8" cy="6" r="2" fill="currentColor"/>
@@ -4490,7 +4575,7 @@ input[type="checkbox"]:focus-visible {
                 <div class="form-group"><label>Flow Rate (mL/hr)</label><input type="number" inputmode="decimal" id="infusion-rate" placeholder="e.g., 125" step="1"></div>
             </div>
             <button class="btn btn-primary btn-full" onclick="calculateInfusionTime()">Calculate Time</button>
-            <div class="result-display" id="infusion-time-result">
+            <div class="result-display" id="infusion-time-result" style="display:none">
                 <div class="result-label">Infusion Duration</div>
                 <div class="result-value" id="infusion-time-value">0 hours</div>
                 <div class="result-note" id="infusion-completion"></div>
@@ -5352,7 +5437,7 @@ input[type="checkbox"]:focus-visible {
                 </div>
             </div>
 
-            <!-- ROW 3: Undo / Redo + Word count -->
+            <!-- ROW 3: Undo / Redo + Word count (inline) -->
             <div class="notes-toolbar-row">
                 <div class="notes-toolbar-group">
                     <button class="notes-fmt-btn" onclick="notesExecCmd('undo')" title="Undo (Ctrl+Z)" aria-label="Undo" onmousedown="event.preventDefault()">
@@ -5861,6 +5946,8 @@ function showResult(resultElId, valueElId, displayValue, status, note, noteElId,
     const resultEl = document.getElementById(resultElId);
     const valueEl = document.getElementById(valueElId);
     if (!resultEl || !valueEl) return;
+    // Un-hide result boxes that start display:none
+    if (resultEl.style.display === 'none') resultEl.style.display = '';
     valueEl.textContent = displayValue;
     resultEl.classList.remove('result-normal', 'result-warning', 'result-danger', 'result-neutral');
     resultEl.classList.add(`result-${status || 'neutral'}`, 'show');
@@ -5956,6 +6043,15 @@ function initializeTabs() {
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => switchToTab(btn.getAttribute('data-tab')));
     });
+    // Restore tab from URL param (?tab=dosage) — supports manifest shortcuts
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const tabParam = params.get('tab');
+        if (tabParam && document.getElementById(`panel-${tabParam}`)) {
+            switchToTab(tabParam);
+            updateMobileNav(tabParam);
+        }
+    } catch {}
 }
 
 window.switchToTab = function (tabId) {
@@ -5969,6 +6065,12 @@ window.switchToTab = function (tabId) {
     if (btn) { btn.classList.add('active'); btn.setAttribute('aria-selected', 'true'); }
     if (panel) panel.classList.add('active');
     if (navigator.vibrate) navigator.vibrate(8);
+    // Sync URL so manifest shortcuts & browser back button restore the correct tab
+    try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', tabId);
+        history.replaceState(null, '', url.toString());
+    } catch {}
 };
 
 window.showSubPanel = function (subId) {
@@ -6818,7 +6920,7 @@ function hci_initFocusTrap() {
     }
 
     // Monkey-patch showOnboarding / openSettings / openPinManager to apply traps
-    const _origShowOnboarding = window.showOnboarding;
+    const _origShowOnboarding = window.showOnboarding || function(){};
     const _origOpenSettings   = window.openSettings;
     const _origOpenPinManager = window.openPinManager;
     const _origSubmitOnboard  = window.submitOnboarding;
@@ -7183,45 +7285,35 @@ function initOfflineIndicator() {
 
 /* Enter to calculate */
 function initEnterToCalculate() {
-    // Map: panel ID → calculate function name
-    const panelCalcMap = {
-        'panel-dosage': { 'sub-dosage-standard': 'calculateDosage', 'sub-dosage-weight': 'calculateWeightDose', 'sub-dosage-bsa': 'calculateBSA' },
-        'panel-iv':     { 'sub-drip-rate': 'calculateIV', 'sub-infusion-time': 'calculateInfusionTime', 'sub-concentration': 'calculateConcentration' },
-        'panel-vitals': { 'sub-map': 'calculateMAP', 'sub-pp': 'calculatePP', 'sub-shock-index': 'calculateShockIndex', 'sub-a-a-gradient': 'calculateAAGradient' },
-        'panel-assessment': { 'sub-gcs': 'calculateGCS', 'sub-bmi': 'calculateBMI', 'sub-egfr': 'calculateEGFR', 'sub-wells': 'calculateWells' },
-        'panel-pediatric': { 'sub-peds-weight': 'calculatePedsWeight', 'sub-peds-dose': 'calculatePedsDose', 'sub-apgar': 'calculateAPGAR' },
-        'panel-lab':     { '_default': 'convertLab' },
+    // Map of calc panel IDs to their primary calculate button selector
+    const CALC_PANELS = {
+        'panel-dosage':     '.btn-primary',
+        'panel-iv':         '.btn-primary',
+        'panel-vitals':     '.btn-primary',
+        'panel-assessment': '.btn-primary',
+        'panel-pediatric':  '.btn-primary',
+        'panel-lab':        '.btn-primary',
+        'panel-convert':    '.btn-primary',
+        'panel-reference':  '.btn-primary',
     };
 
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', function(e) {
         if (e.key !== 'Enter') return;
-        // Only if focused inside an input (not a button or textarea)
         const active = document.activeElement;
-        if (!active || !['INPUT', 'SELECT'].includes(active.tagName)) return;
-        // Don't trigger if inside onboarding or modals
-        if (active.closest('#onboarding-overlay, #pin-overlay, #confirm-modal')) return;
-
-        // Find which panel is active
-        const activePanel = document.querySelector('.calc-card.active');
-        if (!activePanel) return;
-        const panelId = activePanel.id;
-        const panelMap = panelCalcMap[panelId];
-        if (!panelMap) return;
-
-        // Find active sub-panel
-        const activeSubPanel = activePanel.querySelector('.sub-panel.active');
-        const subId = activeSubPanel ? activeSubPanel.id : '_default';
-
-        let fn = panelMap[subId] || panelMap['_default'];
-        if (!fn) {
-            // If only one entry in map, use that
-            const entries = Object.values(panelMap);
-            if (entries.length === 1) fn = entries[0];
+        if (!active || (active.tagName !== 'INPUT' && active.tagName !== 'SELECT')) return;
+        // Don't intercept time/date inputs or textareas
+        if (['time','date','search'].includes(active.type)) return;
+        // Find the active sub-panel
+        const subPanel = active.closest('.sub-panel.active') || active.closest('.sub-panel');
+        if (subPanel) {
+            const btn = subPanel.querySelector('.btn-primary');
+            if (btn) { e.preventDefault(); btn.click(); return; }
         }
-
-        if (fn && window[fn]) {
-            e.preventDefault();
-            window[fn]();
+        // Fallback: find the active calc-card's primary button
+        const card = active.closest('.calc-card.active') || active.closest('.calc-card');
+        if (card) {
+            const btn = card.querySelector('.sub-panel.active .btn-primary') || card.querySelector('.btn-primary');
+            if (btn) { e.preventDefault(); btn.click(); }
         }
     });
 }
@@ -7305,7 +7397,7 @@ window.startTimer = function(seconds) {
     _origStartTimer.call(this, seconds);
 };
 
-const _origUpdateTimerDisplay = window.updateTimerDisplay;
+const _origUpdateTimerDisplay = window.updateTimerDisplay || function(){};
 // We need to hook into the interval - patch via overriding the whole timer
 let _timerPatchInterval = null;
 const _origStartTimer2 = window.startTimer;
@@ -7744,7 +7836,7 @@ window.toggleDrugFav = function(drugName, btn) {
 };
 
 // Override renderAllDrugs to sort favorites to top
-const _origRenderAllDrugs = window.renderAllDrugs;
+const _origRenderAllDrugs = window.renderAllDrugs || function(){};
 window.renderAllDrugs = function() {
     const el = document.getElementById('drug-results');
     if (!el || !window.DRUG_DB) return;
@@ -8358,6 +8450,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+/* ── More sheet theme toggle ── */
+window.moreSheetToggleTheme = function() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('medconvert_theme', next);
+    updateMoreSheetThemeBtn(next);
+    showToast(next === 'dark' ? 'Dark mode on' : 'Light mode on', 'info');
+};
+
+function updateMoreSheetThemeBtn(theme) {
+    const icon = document.getElementById('more-theme-icon');
+    const label = document.getElementById('more-theme-label');
+    if (!icon || !label) return;
+    if (theme === 'dark') {
+        icon.innerHTML = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+        label.textContent = 'Light Mode';
+    } else {
+        icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+        label.textContent = 'Dark Mode';
+    }
+}
+
 /* ==================== MOBILE NAV SYNC ==================== */
 /* ── More Sheet tabs ── */
 // Tabs that live inside the More sheet (not in bottom nav)
@@ -8401,6 +8516,11 @@ window.openMoreSheet = function() {
     document.body.style.overflow = 'hidden';
     sheet.setAttribute('aria-hidden', 'false');
     attachSheetSwipe(sheet);
+    // Hide glove FAB so it doesn't overlap sheet tiles
+    const fab = document.getElementById('glove-fab');
+    if (fab) fab.style.visibility = 'hidden';
+    // Update theme button state whenever sheet opens
+    updateMoreSheetThemeBtn(document.documentElement.getAttribute('data-theme') || 'light');
 };
 
 /* Close More sheet — wait for transition to finish, then hide */
@@ -8412,6 +8532,9 @@ window.closeMoreSheet = function() {
     sheet.classList.remove('open');
     document.body.style.overflow = '';
     sheet.setAttribute('aria-hidden', 'true');
+    // Restore glove FAB
+    const fab = document.getElementById('glove-fab');
+    if (fab) fab.style.visibility = '';
     // After the transition ends, remove .visible so display:block is cleared
     // and the elements go back to display:none — freeing up pointer events
     const TRANSITION_MS = 420; // matches --t-spring ~500ms, give a little buffer
@@ -9034,13 +9157,19 @@ function showDoseWarning(elementId, textId, message, level) {
         const Q = parseFloat(document.getElementById('dose-volume').value);
         const D = parseFloat(document.getElementById('dose-desired').value);
         const H = parseFloat(document.getElementById('dose-stock').value);
-        if (!D || !H || !Q) return;
+        // Always clear first so stale warnings don't linger
+        if (!D || !H || !Q) {
+            showDoseWarning('dosage-warning', 'dosage-warning-text', null);
+            return;
+        }
         const result = (D / H) * Q;
         let warning = null, level = 'warning';
-        if (result > 20) { warning = `Calculated volume is ${result.toFixed(1)} mL — unusually large for a single dose. Verify your values.`; level = 'warning'; }
         if (result > 50) { warning = `⚠️ ${result.toFixed(1)} mL is a very high volume. Double-check desired dose, stock concentration, and volume.`; level = 'danger'; }
-        if (D / H > 5)   { warning = `Dose requested is ${(D/H).toFixed(1)}× the stock concentration — verify this is intentional.`; level = 'warning'; }
+        else if (result > 20) { warning = `Calculated volume is ${result.toFixed(1)} mL — unusually large for a single dose. Verify your values.`; level = 'warning'; }
+        if (!warning && D / H > 5) { warning = `Dose requested is ${(D/H).toFixed(1)}× the stock concentration — verify this is intentional.`; level = 'warning'; }
         showDoseWarning('dosage-warning', 'dosage-warning-text', warning, level);
+        // Haptic on danger
+        if (level === 'danger' && warning && navigator.vibrate) navigator.vibrate([100, 50, 100]);
     };
 })();
 
@@ -9052,13 +9181,18 @@ function showDoseWarning(elementId, textId, message, level) {
         _orig.apply(this, arguments);
         const d = parseFloat(document.getElementById('weight-dose-per-kg').value);
         const w = parseFloat(document.getElementById('weight-dose-kg').value);
-        if (!d || !w) return;
+        // Always clear first
+        if (!d || !w) {
+            showDoseWarning('weight-dose-warning', 'weight-dose-warning-text', null);
+            return;
+        }
         let warning = null, level = 'warning';
-        if (d > 50)  { warning = `${d} mg/kg is high — verify this dose is correct for the chosen medication.`; level = 'warning'; }
-        if (d > 100) { warning = `⚠️ ${d} mg/kg is extremely high. Most medications are dosed at 1–30 mg/kg. Please double-check.`; level = 'danger'; }
-        if (w < 1)   { warning = `Weight under 1 kg — confirm this is a premature neonate and doses are appropriate.`; level = 'warning'; }
         if (w * d > 5000) { warning = `Total dose exceeds 5,000 mg — verify patient weight and dose per kg before administration.`; level = 'danger'; }
+        else if (d > 100) { warning = `⚠️ ${d} mg/kg is extremely high. Most medications are dosed at 1–30 mg/kg. Please double-check.`; level = 'danger'; }
+        else if (d > 50)  { warning = `${d} mg/kg is high — verify this dose is correct for the chosen medication.`; level = 'warning'; }
+        else if (w < 1)   { warning = `Weight under 1 kg — confirm this is a premature neonate and doses are appropriate.`; level = 'warning'; }
         showDoseWarning('weight-dose-warning', 'weight-dose-warning-text', warning, level);
+        if (level === 'danger' && warning && navigator.vibrate) navigator.vibrate([100, 50, 100]);
     };
 })();
 
@@ -9090,7 +9224,8 @@ function showDoseWarning(elementId, textId, message, level) {
 
 /* ==================== CLOCK FORMAT HINT CSS ==================== */
 // Add a subtle tooltip-style indicator on the clock
-(function() {
+// Wrapped in load event to guarantee toggleClockFormat is defined first
+window.addEventListener('load', function() {
     const widget = document.getElementById('clock-widget');
     if (!widget) return;
     // Add title attribute dynamically based on current format
@@ -9102,11 +9237,13 @@ function showDoseWarning(elementId, textId, message, level) {
     updateTitle();
     // Refresh title after each toggle
     const _origToggle = window.toggleClockFormat;
-    window.toggleClockFormat = function() {
-        if (_origToggle) _origToggle.apply(this, arguments);
-        updateTitle();
-    };
-})();
+    if (_origToggle) {
+        window.toggleClockFormat = function() {
+            _origToggle.apply(this, arguments);
+            updateTitle();
+        };
+    }
+});
 
 </script>
 
