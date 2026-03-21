@@ -3764,20 +3764,21 @@ input[type="checkbox"]:focus-visible {
     width: 0;
     background: #2d5a27;
     border-radius: 99px;
-    animation: splashLoad 0.8s 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+    animation: splashLoad 1.1s 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
 }
 @keyframes splashLoad {
     0%   { width: 0%; }
     100% { width: 100%; }
 }
-/* Hide on desktop — splash is a mobile experience */
-@media (min-width: 641px) {
+/* Hide on wide desktop monitors only (>= 1024px = laptop+) */
+@media (min-width: 1024px) {
     #app-splash { display: none !important; }
 }
 /* Fade-out state applied by JS */
 #app-splash.splash-out {
     opacity: 0;
     pointer-events: none;
+    transition: opacity 0.6s ease;
 }
 
 /* ── Mobile: no strip, no rectangle behind search ── */
@@ -5353,15 +5354,27 @@ function initializeApp() {
 }
 
 function dismissSplash() {
-    // Only on mobile
-    if (window.innerWidth >= 641) return;
     const splash = document.getElementById('app-splash');
     if (!splash) return;
-    // Wait at minimum 1.1s so the bar animation completes, then fade out
-    const delay = Math.max(0, 1100 - performance.now());
+
+    // Don't show on wide desktop monitors
+    if (window.innerWidth >= 1024 && !window.matchMedia('(display-mode: standalone)').matches) {
+        splash.style.display = 'none';
+        return;
+    }
+
+    // Minimum display time = 1.6s so the bar + logo animations complete fully.
+    // performance.now() tells us how long since page load — if JS was slow,
+    // we reduce the wait so the splash doesn't hang forever.
+    const MIN_MS = 1600;
+    const elapsed = performance.now();
+    const delay = Math.max(0, MIN_MS - elapsed);
+
     setTimeout(() => {
         splash.classList.add('splash-out');
-        setTimeout(() => { splash.style.display = 'none'; }, 520);
+        setTimeout(() => {
+            splash.style.display = 'none';
+        }, 600); // match the CSS transition duration
     }, delay);
 }
 
