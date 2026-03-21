@@ -1,13 +1,13 @@
 {
-  "name": "MedConvert \u2014 Offline Medical Toolkit",
+  "name": "MedConvert — Offline Medical Toolkit",
   "short_name": "MedConvert",
   "id": "/Med-Calc/",
-  "description": "Offline medical calculator toolkit \u2014 dosage, IV drip, vitals, pediatric, and lab reference.",
+  "description": "Offline medical calculator toolkit — dosage, IV drip, vitals, pediatric, and lab reference.",
   "start_url": "/Med-Calc/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#f5f0e8",
-  "theme_color": "#2d5a27",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "lang": "en",
   "categories": [
     "medical",
