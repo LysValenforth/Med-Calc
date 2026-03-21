@@ -60,7 +60,7 @@ const OFFLINE_HTML = `<!DOCTYPE html>
     <rect x="28" y="10" width="8" height="44" rx="4" fill="#2d5a27"/>
     <rect x="10" y="28" width="44" height="8" rx="4" fill="#2d5a27"/>
     <polyline points="12,32 21,32 24,24 28,40 32,16 36,32 40,32 52,32"
-              fill="none" stroke="#9dc990" stroke-width="2.6"
+              fill="none" stroke="#7db870" stroke-width="2.6"
               stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
   <h1>You're offline</h1>

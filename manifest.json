@@ -1,9 +1,9 @@
 {
   "name": "MedConvert \u2014 Offline Medical Toolkit",
   "short_name": "MedConvert",
-  "id": "/",
+  "id": "/Med-Calc/",
   "description": "Offline medical calculator toolkit \u2014 dosage, IV drip, vitals, pediatric, and lab reference.",
-  "start_url": "/",
+  "start_url": "/Med-Calc/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#f5f0e8",
@@ -16,25 +16,25 @@
   ],
   "icons": [
     {
-      "src": "/image/favicon.svg",
+      "src": "/Med-Calc/image/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "/image/icon-192.png",
+      "src": "/Med-Calc/image/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/image/icon-512.png",
+      "src": "/Med-Calc/image/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/image/icon-maskable-512.png",
+      "src": "/Med-Calc/image/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -45,10 +45,10 @@
       "name": "Dosage Calculator",
       "short_name": "Dosage",
       "description": "Weight-based and standard dosage calculations",
-      "url": "/?tab=dosage",
+      "url": "/Med-Calc/?tab=dosage",
       "icons": [
         {
-          "src": "/image/favicon.svg",
+          "src": "/Med-Calc/image/favicon.svg",
           "sizes": "any"
         }
       ]
@@ -57,10 +57,10 @@
       "name": "IV & Drip",
       "short_name": "IV Drip",
       "description": "IV drip rate and infusion calculations",
-      "url": "/?tab=iv",
+      "url": "/Med-Calc/?tab=iv",
       "icons": [
         {
-          "src": "/image/favicon.svg",
+          "src": "/Med-Calc/image/favicon.svg",
           "sizes": "any"
         }
       ]
@@ -69,10 +69,10 @@
       "name": "Drug Reference",
       "short_name": "Drugs",
       "description": "Quick reference for 26 common medications",
-      "url": "/?tab=drugs",
+      "url": "/Med-Calc/?tab=drugs",
       "icons": [
         {
-          "src": "/image/favicon.svg",
+          "src": "/Med-Calc/image/favicon.svg",
           "sizes": "any"
         }
       ]
@@ -81,10 +81,10 @@
       "name": "Quick Notes",
       "short_name": "Notes",
       "description": "Shift notes saved on your device",
-      "url": "/?tab=notes",
+      "url": "/Med-Calc/?tab=notes",
       "icons": [
         {
-          "src": "/image/favicon.svg",
+          "src": "/Med-Calc/image/favicon.svg",
           "sizes": "any"
         }
       ]
