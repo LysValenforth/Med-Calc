@@ -5981,248 +5981,264 @@ input[type="checkbox"]:focus-visible {
         </div>
     </div>
 
-</div><!-- end .dashboard-collapse-wrap -->
-
 <!-- ==================== I&O TRACKER PANEL ==================== -->
 <div id="panel-io" class="calc-card" role="tabpanel">
-  <div class="card-header">
-    <div class="card-header-icon"><svg><use href="#icon-io"/></svg></div>
-    <div><h2 class="card-title">Fluid Balance / I&amp;O</h2>
-    <p class="card-subtitle">Track intake and output for the current shift</p></div>
-  </div>
-  <div style="display:flex;gap:var(--space-3);margin-bottom:var(--space-5);flex-wrap:wrap;align-items:center;">
-    <div style="font-family:var(--font-body);font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">Shift Balance:</div>
-    <div id="io-balance" style="font-family:var(--font-display);font-size:var(--text-xl);font-weight:700;color:var(--forest);">0 mL</div>
-    <button class="btn btn-secondary" style="margin-left:auto;padding:0.3rem 0.75rem;min-height:2rem;font-size:var(--text-xs);" onclick="ioClearAll()">Clear All</button>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5);margin-bottom:var(--space-6);">
-    <div>
-      <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--success);margin-bottom:var(--space-3);font-family:var(--font-body);">↓ Intake</div>
-      <div class="form-row" style="margin-bottom:var(--space-3);">
-        <div class="form-group"><label>Amount (mL)</label><input type="number" inputmode="decimal" id="io-in-amt" placeholder="e.g., 250" step="1"></div>
-        <div class="form-group"><label>Type</label>
-          <select id="io-in-type"><option>IV Fluids</option><option>Oral</option><option>NG Feed</option><option>Blood Products</option><option>Medications</option><option>Other</option></select>
+    <div class="card-header">
+        <div class="card-header-icon"><svg><use href="#icon-io"/></svg></div>
+        <div>
+            <h2 class="card-title">Fluid Balance / I&amp;O</h2>
+            <p class="card-subtitle">Track intake and output for the current shift</p>
         </div>
-      </div>
-      <button class="btn btn-primary btn-full" onclick="ioAdd('in')" style="background:var(--success);border-color:var(--success);">+ Add Intake</button>
     </div>
-    <div>
-      <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--dusty-rose);margin-bottom:var(--space-3);font-family:var(--font-body);">↑ Output</div>
-      <div class="form-row" style="margin-bottom:var(--space-3);">
-        <div class="form-group"><label>Amount (mL)</label><input type="number" inputmode="decimal" id="io-out-amt" placeholder="e.g., 150" step="1"></div>
-        <div class="form-group"><label>Type</label>
-          <select id="io-out-type"><option>Urine</option><option>NG Drain</option><option>Vomit</option><option>Wound Drain</option><option>Stool</option><option>Blood Loss</option><option>Other</option></select>
+    <div style="display:flex;gap:var(--space-3);margin-bottom:var(--space-5);flex-wrap:wrap;align-items:center;">
+        <div style="font-family:var(--font-body);font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">Shift Balance:</div>
+        <div id="io-balance" style="font-family:var(--font-display);font-size:var(--text-xl);font-weight:700;color:var(--forest);">0 mL</div>
+        <button class="btn btn-secondary" style="margin-left:auto;padding:0.3rem 0.75rem;min-height:2rem;font-size:var(--text-xs);" onclick="ioClearAll()">Clear All</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5);margin-bottom:var(--space-6);">
+        <div>
+            <div class="section-heading" style="color:var(--success);">↓ Intake</div>
+            <div class="form-row" style="margin-bottom:var(--space-3);">
+                <div class="form-group"><label>Amount (mL)</label><input type="number" inputmode="decimal" id="io-in-amt" placeholder="e.g., 250" step="1"></div>
+                <div class="form-group"><label>Type</label>
+                    <select id="io-in-type"><option>IV Fluids</option><option>Oral</option><option>NG Feed</option><option>Blood Products</option><option>Medications</option><option>Other</option></select>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="ioAdd('in')" style="background:var(--success);border-color:var(--success);">+ Add Intake</button>
         </div>
-      </div>
-      <button class="btn btn-primary btn-full" onclick="ioAdd('out')" style="background:var(--dusty-rose);border-color:var(--dusty-rose);">+ Add Output</button>
+        <div>
+            <div class="section-heading" style="color:var(--dusty-rose);">↑ Output</div>
+            <div class="form-row" style="margin-bottom:var(--space-3);">
+                <div class="form-group"><label>Amount (mL)</label><input type="number" inputmode="decimal" id="io-out-amt" placeholder="e.g., 150" step="1"></div>
+                <div class="form-group"><label>Type</label>
+                    <select id="io-out-type"><option>Urine</option><option>NG Drain</option><option>Vomit</option><option>Wound Drain</option><option>Stool</option><option>Blood Loss</option><option>Other</option></select>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="ioAdd('out')" style="background:var(--dusty-rose);border-color:var(--dusty-rose);">+ Add Output</button>
+        </div>
     </div>
-  </div>
-  <div id="io-log" style="display:flex;flex-direction:column;gap:var(--space-2);max-height:320px;overflow-y:auto;"></div>
-  <div class="info-box" style="margin-top:var(--space-5);"><p><strong>Positive balance</strong> = more in than out. <strong>Negative</strong> = more out. Target varies by clinical context — check orders for fluid goals.</p></div>
+    <div id="io-log" style="display:flex;flex-direction:column;gap:var(--space-2);max-height:320px;overflow-y:auto;"></div>
+    <div class="info-box" style="margin-top:var(--space-5);"><p><strong>Positive balance</strong> = more in than out. <strong>Negative</strong> = more out. Target varies by clinical context — check orders for fluid goals.</p></div>
 </div>
 
 <!-- ==================== HANDOVER PANEL ==================== -->
 <div id="panel-handover" class="calc-card" role="tabpanel">
-  <div class="card-header">
-    <div class="card-header-icon"><svg><use href="#icon-handover"/></svg></div>
-    <div><h2 class="card-title">Patient Handover Builder</h2>
-    <p class="card-subtitle">Build a structured SBAR handover for each patient</p></div>
-  </div>
-  <div style="display:flex;gap:var(--space-3);margin-bottom:var(--space-5);flex-wrap:wrap;">
-    <button class="btn btn-primary" onclick="handoverAdd()">+ Add Patient</button>
-    <button class="btn btn-secondary" onclick="handoverCopyAll()">Copy All</button>
-    <button class="btn btn-secondary" onclick="handoverPrint()">Print</button>
-    <button class="btn btn-secondary" style="color:var(--dusty-rose);border-color:rgba(158,79,66,0.3);" onclick="handoverClearAll()">Clear</button>
-  </div>
-  <div id="handover-list" style="display:flex;flex-direction:column;gap:var(--space-4);"></div>
-  <div class="multi-timer-empty" id="handover-empty" style="margin-top:var(--space-4);">No patients yet — tap <strong>+ Add Patient</strong> to start building your handover list.</div>
+    <div class="card-header">
+        <div class="card-header-icon"><svg><use href="#icon-handover"/></svg></div>
+        <div>
+            <h2 class="card-title">Patient Handover Builder</h2>
+            <p class="card-subtitle">Build a structured SBAR handover for each patient</p>
+        </div>
+    </div>
+    <div style="display:flex;gap:var(--space-3);margin-bottom:var(--space-5);flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="handoverAdd()">+ Add Patient</button>
+        <button class="btn btn-secondary" onclick="handoverCopyAll()">Copy All</button>
+        <button class="btn btn-secondary" onclick="handoverPrint()">Print</button>
+        <button class="btn btn-secondary" style="color:var(--dusty-rose);border-color:rgba(158,79,66,0.3);" onclick="handoverClearAll()">Clear</button>
+    </div>
+    <div id="handover-list" style="display:flex;flex-direction:column;gap:var(--space-4);"></div>
+    <div class="multi-timer-empty" id="handover-empty" style="margin-top:var(--space-4);">No patients yet — tap <strong>+ Add Patient</strong> to start building your handover list.</div>
 </div>
 
 <!-- ==================== MED DUE TRACKER PANEL ==================== -->
 <div id="panel-meddue" class="calc-card" role="tabpanel">
-  <div class="card-header">
-    <div class="card-header-icon"><svg><use href="#icon-clock"/></svg></div>
-    <div><h2 class="card-title">Medication Due Tracker</h2>
-    <p class="card-subtitle">Enter time last given + frequency to see next dose time</p></div>
-  </div>
-  <div class="form-row" style="margin-bottom:var(--space-4);">
-    <div class="form-group"><label>Drug Name</label><input type="text" id="med-name" placeholder="e.g., Metoprolol 25 mg" autocomplete="off"></div>
-    <div class="form-group"><label>Last Given</label><input type="time" id="med-last-given"></div>
-    <div class="form-group"><label>Frequency</label>
-      <select id="med-freq">
-        <option value="4">q4h — Every 4 hours</option>
-        <option value="6">q6h — Every 6 hours</option>
-        <option value="8">q8h — Every 8 hours</option>
-        <option value="12">q12h — Every 12 hours</option>
-        <option value="24">q24h — Once daily</option>
-        <option value="48">q48h — Every 48 hours</option>
-        <option value="72">q72h — Every 72 hours</option>
-        <option value="1">qh — Every hour</option>
-        <option value="2">q2h — Every 2 hours</option>
-      </select>
+    <div class="card-header">
+        <div class="card-header-icon"><svg><use href="#icon-clock"/></svg></div>
+        <div>
+            <h2 class="card-title">Medication Due Tracker</h2>
+            <p class="card-subtitle">Enter time last given + frequency to see next dose time</p>
+        </div>
     </div>
-  </div>
-  <div class="form-group" style="margin-bottom:var(--space-5);">
-    <label>Patient / Bed (optional)</label>
-    <input type="text" id="med-patient" placeholder="e.g., Bed 4 — Smith" autocomplete="off">
-  </div>
-  <button class="btn btn-primary btn-full" onclick="medDueAdd()">Track This Medication</button>
-  <div id="meddue-list" style="display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-5);"></div>
-  <div class="multi-timer-empty" id="meddue-empty" style="margin-top:var(--space-4);">No medications tracked yet. Add one above to see next-due times.</div>
+    <div class="form-row" style="margin-bottom:var(--space-4);">
+        <div class="form-group"><label>Drug Name</label><input type="text" id="med-name" placeholder="e.g., Metoprolol 25 mg" autocomplete="off"></div>
+        <div class="form-group"><label>Last Given</label><input type="time" id="med-last-given"></div>
+        <div class="form-group"><label>Frequency</label>
+            <select id="med-freq">
+                <option value="4">q4h — Every 4 hours</option>
+                <option value="6">q6h — Every 6 hours</option>
+                <option value="8">q8h — Every 8 hours</option>
+                <option value="12">q12h — Every 12 hours</option>
+                <option value="24">q24h — Once daily</option>
+                <option value="48">q48h — Every 48 hours</option>
+                <option value="72">q72h — Every 72 hours</option>
+                <option value="1">qh — Every hour</option>
+                <option value="2">q2h — Every 2 hours</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group" style="margin-bottom:var(--space-5);">
+        <label>Patient / Bed (optional)</label>
+        <input type="text" id="med-patient" placeholder="e.g., Bed 4 — Smith" autocomplete="off">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="medDueAdd()">Track This Medication</button>
+    <div id="meddue-list" style="display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-5);"></div>
+    <div class="multi-timer-empty" id="meddue-empty" style="margin-top:var(--space-4);">No medications tracked yet. Add one above to see next-due times.</div>
 </div>
 
 <!-- ==================== NEWS2 PANEL ==================== -->
 <div id="panel-news2" class="calc-card" role="tabpanel">
-  <div class="card-header">
-    <div class="card-header-icon"><svg><use href="#icon-warning"/></svg></div>
-    <div><h2 class="card-title">NEWS2 Score</h2>
-    <p class="card-subtitle">National Early Warning Score 2 — deterioration detection</p></div>
-  </div>
-  <div class="form-row">
-    <div class="form-group"><label>Respiratory Rate (breaths/min)</label><input type="number" inputmode="decimal" id="news-rr" placeholder="e.g., 18" step="1" onchange="calcNEWS2()"></div>
-    <div class="form-group"><label>SpO₂ (%)</label><input type="number" inputmode="decimal" id="news-spo2" placeholder="e.g., 98" step="1" onchange="calcNEWS2()"></div>
-    <div class="form-group"><label>Supplemental O₂?</label>
-      <select id="news-o2" onchange="calcNEWS2()"><option value="0">No (room air)</option><option value="2">Yes (any O₂)</option></select>
+    <div class="card-header">
+        <div class="card-header-icon"><svg><use href="#icon-warning"/></svg></div>
+        <div>
+            <h2 class="card-title">NEWS2 Score</h2>
+            <p class="card-subtitle">National Early Warning Score 2 — deterioration detection</p>
+        </div>
     </div>
-  </div>
-  <div class="form-row">
-    <div class="form-group"><label>Systolic BP (mmHg)</label><input type="number" inputmode="decimal" id="news-sbp" placeholder="e.g., 120" step="1" onchange="calcNEWS2()"></div>
-    <div class="form-group"><label>Heart Rate (bpm)</label><input type="number" inputmode="decimal" id="news-hr" placeholder="e.g., 80" step="1" onchange="calcNEWS2()"></div>
-    <div class="form-group"><label>Temperature (°C)</label><input type="number" inputmode="decimal" id="news-temp" placeholder="e.g., 36.8" step="0.1" onchange="calcNEWS2()"></div>
-  </div>
-  <div class="form-row">
-    <div class="form-group"><label>AVPU Level</label>
-      <select id="news-avpu" onchange="calcNEWS2()">
-        <option value="0">A — Alert</option>
-        <option value="3">C — Confused (new)</option>
-        <option value="3">V — Responds to Voice</option>
-        <option value="3">P — Responds to Pain</option>
-        <option value="3">U — Unresponsive</option>
-      </select>
+    <div class="form-row">
+        <div class="form-group"><label>Respiratory Rate (breaths/min)</label><input type="number" inputmode="decimal" id="news-rr" placeholder="e.g., 18" step="1" oninput="calcNEWS2()"></div>
+        <div class="form-group"><label>SpO₂ (%)</label><input type="number" inputmode="decimal" id="news-spo2" placeholder="e.g., 98" step="1" oninput="calcNEWS2()"></div>
+        <div class="form-group"><label>Supplemental O₂?</label>
+            <select id="news-o2" onchange="calcNEWS2()"><option value="0">No (room air)</option><option value="2">Yes (any O₂)</option></select>
+        </div>
     </div>
-    <div class="form-group"><label>SpO₂ Scale (for hypercapnic risk)</label>
-      <select id="news-scale" onchange="calcNEWS2()"><option value="1">Scale 1 (standard)</option><option value="2">Scale 2 (COPD/hypercapnic risk)</option></select>
+    <div class="form-row">
+        <div class="form-group"><label>Systolic BP (mmHg)</label><input type="number" inputmode="decimal" id="news-sbp" placeholder="e.g., 120" step="1" oninput="calcNEWS2()"></div>
+        <div class="form-group"><label>Heart Rate (bpm)</label><input type="number" inputmode="decimal" id="news-hr" placeholder="e.g., 80" step="1" oninput="calcNEWS2()"></div>
+        <div class="form-group"><label>Temperature (°C)</label><input type="number" inputmode="decimal" id="news-temp" placeholder="e.g., 36.8" step="0.1" oninput="calcNEWS2()"></div>
     </div>
-  </div>
-  <div class="result-display result-neutral show" id="news2-result" style="margin-top:var(--space-5);">
-    <div class="result-label">NEWS2 Score</div>
-    <div class="result-value" id="news2-score">—</div>
-    <div class="result-note" id="news2-action"></div>
-    <div class="result-interpretation" id="news2-breakdown"></div>
-  </div>
-  <div class="info-box" style="margin-top:var(--space-5);"><p><strong>Score 0–4:</strong> Low — routine monitoring. <strong>3 in single param or 5–6 total:</strong> Medium — urgent review. <strong>7+:</strong> High — emergency response team.</p></div>
+    <div class="form-row">
+        <div class="form-group"><label>AVPU Level</label>
+            <select id="news-avpu" onchange="calcNEWS2()">
+                <option value="0">A — Alert</option>
+                <option value="3">C — Confused (new)</option>
+                <option value="3">V — Responds to Voice</option>
+                <option value="3">P — Responds to Pain</option>
+                <option value="3">U — Unresponsive</option>
+            </select>
+        </div>
+        <div class="form-group"><label>SpO₂ Scale</label>
+            <select id="news-scale" onchange="calcNEWS2()"><option value="1">Scale 1 (standard)</option><option value="2">Scale 2 (COPD/hypercapnic risk)</option></select>
+        </div>
+    </div>
+    <div class="result-display result-neutral show" id="news2-result" style="margin-top:var(--space-5);">
+        <div class="result-label">NEWS2 Score</div>
+        <div class="result-value" id="news2-score">—</div>
+        <div class="result-note" id="news2-action"></div>
+        <div class="result-interpretation" id="news2-breakdown"></div>
+    </div>
+    <div class="info-box" style="margin-top:var(--space-5);"><p><strong>Score 0–4:</strong> Low — routine monitoring. <strong>3 in single param or 5–6 total:</strong> Medium — urgent review. <strong>7+:</strong> High — emergency response team.</p></div>
 </div>
 
 <!-- ==================== qSOFA PANEL ==================== -->
 <div id="panel-qsofa" class="calc-card" role="tabpanel">
-  <div class="card-header">
-    <div class="card-header-icon"><svg><use href="#icon-flag"/></svg></div>
-    <div><h2 class="card-title">Sepsis Screening (qSOFA)</h2>
-    <p class="card-subtitle">Quick SOFA — bedside sepsis risk tool</p></div>
-  </div>
-  <div style="display:flex;flex-direction:column;gap:var(--space-4);margin-bottom:var(--space-6);">
-    <label style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4);background:var(--bg-input);border:1.5px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;">
-      <input type="checkbox" id="qsofa-rr" onchange="calcQSOFA()" style="width:1.25rem;height:1.25rem;accent-color:var(--sage);flex-shrink:0;">
-      <div><div style="font-weight:700;color:var(--text-primary);font-family:var(--font-body);">Respiratory Rate ≥ 22 breaths/min</div>
-      <div style="font-size:var(--text-xs);color:var(--text-muted);font-family:var(--font-body);margin-top:2px;">1 point</div></div>
-    </label>
-    <label style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4);background:var(--bg-input);border:1.5px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;">
-      <input type="checkbox" id="qsofa-ms" onchange="calcQSOFA()" style="width:1.25rem;height:1.25rem;accent-color:var(--sage);flex-shrink:0;">
-      <div><div style="font-weight:700;color:var(--text-primary);font-family:var(--font-body);">Altered Mental Status (GCS &lt; 15)</div>
-      <div style="font-size:var(--text-xs);color:var(--text-muted);font-family:var(--font-body);margin-top:2px;">1 point</div></div>
-    </label>
-    <label style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4);background:var(--bg-input);border:1.5px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;">
-      <input type="checkbox" id="qsofa-sbp" onchange="calcQSOFA()" style="width:1.25rem;height:1.25rem;accent-color:var(--sage);flex-shrink:0;">
-      <div><div style="font-weight:700;color:var(--text-primary);font-family:var(--font-body);">Systolic BP ≤ 100 mmHg</div>
-      <div style="font-size:var(--text-xs);color:var(--text-muted);font-family:var(--font-body);margin-top:2px;">1 point</div></div>
-    </label>
-  </div>
-  <div class="result-display result-neutral show" id="qsofa-result">
-    <div class="result-label">qSOFA Score</div>
-    <div class="result-value" id="qsofa-score">0 / 3</div>
-    <div class="result-note" id="qsofa-interp">Check boxes above to calculate</div>
-  </div>
-  <div class="info-box" style="margin-top:var(--space-5);"><p><strong>Score ≥ 2:</strong> Suspect sepsis — reassess for organ dysfunction, obtain lactate, cultures, consider escalation. qSOFA is a screening tool, not a diagnostic criterion.</p></div>
+    <div class="card-header">
+        <div class="card-header-icon"><svg><use href="#icon-flag"/></svg></div>
+        <div>
+            <h2 class="card-title">Sepsis Screening (qSOFA)</h2>
+            <p class="card-subtitle">Quick SOFA — bedside sepsis risk tool</p>
+        </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:var(--space-4);margin-bottom:var(--space-6);">
+        <label style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4);background:var(--bg-input);border:1.5px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;">
+            <input type="checkbox" id="qsofa-rr" onchange="calcQSOFA()" style="width:1.25rem;height:1.25rem;accent-color:var(--sage);flex-shrink:0;">
+            <div><div style="font-weight:700;color:var(--text-primary);font-family:var(--font-body);">Respiratory Rate ≥ 22 breaths/min</div>
+            <div style="font-size:var(--text-xs);color:var(--text-muted);font-family:var(--font-body);margin-top:2px;">1 point</div></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4);background:var(--bg-input);border:1.5px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;">
+            <input type="checkbox" id="qsofa-ms" onchange="calcQSOFA()" style="width:1.25rem;height:1.25rem;accent-color:var(--sage);flex-shrink:0;">
+            <div><div style="font-weight:700;color:var(--text-primary);font-family:var(--font-body);">Altered Mental Status (GCS &lt; 15)</div>
+            <div style="font-size:var(--text-xs);color:var(--text-muted);font-family:var(--font-body);margin-top:2px;">1 point</div></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4);background:var(--bg-input);border:1.5px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;">
+            <input type="checkbox" id="qsofa-sbp" onchange="calcQSOFA()" style="width:1.25rem;height:1.25rem;accent-color:var(--sage);flex-shrink:0;">
+            <div><div style="font-weight:700;color:var(--text-primary);font-family:var(--font-body);">Systolic BP ≤ 100 mmHg</div>
+            <div style="font-size:var(--text-xs);color:var(--text-muted);font-family:var(--font-body);margin-top:2px;">1 point</div></div>
+        </label>
+    </div>
+    <div class="result-display result-neutral show" id="qsofa-result">
+        <div class="result-label">qSOFA Score</div>
+        <div class="result-value" id="qsofa-score">0 / 3</div>
+        <div class="result-note" id="qsofa-interp">Check boxes above to calculate</div>
+    </div>
+    <div class="info-box" style="margin-top:var(--space-5);"><p><strong>Score ≥ 2:</strong> Suspect sepsis — reassess for organ dysfunction, obtain lactate, cultures, consider escalation. qSOFA is a screening tool, not a diagnostic criterion.</p></div>
 </div>
 
 <!-- ==================== ECG GUIDE PANEL ==================== -->
 <div id="panel-ecg" class="calc-card" role="tabpanel">
-  <div class="card-header">
-    <div class="card-header-icon"><svg><use href="#icon-heart"/></svg></div>
-    <div><h2 class="card-title">ECG Rhythm Guide</h2>
-    <p class="card-subtitle">Quick reference for common rhythms and intervals</p></div>
-  </div>
-  <div class="sub-tabs">
-    <button class="sub-tab active" onclick="showSubPanel('ecg-rhythms')">Rhythms</button>
-    <button class="sub-tab" onclick="showSubPanel('ecg-intervals')">Intervals</button>
-    <button class="sub-tab" onclick="showSubPanel('ecg-approach')">Approach</button>
-  </div>
-  <div id="sub-ecg-rhythms" class="sub-panel active">
-    <div id="ecg-rhythm-list" style="display:flex;flex-direction:column;gap:var(--space-3);"></div>
-  </div>
-  <div id="sub-ecg-intervals" class="sub-panel">
-    <div id="ecg-interval-list" style="display:flex;flex-direction:column;gap:var(--space-3);"></div>
-    <div class="form-row" style="margin-top:var(--space-6);">
-      <div class="form-group"><label>QT Interval (ms)</label><input type="number" inputmode="decimal" id="qtc-qt" placeholder="e.g., 400" step="1"></div>
-      <div class="form-group"><label>RR Interval (ms)</label><input type="number" inputmode="decimal" id="qtc-rr" placeholder="e.g., 800" step="1"></div>
+    <div class="card-header">
+        <div class="card-header-icon"><svg><use href="#icon-heart"/></svg></div>
+        <div>
+            <h2 class="card-title">ECG Rhythm Guide</h2>
+            <p class="card-subtitle">Quick reference for common rhythms and intervals</p>
+        </div>
     </div>
-    <button class="btn btn-primary btn-full" onclick="calcQTc()">Calculate QTc (Bazett)</button>
-    <div class="result-display result-neutral show" id="qtc-result" style="margin-top:var(--space-4);display:none;">
-      <div class="result-label">Corrected QT (QTc)</div>
-      <div class="result-value" id="qtc-value">—</div>
-      <div class="result-note" id="qtc-note"></div>
+    <div class="sub-tabs">
+        <button class="sub-tab active" onclick="showSubPanel('ecg-rhythms')">Rhythms</button>
+        <button class="sub-tab" onclick="showSubPanel('ecg-intervals')">Intervals</button>
+        <button class="sub-tab" onclick="showSubPanel('ecg-approach')">Approach</button>
     </div>
-  </div>
-  <div id="sub-ecg-approach" class="sub-panel">
-    <div id="ecg-approach-list" style="display:flex;flex-direction:column;gap:var(--space-3);"></div>
-  </div>
+    <div id="sub-ecg-rhythms" class="sub-panel active">
+        <div id="ecg-rhythm-list" style="display:flex;flex-direction:column;gap:var(--space-3);"></div>
+    </div>
+    <div id="sub-ecg-intervals" class="sub-panel">
+        <div id="ecg-interval-list" style="display:flex;flex-direction:column;gap:var(--space-3);"></div>
+        <div class="form-row" style="margin-top:var(--space-6);">
+            <div class="form-group"><label>QT Interval (ms)</label><input type="number" inputmode="decimal" id="qtc-qt" placeholder="e.g., 400" step="1"></div>
+            <div class="form-group"><label>RR Interval (ms)</label><input type="number" inputmode="decimal" id="qtc-rr" placeholder="e.g., 800" step="1"></div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="calcQTc()">Calculate QTc (Bazett)</button>
+        <div class="result-display result-neutral show" id="qtc-result" style="margin-top:var(--space-4);display:none;">
+            <div class="result-label">Corrected QT (QTc)</div>
+            <div class="result-value" id="qtc-value">—</div>
+            <div class="result-note" id="qtc-note"></div>
+        </div>
+    </div>
+    <div id="sub-ecg-approach" class="sub-panel">
+        <div id="ecg-approach-list" style="display:flex;flex-direction:column;gap:var(--space-3);"></div>
+    </div>
 </div>
 
 <!-- ==================== CRASH CART PANEL ==================== -->
 <div id="panel-crashcart" class="calc-card" role="tabpanel">
-  <div class="card-header">
-    <div class="card-header-icon"><svg><use href="#icon-crash"/></svg></div>
-    <div><h2 class="card-title">Crash Cart Reference</h2>
-    <p class="card-subtitle">Emergency weight-based drug doses — ACLS/ALS</p></div>
-  </div>
-  <div class="form-row" style="margin-bottom:var(--space-5);">
-    <div class="form-group"><label>Patient Weight (kg) <span style="font-size:0.65rem;color:var(--sage);font-weight:600;" id="crash-weight-autofill"></span></label>
-      <input type="number" inputmode="decimal" id="crash-weight" placeholder="e.g., 70" step="1" oninput="renderCrashCart()">
+    <div class="card-header">
+        <div class="card-header-icon"><svg><use href="#icon-crash"/></svg></div>
+        <div>
+            <h2 class="card-title">Crash Cart Reference</h2>
+            <p class="card-subtitle">Emergency weight-based drug doses — ACLS/ALS</p>
+        </div>
     </div>
-    <div class="form-group"><label>Age Group</label>
-      <select id="crash-age-group" onchange="renderCrashCart()"><option value="adult">Adult</option><option value="peds">Paediatric</option></select>
+    <div class="form-row" style="margin-bottom:var(--space-5);">
+        <div class="form-group">
+            <label>Patient Weight (kg) <span style="font-size:0.65rem;color:var(--sage);font-weight:600;" id="crash-weight-autofill"></span></label>
+            <input type="number" inputmode="decimal" id="crash-weight" placeholder="e.g., 70" step="1" oninput="renderCrashCart()">
+        </div>
+        <div class="form-group"><label>Age Group</label>
+            <select id="crash-age-group" onchange="renderCrashCart()"><option value="adult">Adult</option><option value="peds">Paediatric</option></select>
+        </div>
     </div>
-  </div>
-  <div id="crash-cart-list" style="display:flex;flex-direction:column;gap:var(--space-3);"></div>
+    <div id="crash-cart-list" style="display:flex;flex-direction:column;gap:var(--space-3);"></div>
 </div>
 
 <!-- ==================== IV COMPATIBILITY PANEL ==================== -->
 <div id="panel-ivcompat" class="calc-card" role="tabpanel">
-  <div class="card-header">
-    <div class="card-header-icon"><svg><use href="#icon-compat"/></svg></div>
-    <div><h2 class="card-title">IV Compatibility</h2>
-    <p class="card-subtitle">Common IV drug compatibility reference</p></div>
-  </div>
-  <div class="form-row" style="margin-bottom:var(--space-5);">
-    <div class="form-group"><label>Drug 1</label>
-      <select id="compat-drug1" onchange="checkCompat()"><option value="">Select drug…</option></select>
+    <div class="card-header">
+        <div class="card-header-icon"><svg><use href="#icon-compat"/></svg></div>
+        <div>
+            <h2 class="card-title">IV Compatibility</h2>
+            <p class="card-subtitle">Common IV drug compatibility reference</p>
+        </div>
     </div>
-    <div class="form-group"><label>Drug 2</label>
-      <select id="compat-drug2" onchange="checkCompat()"><option value="">Select drug…</option></select>
+    <div class="form-row" style="margin-bottom:var(--space-5);">
+        <div class="form-group"><label>Drug 1</label>
+            <select id="compat-drug1" onchange="checkCompat()"><option value="">Select drug…</option></select>
+        </div>
+        <div class="form-group"><label>Drug 2</label>
+            <select id="compat-drug2" onchange="checkCompat()"><option value="">Select drug…</option></select>
+        </div>
     </div>
-  </div>
-  <div id="compat-result" style="display:none;" class="result-display result-neutral show">
-    <div class="result-label">Compatibility</div>
-    <div class="result-value" id="compat-verdict">—</div>
-    <div class="result-note" id="compat-note"></div>
-  </div>
-  <div style="margin-top:var(--space-6);">
-    <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:var(--space-4);font-family:var(--font-body);">Full Compatibility Matrix</div>
-    <div id="compat-matrix" style="overflow-x:auto;"></div>
-  </div>
-  <div class="info-box" style="margin-top:var(--space-5);"><p><strong>Always verify</strong> with your pharmacy or a current Trissel's reference. Compatibility depends on concentrations, diluents, pH, and temperature. This is a quick reference only.</p></div>
+    <div id="compat-result" style="display:none;" class="result-display result-neutral show">
+        <div class="result-label">Compatibility</div>
+        <div class="result-value" id="compat-verdict">—</div>
+        <div class="result-note" id="compat-note"></div>
+    </div>
+    <div style="margin-top:var(--space-6);">
+        <div class="section-heading">Full Compatibility Matrix</div>
+        <div id="compat-matrix" style="overflow-x:auto;"></div>
+    </div>
+    <div class="info-box" style="margin-top:var(--space-5);"><p><strong>Always verify</strong> with your pharmacy or a current Trissel's reference. Compatibility depends on concentrations, diluents, pH, and temperature. This is a quick reference only.</p></div>
 </div>
 
+</div><!-- end .dashboard-collapse-wrap -->
 </div><!-- end .container -->
 </main><!-- end main#main-content -->
 
