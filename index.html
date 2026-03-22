@@ -15,7 +15,16 @@
     <meta name="theme-color" content="#0d1a0f" media="(prefers-color-scheme: dark)">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Fonts loaded async to avoid FOUT blocking render; system fonts used until ready -->
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"></noscript>
+    <style>
+    /* System font stack active until web fonts arrive — prevents FOUT flash */
+    :root {
+        --font-display: 'Lexend', ui-rounded, 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        --font-body:    'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    }
+    </style>
     <style>
 
 :root {
@@ -3829,11 +3838,12 @@ input[type="checkbox"]:focus-visible {
     font-size: var(--text-sm);
     font-weight: 600;
     line-height: 1.6;
-    border: 2px solid;
+    border: 2px solid transparent;
     align-items: flex-start;
     gap: var(--space-3);
+    visibility: hidden;
 }
-.dose-warning.show { display: flex; }
+.dose-warning.show { display: flex; visibility: visible; }
 .dose-warning svg { width: 1.1rem; height: 1.1rem; flex-shrink: 0; margin-top: 0.1em; }
 .dose-warning.warn-amber { background: var(--warning-bg); border-color: rgba(138,92,24,0.5); color: var(--warning); }
 .dose-warning.warn-red   { background: var(--danger-bg);  border-color: rgba(122,42,34,0.6); color: var(--danger); }
@@ -3974,6 +3984,248 @@ input[type="checkbox"]:focus-visible {
         border-radius: var(--radius-full);
     }
 }
+/* ==================== PATIENT PROFILE BANNER ==================== */
+.patient-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-5);
+    flex-wrap: wrap;
+    cursor: pointer;
+    transition: border-color var(--t-fast), background var(--t-fast);
+    -webkit-tap-highlight-color: transparent;
+}
+.patient-banner:hover { border-color: var(--sage); background: var(--bg-card); }
+.patient-banner-icon {
+    width: 2.25rem; height: 2.25rem;
+    background: var(--moss); border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; border: 1px solid var(--sage);
+}
+.patient-banner-icon svg { width: 1rem; height: 1rem; color: var(--forest); }
+[data-theme="dark"] .patient-banner-icon { background: rgba(122,175,110,0.18); }
+[data-theme="dark"] .patient-banner-icon svg { color: var(--fern); }
+.patient-banner-info { flex: 1; min-width: 0; }
+.patient-banner-label {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.07em; color: var(--text-muted); font-family: var(--font-body);
+}
+.patient-banner-values {
+    display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: 2px;
+}
+.patient-banner-chip {
+    font-size: var(--text-xs); font-weight: 700; color: var(--forest);
+    font-family: var(--font-body); white-space: nowrap;
+}
+[data-theme="dark"] .patient-banner-chip { color: var(--fern); }
+.patient-banner-chip span { font-weight: 400; color: var(--text-secondary); }
+.patient-banner-empty {
+    font-size: var(--text-xs); color: var(--text-muted); font-family: var(--font-body);
+    font-style: italic;
+}
+.patient-banner-edit {
+    font-size: var(--text-2xs); font-weight: 700; color: var(--sage);
+    font-family: var(--font-body); flex-shrink: 0; letter-spacing: 0.04em;
+}
+
+/* Patient profile modal */
+.patient-modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,25,14,0.72); backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px); z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    padding: var(--space-6); opacity: 0; transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+.patient-modal-overlay.visible { opacity: 1; pointer-events: auto; }
+.patient-modal-card {
+    background: var(--bg-card); border-radius: var(--radius-2xl);
+    padding: var(--space-8); max-width: 440px; width: 100%;
+    border: var(--outline-card);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+    transform: translateY(16px) scale(0.97);
+    transition: transform var(--t-spring);
+}
+.patient-modal-overlay.visible .patient-modal-card { transform: translateY(0) scale(1); }
+.patient-modal-title {
+    font-family: var(--font-display); font-size: var(--text-xl);
+    font-weight: 700; color: var(--forest); margin-bottom: var(--space-2);
+}
+[data-theme="dark"] .patient-modal-title { color: var(--fern); }
+.patient-modal-subtitle {
+    font-size: var(--text-sm); color: var(--text-secondary);
+    margin-bottom: var(--space-6); line-height: 1.6; font-family: var(--font-body);
+}
+.patient-modal-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+.patient-egfr-row { margin-bottom: var(--space-4); }
+.patient-egfr-badge {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    margin-top: var(--space-2); padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full); font-size: var(--text-xs);
+    font-weight: 700; font-family: var(--font-body);
+}
+.patient-modal-actions { display: flex; gap: var(--space-3); justify-content: flex-end; }
+
+/* Renal impairment badge on drug cards */
+.drug-renal-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.2em 0.65em;
+    border-radius: var(--radius-full);
+    font-size: 0.68rem; font-weight: 700; font-family: var(--font-body);
+    letter-spacing: 0.03em; white-space: nowrap; flex-shrink: 0;
+}
+.drug-renal-badge.renal-caution {
+    background: var(--warning-bg); color: var(--warning);
+    border: 1px solid rgba(138,92,24,0.35);
+}
+.drug-renal-badge.renal-avoid {
+    background: var(--danger-bg); color: var(--danger);
+    border: 1px solid rgba(122,42,34,0.35);
+}
+.drug-renal-badge.renal-adjust {
+    background: #e8f0fe; color: #2c4fa3;
+    border: 1px solid rgba(44,79,163,0.3);
+}
+[data-theme="dark"] .drug-renal-badge.renal-adjust { background: #1a2240; color: #8aabf7; }
+.drug-renal-badge svg { width: 0.7rem; height: 0.7rem; }
+
+/* ==================== MULTI-TIMER ==================== */
+.multi-timer-section {
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+}
+.multi-timer-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: var(--space-4);
+}
+.multi-timer-label {
+    font-size: var(--text-xs); font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.07em; color: var(--text-muted); font-family: var(--font-body);
+}
+.multi-timer-add-btn {
+    display: inline-flex; align-items: center; gap: var(--space-1);
+    padding: 0.3rem 0.75rem; background: var(--bg-input);
+    border: 1.5px solid var(--border); border-radius: var(--radius-md);
+    font-size: var(--text-xs); font-weight: 700; color: var(--text-secondary);
+    cursor: pointer; font-family: var(--font-body);
+    transition: all var(--t-fast); -webkit-tap-highlight-color: transparent;
+}
+.multi-timer-add-btn:hover { border-color: var(--sage); color: var(--forest); background: var(--bg-card); }
+.multi-timer-add-btn svg { width: 0.8rem; height: 0.8rem; }
+.multi-timer-list { display: flex; flex-direction: column; gap: var(--space-3); }
+.multi-timer-item {
+    display: flex; align-items: center; gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-card); border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--t-fast);
+}
+.multi-timer-item.mt-running { border-color: var(--sage); }
+.multi-timer-item.mt-done { border-color: var(--dusty-rose); background: var(--danger-bg); }
+.mt-name {
+    flex: 1; font-size: var(--text-sm); font-weight: 600;
+    color: var(--text-primary); font-family: var(--font-body);
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mt-display {
+    font-family: var(--font-display); font-size: 1.1rem;
+    font-weight: 700; color: var(--forest); font-variant-numeric: tabular-nums;
+    flex-shrink: 0; min-width: 3.5rem; text-align: right;
+}
+.mt-done .mt-display { color: var(--dusty-rose); }
+[data-theme="dark"] .mt-display { color: var(--fern); }
+.mt-controls { display: flex; gap: var(--space-1); flex-shrink: 0; }
+.mt-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: var(--radius-md);
+    background: var(--bg-input); border: 1px solid var(--border);
+    cursor: pointer; color: var(--text-muted); transition: all var(--t-fast);
+    -webkit-tap-highlight-color: transparent;
+}
+.mt-btn:hover { border-color: var(--sage); color: var(--forest); background: var(--bg-hover); }
+.mt-btn svg { width: 0.875rem; height: 0.875rem; }
+.mt-btn.mt-stop { color: var(--dusty-rose); }
+.mt-btn.mt-stop:hover { border-color: var(--dusty-rose); background: var(--danger-bg); }
+.multi-timer-empty {
+    text-align: center; font-size: var(--text-sm); color: var(--text-muted);
+    font-family: var(--font-body); padding: var(--space-4);
+    border: 2px dashed var(--linen); border-radius: var(--radius-lg);
+    line-height: 1.6;
+}
+
+/* ==================== QR SHARE MODAL ==================== */
+.qr-modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,25,14,0.72); backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px); z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    padding: var(--space-6); opacity: 0; transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+.qr-modal-overlay.visible { opacity: 1; pointer-events: auto; }
+.qr-modal-card {
+    background: var(--bg-card); border-radius: var(--radius-2xl);
+    padding: var(--space-8); max-width: 360px; width: 100%;
+    border: var(--outline-card); box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+    text-align: center; transform: translateY(16px) scale(0.97);
+    transition: transform var(--t-spring);
+}
+.qr-modal-overlay.visible .qr-modal-card { transform: translateY(0) scale(1); }
+.qr-canvas-wrap {
+    background: #fff; border-radius: var(--radius-lg);
+    padding: var(--space-4); display: inline-block;
+    margin: var(--space-5) 0; border: 2px solid var(--border);
+}
+.qr-modal-title {
+    font-family: var(--font-display); font-size: var(--text-lg);
+    font-weight: 700; color: var(--forest); margin-bottom: var(--space-2);
+}
+[data-theme="dark"] .qr-modal-title { color: var(--fern); }
+.qr-modal-hint {
+    font-size: var(--text-xs); color: var(--text-muted);
+    font-family: var(--font-body); line-height: 1.6; margin-bottom: var(--space-4);
+}
+.qr-modal-actions { display: flex; gap: var(--space-3); justify-content: center; }
+
+/* ==================== VANCOMYCIN / AMINOGLYCOSIDE CALC ==================== */
+.vanco-result-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: var(--space-4); margin-top: var(--space-5);
+}
+.vanco-result-card {
+    background: var(--bg-input); border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg); padding: var(--space-4);
+    text-align: center;
+}
+.vanco-result-card-label {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.07em; color: var(--text-muted);
+    font-family: var(--font-body); margin-bottom: var(--space-2);
+}
+.vanco-result-card-value {
+    font-family: var(--font-display); font-size: 1.4rem;
+    font-weight: 700; color: var(--forest); font-variant-numeric: tabular-nums;
+}
+[data-theme="dark"] .vanco-result-card-value { color: var(--fern); }
+.vanco-result-card.vc-target .vanco-result-card-value { color: var(--success); }
+.vanco-result-card.vc-warn .vanco-result-card-value { color: var(--warning); }
+.vanco-result-card.vc-danger .vanco-result-card-value { color: var(--danger); }
+
+/* autofill pulse animation */
+@keyframes autofill-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(92,138,82,0.45); }
+    60%  { box-shadow: 0 0 0 6px rgba(92,138,82,0); }
+    100% { box-shadow: 0 0 0 0 rgba(92,138,82,0); }
+}
+.autofilled { animation: autofill-pulse 0.6s ease-out; border-color: var(--sage) !important; }
 </style>
     <script>
     // Font load detection — apply fallback class if fonts unavailable (offline first load)
@@ -4072,6 +4324,38 @@ input[type="checkbox"]:focus-visible {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             Settings
         </button>
+        <button class="more-sheet-item" data-tab="io" onclick="sheetSwitchTab('io')" aria-label="I&O">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M7 7l-5 5 5 5M17 7l5 5-5 5"/></svg>
+            I&amp;O
+        </button>
+        <button class="more-sheet-item" data-tab="handover" onclick="sheetSwitchTab('handover')" aria-label="Handover">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Handover
+        </button>
+        <button class="more-sheet-item" data-tab="meddue" onclick="sheetSwitchTab('meddue')" aria-label="Med Due">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            Med Due
+        </button>
+        <button class="more-sheet-item" data-tab="news2" onclick="sheetSwitchTab('news2')" aria-label="NEWS2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            NEWS2
+        </button>
+        <button class="more-sheet-item" data-tab="qsofa" onclick="sheetSwitchTab('qsofa')" aria-label="qSOFA">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            qSOFA
+        </button>
+        <button class="more-sheet-item" data-tab="ecg" onclick="sheetSwitchTab('ecg')" aria-label="ECG">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 12 6 12 8 6 10 18 12 10 14 14 16 12 22 12"/></svg>
+            ECG
+        </button>
+        <button class="more-sheet-item" data-tab="crashcart" onclick="sheetSwitchTab('crashcart')" aria-label="Crash Cart">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+            Crash Cart
+        </button>
+        <button class="more-sheet-item" data-tab="ivcompat" onclick="sheetSwitchTab('ivcompat')" aria-label="IV Compat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="7"/><circle cx="15" cy="12" r="7"/></svg>
+            IV Compat
+        </button>
     </div>
 </div>
 
@@ -4166,7 +4450,21 @@ input[type="checkbox"]:focus-visible {
     <symbol id="icon-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
     </symbol>
-    <symbol id="icon-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <symbol id="icon-io" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v20M2 12h20M7 7l-5 5 5 5M17 7l5 5-5 5"/>
+    </symbol>
+    <symbol id="icon-handover" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </symbol>
+    <symbol id="icon-ecg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="2 12 6 12 8 6 10 18 12 10 14 14 16 12 22 12"/>
+    </symbol>
+    <symbol id="icon-crash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/>
+    </symbol>
+    <symbol id="icon-compat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="9" cy="12" r="7"/><circle cx="15" cy="12" r="7"/>
+    </symbol>
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
     </symbol>
     <symbol id="icon-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -4303,6 +4601,30 @@ input[type="checkbox"]:focus-visible {
         <button class="tab-btn" data-tab="notes" role="tab" aria-selected="false" aria-controls="panel-notes" id="tab-notes" tabindex="-1">
             <svg aria-hidden="true" focusable="false"><use href="#icon-notes"/></svg> Notes
         </button>
+        <button class="tab-btn" data-tab="io" role="tab" aria-selected="false" aria-controls="panel-io" id="tab-io" tabindex="-1">
+            <svg aria-hidden="true" focusable="false"><use href="#icon-io"/></svg> I&amp;O
+        </button>
+        <button class="tab-btn" data-tab="handover" role="tab" aria-selected="false" aria-controls="panel-handover" id="tab-handover" tabindex="-1">
+            <svg aria-hidden="true" focusable="false"><use href="#icon-handover"/></svg> Handover
+        </button>
+        <button class="tab-btn" data-tab="meddue" role="tab" aria-selected="false" aria-controls="panel-meddue" id="tab-meddue" tabindex="-1">
+            <svg aria-hidden="true" focusable="false"><use href="#icon-clock"/></svg> Med Due
+        </button>
+        <button class="tab-btn" data-tab="news2" role="tab" aria-selected="false" aria-controls="panel-news2" id="tab-news2" tabindex="-1">
+            <svg aria-hidden="true" focusable="false"><use href="#icon-warning"/></svg> NEWS2
+        </button>
+        <button class="tab-btn" data-tab="qsofa" role="tab" aria-selected="false" aria-controls="panel-qsofa" id="tab-qsofa" tabindex="-1">
+            <svg aria-hidden="true" focusable="false"><use href="#icon-flag"/></svg> qSOFA
+        </button>
+        <button class="tab-btn" data-tab="ecg" role="tab" aria-selected="false" aria-controls="panel-ecg" id="tab-ecg" tabindex="-1">
+            <svg aria-hidden="true" focusable="false"><use href="#icon-heart"/></svg> ECG
+        </button>
+        <button class="tab-btn" data-tab="crashcart" role="tab" aria-selected="false" aria-controls="panel-crashcart" id="tab-crashcart" tabindex="-1">
+            <svg aria-hidden="true" focusable="false"><use href="#icon-warning"/></svg> Crash Cart
+        </button>
+        <button class="tab-btn" data-tab="ivcompat" role="tab" aria-selected="false" aria-controls="panel-ivcompat" id="tab-ivcompat" tabindex="-1">
+            <svg aria-hidden="true" focusable="false"><use href="#icon-drip"/></svg> IV Compat
+        </button>
     </nav><div class="tab-fade-right" aria-hidden="true"></div></div>
 
     <!-- Global calculator search -->
@@ -4396,6 +4718,20 @@ input[type="checkbox"]:focus-visible {
                 </svg>
             </button>
         </div>
+
+        <!-- Multi-timer section -->
+        <div class="multi-timer-section">
+            <div class="multi-timer-header">
+                <span class="multi-timer-label">Parallel Timers</span>
+                <button class="multi-timer-add-btn" onclick="addMultiTimer()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add Timer
+                </button>
+            </div>
+            <div class="multi-timer-list" id="multi-timer-list">
+                <div class="multi-timer-empty" id="multi-timer-empty">Add parallel timers to track multiple infusions or obs intervals simultaneously.</div>
+            </div>
+        </div>
     </div>
 
     <!-- ==================== DOSAGE PANEL ==================== -->
@@ -4408,10 +4744,26 @@ input[type="checkbox"]:focus-visible {
             </div>
         </div>
 
+        <!-- Patient Profile Banner -->
+        <div class="patient-banner" id="patient-banner" onclick="openPatientModal()" role="button" tabindex="0" aria-label="Edit current patient profile">
+            <div class="patient-banner-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            </div>
+            <div class="patient-banner-info">
+                <div class="patient-banner-label">Current Patient</div>
+                <div class="patient-banner-values" id="patient-banner-values">
+                    <span class="patient-banner-empty">Tap to add patient — auto-fills weight, age &amp; eGFR</span>
+                </div>
+            </div>
+            <div class="patient-banner-edit">Edit ›</div>
+        </div>
+
         <div class="sub-tabs">
             <button class="sub-tab active" onclick="showSubPanel('dosage-standard')">Standard D/H×Q</button>
             <button class="sub-tab" onclick="showSubPanel('dosage-weight')">Weight-Based</button>
             <button class="sub-tab" onclick="showSubPanel('dosage-bsa')">BSA</button>
+            <button class="sub-tab" onclick="showSubPanel('dosage-vanco')">Vancomycin</button>
+            <button class="sub-tab" onclick="showSubPanel('dosage-aminoglycoside')">Aminoglycoside</button>
         </div>
 
         <!-- Standard Dosage -->
@@ -4438,7 +4790,6 @@ input[type="checkbox"]:focus-visible {
                 <div class="result-note">Double-check using the five rights before administration.</div>
             </div>
             <div class="dose-warning" id="dosage-warning">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 <span id="dosage-warning-text"></span>
             </div>
             <div class="info-box">
@@ -4483,7 +4834,6 @@ input[type="checkbox"]:focus-visible {
                 <div class="result-note" id="weight-dose-note"></div>
             </div>
             <div class="dose-warning" id="weight-dose-warning">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 <span id="weight-dose-warning-text"></span>
             </div>
         </div>
@@ -4528,7 +4878,147 @@ input[type="checkbox"]:focus-visible {
         </div>
     </div>
 
-    <!-- ==================== IV & DRIP PANEL ==================== -->
+        <!-- Vancomycin AUC/MIC -->
+        <div id="sub-dosage-vanco" class="sub-panel">
+            <h3 class="card-subtitle mb-md" style="color:var(--text-primary);font-weight:600;margin-bottom:var(--space-5);">Vancomycin AUC/MIC Dosing</h3>
+            <div class="info-box" style="margin-bottom:var(--space-5);">
+                <p><strong>ASHP/IDSA 2020 Guidelines:</strong> Target AUC₂₄/MIC of <strong>400–600 mg·h/L</strong> (assumes MIC = 1 mg/L). Uses two-level Bayesian estimation.</p>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Patient Weight (kg) <span style="font-size:0.65rem;color:var(--sage);font-weight:600;" id="vanco-weight-autofill"></span></label>
+                    <input type="number" inputmode="decimal" id="vanco-weight" placeholder="e.g., 70" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Age (years) <span style="font-size:0.65rem;color:var(--sage);font-weight:600;" id="vanco-age-autofill"></span></label>
+                    <input type="number" inputmode="decimal" id="vanco-age" placeholder="e.g., 45" step="1">
+                </div>
+                <div class="form-group">
+                    <label>Serum Creatinine (mg/dL)</label>
+                    <input type="number" inputmode="decimal" id="vanco-cr" placeholder="e.g., 1.0" step="0.01">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Sex</label>
+                    <select id="vanco-sex"><option value="male">Male</option><option value="female">Female</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Dose Interval</label>
+                    <select id="vanco-interval">
+                        <option value="8">Every 8 hours (q8h)</option>
+                        <option value="12" selected>Every 12 hours (q12h)</option>
+                        <option value="24">Every 24 hours (q24h)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>MIC (mg/L)</label>
+                    <select id="vanco-mic">
+                        <option value="1" selected>1 mg/L (susceptible)</option>
+                        <option value="0.5">0.5 mg/L</option>
+                        <option value="2">2 mg/L (borderline)</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="calculateVancomycin()">Calculate Vancomycin Dose</button>
+            <div id="vanco-results" style="display:none;margin-top:var(--space-5);">
+                <div class="vanco-result-grid">
+                    <div class="vanco-result-card" id="vc-cl-card">
+                        <div class="vanco-result-card-label">Vanco CL (L/hr)</div>
+                        <div class="vanco-result-card-value" id="vc-cl-val">—</div>
+                    </div>
+                    <div class="vanco-result-card" id="vc-vd-card">
+                        <div class="vanco-result-card-label">Vd (L/kg)</div>
+                        <div class="vanco-result-card-value" id="vc-vd-val">—</div>
+                    </div>
+                    <div class="vanco-result-card" id="vc-dose-card">
+                        <div class="vanco-result-card-label">Recommended Dose</div>
+                        <div class="vanco-result-card-value" id="vc-dose-val">—</div>
+                    </div>
+                    <div class="vanco-result-card" id="vc-auc-card">
+                        <div class="vanco-result-card-label">Predicted AUC₂₄</div>
+                        <div class="vanco-result-card-value" id="vc-auc-val">—</div>
+                    </div>
+                </div>
+                <div class="result-display result-neutral show" id="vanco-interp" style="margin-top:var(--space-4);">
+                    <div class="result-label">Clinical Interpretation</div>
+                    <div class="result-note" id="vanco-interp-text"></div>
+                </div>
+                <div class="info-box" style="margin-top:var(--space-4);">
+                    <p><strong>Monitoring:</strong> Obtain trough (30 min before 4th dose) or use two-level AUC sampling (pre-dose + 1–2 hrs post). Target AUC/MIC 400–600.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aminoglycoside Hartford Nomogram -->
+        <div id="sub-dosage-aminoglycoside" class="sub-panel">
+            <h3 class="card-subtitle mb-md" style="color:var(--text-primary);font-weight:600;margin-bottom:var(--space-5);">Once-Daily Aminoglycoside (Hartford Nomogram)</h3>
+            <div class="info-box" style="margin-bottom:var(--space-5);">
+                <p><strong>Hartford Nomogram:</strong> Gentamicin/Tobramycin 7 mg/kg q24h. Amikacin 15–20 mg/kg q24h. Not for endocarditis, pregnancy, burns &gt;20% BSA, or CrCl &lt;20.</p>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Drug</label>
+                    <select id="amino-drug">
+                        <option value="gentamicin">Gentamicin</option>
+                        <option value="tobramycin">Tobramycin</option>
+                        <option value="amikacin">Amikacin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Actual Body Weight (kg) <span style="font-size:0.65rem;color:var(--sage);font-weight:600;" id="amino-weight-autofill"></span></label>
+                    <input type="number" inputmode="decimal" id="amino-weight" placeholder="e.g., 70" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Height (cm)</label>
+                    <input type="number" inputmode="decimal" id="amino-height" placeholder="e.g., 170" step="1">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Sex</label>
+                    <select id="amino-sex"><option value="male">Male</option><option value="female">Female</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Serum Creatinine (mg/dL)</label>
+                    <input type="number" inputmode="decimal" id="amino-cr" placeholder="e.g., 1.0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Age (years) <span style="font-size:0.65rem;color:var(--sage);font-weight:600;" id="amino-age-autofill"></span></label>
+                    <input type="number" inputmode="decimal" id="amino-age" placeholder="e.g., 45" step="1">
+                </div>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="calculateAminoglycoside()">Calculate Dose &amp; Interval</button>
+            <div id="amino-results" style="display:none;margin-top:var(--space-5);">
+                <div class="vanco-result-grid">
+                    <div class="vanco-result-card">
+                        <div class="vanco-result-card-label">Dosing Weight</div>
+                        <div class="vanco-result-card-value" id="amino-dosing-weight">—</div>
+                    </div>
+                    <div class="vanco-result-card">
+                        <div class="vanco-result-card-label">Dose</div>
+                        <div class="vanco-result-card-value" id="amino-dose">—</div>
+                    </div>
+                    <div class="vanco-result-card">
+                        <div class="vanco-result-card-label">CrCl</div>
+                        <div class="vanco-result-card-value" id="amino-crcl">—</div>
+                    </div>
+                    <div class="vanco-result-card">
+                        <div class="vanco-result-card-label">Interval</div>
+                        <div class="vanco-result-card-value" id="amino-interval">—</div>
+                    </div>
+                </div>
+                <div class="result-display result-neutral show" id="amino-interp" style="margin-top:var(--space-4);">
+                    <div class="result-label">Hartford Nomogram Guidance</div>
+                    <div class="result-note" id="amino-interp-text"></div>
+                </div>
+                <div class="info-box" style="margin-top:var(--space-4);">
+                    <p><strong>Level monitoring:</strong> Draw random level 6–14 hrs post-dose. Plot on Hartford nomogram to confirm q24h, q36h, or q48h dosing.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
     <div id="panel-iv" class="calc-card" role="tabpanel">
         <div class="card-header">
             <div class="card-header-icon"><svg><use href="#icon-drip"/></svg></div>
@@ -5472,6 +5962,10 @@ input[type="checkbox"]:focus-visible {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                 Copy
             </button>
+            <button class="notes-action-btn" onclick="showQRShare()" title="QR code handover" aria-label="QR Share">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="5" y="5" width="3" height="3" fill="currentColor" stroke="none"/><rect x="16" y="5" width="3" height="3" fill="currentColor" stroke="none"/><rect x="5" y="16" width="3" height="3" fill="currentColor" stroke="none"/><circle cx="17" cy="17" r="1.5" fill="currentColor" stroke="none"/><line x1="14" y1="17" x2="14" y2="21"/><line x1="17" y1="14" x2="21" y2="14"/><line x1="21" y1="17" x2="21" y2="21"/></svg>
+                QR Share
+            </button>
             <button class="notes-action-btn" onclick="exportNotes()" title="Export as HTML file" aria-label="Export">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Export
@@ -5488,6 +5982,247 @@ input[type="checkbox"]:focus-visible {
     </div>
 
 </div><!-- end .dashboard-collapse-wrap -->
+
+<!-- ==================== I&O TRACKER PANEL ==================== -->
+<div id="panel-io" class="calc-card" role="tabpanel">
+  <div class="card-header">
+    <div class="card-header-icon"><svg><use href="#icon-io"/></svg></div>
+    <div><h2 class="card-title">Fluid Balance / I&amp;O</h2>
+    <p class="card-subtitle">Track intake and output for the current shift</p></div>
+  </div>
+  <div style="display:flex;gap:var(--space-3);margin-bottom:var(--space-5);flex-wrap:wrap;align-items:center;">
+    <div style="font-family:var(--font-body);font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">Shift Balance:</div>
+    <div id="io-balance" style="font-family:var(--font-display);font-size:var(--text-xl);font-weight:700;color:var(--forest);">0 mL</div>
+    <button class="btn btn-secondary" style="margin-left:auto;padding:0.3rem 0.75rem;min-height:2rem;font-size:var(--text-xs);" onclick="ioClearAll()">Clear All</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5);margin-bottom:var(--space-6);">
+    <div>
+      <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--success);margin-bottom:var(--space-3);font-family:var(--font-body);">↓ Intake</div>
+      <div class="form-row" style="margin-bottom:var(--space-3);">
+        <div class="form-group"><label>Amount (mL)</label><input type="number" inputmode="decimal" id="io-in-amt" placeholder="e.g., 250" step="1"></div>
+        <div class="form-group"><label>Type</label>
+          <select id="io-in-type"><option>IV Fluids</option><option>Oral</option><option>NG Feed</option><option>Blood Products</option><option>Medications</option><option>Other</option></select>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="ioAdd('in')" style="background:var(--success);border-color:var(--success);">+ Add Intake</button>
+    </div>
+    <div>
+      <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--dusty-rose);margin-bottom:var(--space-3);font-family:var(--font-body);">↑ Output</div>
+      <div class="form-row" style="margin-bottom:var(--space-3);">
+        <div class="form-group"><label>Amount (mL)</label><input type="number" inputmode="decimal" id="io-out-amt" placeholder="e.g., 150" step="1"></div>
+        <div class="form-group"><label>Type</label>
+          <select id="io-out-type"><option>Urine</option><option>NG Drain</option><option>Vomit</option><option>Wound Drain</option><option>Stool</option><option>Blood Loss</option><option>Other</option></select>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="ioAdd('out')" style="background:var(--dusty-rose);border-color:var(--dusty-rose);">+ Add Output</button>
+    </div>
+  </div>
+  <div id="io-log" style="display:flex;flex-direction:column;gap:var(--space-2);max-height:320px;overflow-y:auto;"></div>
+  <div class="info-box" style="margin-top:var(--space-5);"><p><strong>Positive balance</strong> = more in than out. <strong>Negative</strong> = more out. Target varies by clinical context — check orders for fluid goals.</p></div>
+</div>
+
+<!-- ==================== HANDOVER PANEL ==================== -->
+<div id="panel-handover" class="calc-card" role="tabpanel">
+  <div class="card-header">
+    <div class="card-header-icon"><svg><use href="#icon-handover"/></svg></div>
+    <div><h2 class="card-title">Patient Handover Builder</h2>
+    <p class="card-subtitle">Build a structured SBAR handover for each patient</p></div>
+  </div>
+  <div style="display:flex;gap:var(--space-3);margin-bottom:var(--space-5);flex-wrap:wrap;">
+    <button class="btn btn-primary" onclick="handoverAdd()">+ Add Patient</button>
+    <button class="btn btn-secondary" onclick="handoverCopyAll()">Copy All</button>
+    <button class="btn btn-secondary" onclick="handoverPrint()">Print</button>
+    <button class="btn btn-secondary" style="color:var(--dusty-rose);border-color:rgba(158,79,66,0.3);" onclick="handoverClearAll()">Clear</button>
+  </div>
+  <div id="handover-list" style="display:flex;flex-direction:column;gap:var(--space-4);"></div>
+  <div class="multi-timer-empty" id="handover-empty" style="margin-top:var(--space-4);">No patients yet — tap <strong>+ Add Patient</strong> to start building your handover list.</div>
+</div>
+
+<!-- ==================== MED DUE TRACKER PANEL ==================== -->
+<div id="panel-meddue" class="calc-card" role="tabpanel">
+  <div class="card-header">
+    <div class="card-header-icon"><svg><use href="#icon-clock"/></svg></div>
+    <div><h2 class="card-title">Medication Due Tracker</h2>
+    <p class="card-subtitle">Enter time last given + frequency to see next dose time</p></div>
+  </div>
+  <div class="form-row" style="margin-bottom:var(--space-4);">
+    <div class="form-group"><label>Drug Name</label><input type="text" id="med-name" placeholder="e.g., Metoprolol 25 mg" autocomplete="off"></div>
+    <div class="form-group"><label>Last Given</label><input type="time" id="med-last-given"></div>
+    <div class="form-group"><label>Frequency</label>
+      <select id="med-freq">
+        <option value="4">q4h — Every 4 hours</option>
+        <option value="6">q6h — Every 6 hours</option>
+        <option value="8">q8h — Every 8 hours</option>
+        <option value="12">q12h — Every 12 hours</option>
+        <option value="24">q24h — Once daily</option>
+        <option value="48">q48h — Every 48 hours</option>
+        <option value="72">q72h — Every 72 hours</option>
+        <option value="1">qh — Every hour</option>
+        <option value="2">q2h — Every 2 hours</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group" style="margin-bottom:var(--space-5);">
+    <label>Patient / Bed (optional)</label>
+    <input type="text" id="med-patient" placeholder="e.g., Bed 4 — Smith" autocomplete="off">
+  </div>
+  <button class="btn btn-primary btn-full" onclick="medDueAdd()">Track This Medication</button>
+  <div id="meddue-list" style="display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-5);"></div>
+  <div class="multi-timer-empty" id="meddue-empty" style="margin-top:var(--space-4);">No medications tracked yet. Add one above to see next-due times.</div>
+</div>
+
+<!-- ==================== NEWS2 PANEL ==================== -->
+<div id="panel-news2" class="calc-card" role="tabpanel">
+  <div class="card-header">
+    <div class="card-header-icon"><svg><use href="#icon-warning"/></svg></div>
+    <div><h2 class="card-title">NEWS2 Score</h2>
+    <p class="card-subtitle">National Early Warning Score 2 — deterioration detection</p></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Respiratory Rate (breaths/min)</label><input type="number" inputmode="decimal" id="news-rr" placeholder="e.g., 18" step="1" onchange="calcNEWS2()"></div>
+    <div class="form-group"><label>SpO₂ (%)</label><input type="number" inputmode="decimal" id="news-spo2" placeholder="e.g., 98" step="1" onchange="calcNEWS2()"></div>
+    <div class="form-group"><label>Supplemental O₂?</label>
+      <select id="news-o2" onchange="calcNEWS2()"><option value="0">No (room air)</option><option value="2">Yes (any O₂)</option></select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Systolic BP (mmHg)</label><input type="number" inputmode="decimal" id="news-sbp" placeholder="e.g., 120" step="1" onchange="calcNEWS2()"></div>
+    <div class="form-group"><label>Heart Rate (bpm)</label><input type="number" inputmode="decimal" id="news-hr" placeholder="e.g., 80" step="1" onchange="calcNEWS2()"></div>
+    <div class="form-group"><label>Temperature (°C)</label><input type="number" inputmode="decimal" id="news-temp" placeholder="e.g., 36.8" step="0.1" onchange="calcNEWS2()"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>AVPU Level</label>
+      <select id="news-avpu" onchange="calcNEWS2()">
+        <option value="0">A — Alert</option>
+        <option value="3">C — Confused (new)</option>
+        <option value="3">V — Responds to Voice</option>
+        <option value="3">P — Responds to Pain</option>
+        <option value="3">U — Unresponsive</option>
+      </select>
+    </div>
+    <div class="form-group"><label>SpO₂ Scale (for hypercapnic risk)</label>
+      <select id="news-scale" onchange="calcNEWS2()"><option value="1">Scale 1 (standard)</option><option value="2">Scale 2 (COPD/hypercapnic risk)</option></select>
+    </div>
+  </div>
+  <div class="result-display result-neutral show" id="news2-result" style="margin-top:var(--space-5);">
+    <div class="result-label">NEWS2 Score</div>
+    <div class="result-value" id="news2-score">—</div>
+    <div class="result-note" id="news2-action"></div>
+    <div class="result-interpretation" id="news2-breakdown"></div>
+  </div>
+  <div class="info-box" style="margin-top:var(--space-5);"><p><strong>Score 0–4:</strong> Low — routine monitoring. <strong>3 in single param or 5–6 total:</strong> Medium — urgent review. <strong>7+:</strong> High — emergency response team.</p></div>
+</div>
+
+<!-- ==================== qSOFA PANEL ==================== -->
+<div id="panel-qsofa" class="calc-card" role="tabpanel">
+  <div class="card-header">
+    <div class="card-header-icon"><svg><use href="#icon-flag"/></svg></div>
+    <div><h2 class="card-title">Sepsis Screening (qSOFA)</h2>
+    <p class="card-subtitle">Quick SOFA — bedside sepsis risk tool</p></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:var(--space-4);margin-bottom:var(--space-6);">
+    <label style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4);background:var(--bg-input);border:1.5px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;">
+      <input type="checkbox" id="qsofa-rr" onchange="calcQSOFA()" style="width:1.25rem;height:1.25rem;accent-color:var(--sage);flex-shrink:0;">
+      <div><div style="font-weight:700;color:var(--text-primary);font-family:var(--font-body);">Respiratory Rate ≥ 22 breaths/min</div>
+      <div style="font-size:var(--text-xs);color:var(--text-muted);font-family:var(--font-body);margin-top:2px;">1 point</div></div>
+    </label>
+    <label style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4);background:var(--bg-input);border:1.5px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;">
+      <input type="checkbox" id="qsofa-ms" onchange="calcQSOFA()" style="width:1.25rem;height:1.25rem;accent-color:var(--sage);flex-shrink:0;">
+      <div><div style="font-weight:700;color:var(--text-primary);font-family:var(--font-body);">Altered Mental Status (GCS &lt; 15)</div>
+      <div style="font-size:var(--text-xs);color:var(--text-muted);font-family:var(--font-body);margin-top:2px;">1 point</div></div>
+    </label>
+    <label style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4);background:var(--bg-input);border:1.5px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;">
+      <input type="checkbox" id="qsofa-sbp" onchange="calcQSOFA()" style="width:1.25rem;height:1.25rem;accent-color:var(--sage);flex-shrink:0;">
+      <div><div style="font-weight:700;color:var(--text-primary);font-family:var(--font-body);">Systolic BP ≤ 100 mmHg</div>
+      <div style="font-size:var(--text-xs);color:var(--text-muted);font-family:var(--font-body);margin-top:2px;">1 point</div></div>
+    </label>
+  </div>
+  <div class="result-display result-neutral show" id="qsofa-result">
+    <div class="result-label">qSOFA Score</div>
+    <div class="result-value" id="qsofa-score">0 / 3</div>
+    <div class="result-note" id="qsofa-interp">Check boxes above to calculate</div>
+  </div>
+  <div class="info-box" style="margin-top:var(--space-5);"><p><strong>Score ≥ 2:</strong> Suspect sepsis — reassess for organ dysfunction, obtain lactate, cultures, consider escalation. qSOFA is a screening tool, not a diagnostic criterion.</p></div>
+</div>
+
+<!-- ==================== ECG GUIDE PANEL ==================== -->
+<div id="panel-ecg" class="calc-card" role="tabpanel">
+  <div class="card-header">
+    <div class="card-header-icon"><svg><use href="#icon-heart"/></svg></div>
+    <div><h2 class="card-title">ECG Rhythm Guide</h2>
+    <p class="card-subtitle">Quick reference for common rhythms and intervals</p></div>
+  </div>
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="showSubPanel('ecg-rhythms')">Rhythms</button>
+    <button class="sub-tab" onclick="showSubPanel('ecg-intervals')">Intervals</button>
+    <button class="sub-tab" onclick="showSubPanel('ecg-approach')">Approach</button>
+  </div>
+  <div id="sub-ecg-rhythms" class="sub-panel active">
+    <div id="ecg-rhythm-list" style="display:flex;flex-direction:column;gap:var(--space-3);"></div>
+  </div>
+  <div id="sub-ecg-intervals" class="sub-panel">
+    <div id="ecg-interval-list" style="display:flex;flex-direction:column;gap:var(--space-3);"></div>
+    <div class="form-row" style="margin-top:var(--space-6);">
+      <div class="form-group"><label>QT Interval (ms)</label><input type="number" inputmode="decimal" id="qtc-qt" placeholder="e.g., 400" step="1"></div>
+      <div class="form-group"><label>RR Interval (ms)</label><input type="number" inputmode="decimal" id="qtc-rr" placeholder="e.g., 800" step="1"></div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="calcQTc()">Calculate QTc (Bazett)</button>
+    <div class="result-display result-neutral show" id="qtc-result" style="margin-top:var(--space-4);display:none;">
+      <div class="result-label">Corrected QT (QTc)</div>
+      <div class="result-value" id="qtc-value">—</div>
+      <div class="result-note" id="qtc-note"></div>
+    </div>
+  </div>
+  <div id="sub-ecg-approach" class="sub-panel">
+    <div id="ecg-approach-list" style="display:flex;flex-direction:column;gap:var(--space-3);"></div>
+  </div>
+</div>
+
+<!-- ==================== CRASH CART PANEL ==================== -->
+<div id="panel-crashcart" class="calc-card" role="tabpanel">
+  <div class="card-header">
+    <div class="card-header-icon"><svg><use href="#icon-crash"/></svg></div>
+    <div><h2 class="card-title">Crash Cart Reference</h2>
+    <p class="card-subtitle">Emergency weight-based drug doses — ACLS/ALS</p></div>
+  </div>
+  <div class="form-row" style="margin-bottom:var(--space-5);">
+    <div class="form-group"><label>Patient Weight (kg) <span style="font-size:0.65rem;color:var(--sage);font-weight:600;" id="crash-weight-autofill"></span></label>
+      <input type="number" inputmode="decimal" id="crash-weight" placeholder="e.g., 70" step="1" oninput="renderCrashCart()">
+    </div>
+    <div class="form-group"><label>Age Group</label>
+      <select id="crash-age-group" onchange="renderCrashCart()"><option value="adult">Adult</option><option value="peds">Paediatric</option></select>
+    </div>
+  </div>
+  <div id="crash-cart-list" style="display:flex;flex-direction:column;gap:var(--space-3);"></div>
+</div>
+
+<!-- ==================== IV COMPATIBILITY PANEL ==================== -->
+<div id="panel-ivcompat" class="calc-card" role="tabpanel">
+  <div class="card-header">
+    <div class="card-header-icon"><svg><use href="#icon-compat"/></svg></div>
+    <div><h2 class="card-title">IV Compatibility</h2>
+    <p class="card-subtitle">Common IV drug compatibility reference</p></div>
+  </div>
+  <div class="form-row" style="margin-bottom:var(--space-5);">
+    <div class="form-group"><label>Drug 1</label>
+      <select id="compat-drug1" onchange="checkCompat()"><option value="">Select drug…</option></select>
+    </div>
+    <div class="form-group"><label>Drug 2</label>
+      <select id="compat-drug2" onchange="checkCompat()"><option value="">Select drug…</option></select>
+    </div>
+  </div>
+  <div id="compat-result" style="display:none;" class="result-display result-neutral show">
+    <div class="result-label">Compatibility</div>
+    <div class="result-value" id="compat-verdict">—</div>
+    <div class="result-note" id="compat-note"></div>
+  </div>
+  <div style="margin-top:var(--space-6);">
+    <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:var(--space-4);font-family:var(--font-body);">Full Compatibility Matrix</div>
+    <div id="compat-matrix" style="overflow-x:auto;"></div>
+  </div>
+  <div class="info-box" style="margin-top:var(--space-5);"><p><strong>Always verify</strong> with your pharmacy or a current Trissel's reference. Compatibility depends on concentrations, diluents, pH, and temperature. This is a quick reference only.</p></div>
+</div>
+
 </div><!-- end .container -->
 </main><!-- end main#main-content -->
 
@@ -5817,17 +6552,25 @@ function initShiftCountdown() {
 
 /* ==================== PINNED TOOLS ==================== */
 const ALL_TABS = [
-    { id: 'timer', label: 'Timer', icon: 'icon-timer' },
-    { id: 'dosage', label: 'Dosage', icon: 'icon-pill' },
-    { id: 'iv', label: 'IV & Drip', icon: 'icon-drip' },
-    { id: 'vitals', label: 'Vitals', icon: 'icon-heart' },
-    { id: 'assessment', label: 'Assessment', icon: 'icon-chart' },
-    { id: 'pediatric', label: 'Pediatric', icon: 'icon-baby' },
-    { id: 'lab', label: 'Lab Values', icon: 'icon-flask' },
-    { id: 'convert', label: 'Converters', icon: 'icon-swap' },
-    { id: 'reference', label: 'Reference', icon: 'icon-book' },
-    { id: 'notes', label: 'Notes', icon: 'icon-notes' },
-    { id: 'drugs', label: 'Drug Ref', icon: 'icon-syringe' },
+    { id: 'timer',      label: 'Timer',      icon: 'icon-timer'   },
+    { id: 'dosage',     label: 'Dosage',     icon: 'icon-pill'    },
+    { id: 'iv',         label: 'IV & Drip',  icon: 'icon-drip'    },
+    { id: 'vitals',     label: 'Vitals',     icon: 'icon-heart'   },
+    { id: 'assessment', label: 'Assessment', icon: 'icon-chart'   },
+    { id: 'pediatric',  label: 'Pediatric',  icon: 'icon-baby'    },
+    { id: 'lab',        label: 'Lab Values', icon: 'icon-flask'   },
+    { id: 'convert',    label: 'Converters', icon: 'icon-swap'    },
+    { id: 'reference',  label: 'Reference',  icon: 'icon-book'    },
+    { id: 'notes',      label: 'Notes',      icon: 'icon-notes'   },
+    { id: 'drugs',      label: 'Drug Ref',   icon: 'icon-syringe' },
+    { id: 'io',         label: 'I&O',        icon: 'icon-io'      },
+    { id: 'handover',   label: 'Handover',   icon: 'icon-handover'},
+    { id: 'meddue',     label: 'Med Due',    icon: 'icon-clock'   },
+    { id: 'news2',      label: 'NEWS2',      icon: 'icon-warning' },
+    { id: 'qsofa',      label: 'qSOFA',      icon: 'icon-flag'    },
+    { id: 'ecg',        label: 'ECG',        icon: 'icon-heart'   },
+    { id: 'crashcart',  label: 'Crash Cart', icon: 'icon-warning' },
+    { id: 'ivcompat',   label: 'IV Compat',  icon: 'icon-compat'  },
 ];
 
 function getPinned() { try { const r = localStorage.getItem('medconvert_pinned'); return r ? JSON.parse(r) : []; } catch { return []; } }
@@ -7977,27 +8720,63 @@ if (origShowResult2) {
 
 /* Search index — maps keywords to tab + sub-panel */
 const CALC_SEARCH_INDEX = [
-    { keywords: ['weight dose','weight based','kg dose','mcg/kg','mg/kg','pediatric dose'], tab: 'dosage', sub: 'sub-dosage-weight', label: 'Weight-Based Dosage' },
-    { keywords: ['standard dose','flat dose','fixed dose'], tab: 'dosage', sub: 'sub-dosage-standard', label: 'Standard Dosage' },
-    { keywords: ['drip rate','iv rate','infusion rate','ml/hr','drops/min'], tab: 'iv', sub: 'sub-drip-rate', label: 'IV Drip Rate' },
-    { keywords: ['infusion time','how long','duration','iv time'], tab: 'iv', sub: 'sub-infusion-time', label: 'Infusion Time' },
-    { keywords: ['concentration','dilution','mix','reconstitute'], tab: 'iv', sub: 'sub-concentration', label: 'IV Concentration' },
-    { keywords: ['map','mean arterial','blood pressure','systolic','diastolic'], tab: 'vitals', sub: 'sub-map', label: 'Mean Arterial Pressure' },
-    { keywords: ['pulse pressure','pp'], tab: 'vitals', sub: 'sub-pp', label: 'Pulse Pressure' },
-    { keywords: ['shock index','si'], tab: 'vitals', sub: 'sub-shock', label: 'Shock Index' },
-    { keywords: ['a-a gradient','alveolar','oxygenation','pao2'], tab: 'vitals', sub: 'sub-aa', label: 'A-a Gradient' },
-    { keywords: ['gcs','glasgow','coma score','consciousness'], tab: 'neuro', sub: 'sub-gcs', label: 'Glasgow Coma Scale' },
-    { keywords: ['bmi','body mass index','obesity','weight height'], tab: 'neuro', sub: 'sub-bmi', label: 'BMI Calculator' },
-    { keywords: ['egfr','creatinine','kidney','renal function','ckd'], tab: 'neuro', sub: 'sub-egfr', label: 'eGFR / Renal Function' },
-    { keywords: ['wells','dvt','deep vein thrombosis','clot'], tab: 'neuro', sub: 'sub-wells', label: 'Wells DVT Score' },
-    { keywords: ['pediatric weight','peds weight','child weight','broselow'], tab: 'peds', sub: 'sub-peds-weight', label: 'Pediatric Weight Estimation' },
-    { keywords: ['pediatric dose','peds dose','child dose'], tab: 'peds', sub: 'sub-peds-dose', label: 'Pediatric Dosage' },
-    { keywords: ['apgar','newborn','neonate','birth score'], tab: 'peds', sub: 'sub-apgar', label: 'APGAR Score' },
-    { keywords: ['bsa','body surface area','chemotherapy'], tab: 'dosage', sub: 'sub-dosage-bsa', label: 'BSA Calculator' },
-    { keywords: ['lab','convert','mmol','mg/dl','laboratory','sodium','potassium','glucose','hemoglobin'], tab: 'lab', sub: null, label: 'Lab Converter' },
-    { keywords: ['drug','medication','reference','dose range','norepinephrine','epinephrine','dopamine','morphine','fentanyl'], tab: 'drugs', sub: null, label: 'Drug Reference' },
-    { keywords: ['timer','countdown','stopwatch','timing','interval'], tab: 'timer', sub: null, label: 'Vitals Timer' },
-    { keywords: ['notes','shift notes','handover','write'], tab: 'notes', sub: null, label: 'Quick Notes' },
+    // Timer
+    { keywords: ['timer','countdown','stopwatch','timing','interval','infusion timer','obs timer'], tab: 'timer', sub: null, label: 'Vitals Timer' },
+    // Dosage
+    { keywords: ['standard dose','flat dose','fixed dose','d/h x q','formula dose','volume administer'], tab: 'dosage', sub: 'sub-dosage-standard', label: 'Standard Dosage (D/H×Q)' },
+    { keywords: ['weight dose','weight based','kg dose','mcg/kg','mg/kg','dose per kg'], tab: 'dosage', sub: 'sub-dosage-weight', label: 'Weight-Based Dosage' },
+    { keywords: ['bsa','body surface area','chemotherapy','mosteller','oncology'], tab: 'dosage', sub: 'sub-dosage-bsa', label: 'BSA Dosing' },
+    { keywords: ['vancomycin','vanco','auc mic','auc/mic','renal dose vanco','trough'], tab: 'dosage', sub: 'sub-dosage-vanco', label: 'Vancomycin AUC/MIC' },
+    { keywords: ['aminoglycoside','gentamicin','tobramycin','amikacin','hartford','once daily'], tab: 'dosage', sub: 'sub-dosage-aminoglycoside', label: 'Aminoglycoside (Hartford)' },
+    // IV & Drip
+    { keywords: ['drip rate','iv rate','infusion rate','ml/hr','drops/min','gtt/min','drop factor'], tab: 'iv', sub: 'sub-drip-rate', label: 'IV Drip Rate' },
+    { keywords: ['infusion time','how long','duration','iv time','completion time'], tab: 'iv', sub: 'sub-infusion-time', label: 'Infusion Time' },
+    { keywords: ['concentration','dilution','mix','reconstitute','mg/ml','mcg/ml'], tab: 'iv', sub: 'sub-concentration', label: 'IV Concentration' },
+    // Vitals
+    { keywords: ['map','mean arterial pressure','blood pressure','perfusion pressure'], tab: 'vitals', sub: 'sub-map', label: 'Mean Arterial Pressure' },
+    { keywords: ['pulse pressure','pp','stroke volume','aortic'], tab: 'vitals', sub: 'sub-pp', label: 'Pulse Pressure' },
+    { keywords: ['shock index','si','haemodynamic','hypotension','hemorrhage'], tab: 'vitals', sub: 'sub-shock-index', label: 'Shock Index' },
+    { keywords: ['a-a gradient','alveolar','oxygenation','pao2','paco2','fio2','abg'], tab: 'vitals', sub: 'sub-a-a-gradient', label: 'A-a Oxygen Gradient' },
+    // Assessment
+    { keywords: ['gcs','glasgow coma scale','consciousness','neurological','avpu'], tab: 'assessment', sub: 'sub-gcs', label: 'Glasgow Coma Scale (GCS)' },
+    { keywords: ['bmi','body mass index','obesity','overweight','underweight'], tab: 'assessment', sub: 'sub-bmi', label: 'BMI Calculator' },
+    { keywords: ['egfr','creatinine','kidney function','renal function','ckd','ckd-epi','glomerular'], tab: 'assessment', sub: 'sub-egfr', label: 'eGFR / Renal Function' },
+    { keywords: ['wells','dvt','deep vein thrombosis','clot','thrombosis','venous'], tab: 'assessment', sub: 'sub-wells', label: 'Wells DVT Score' },
+    { keywords: ['curb','curb65','pneumonia','severity','cap','respiratory infection'], tab: 'assessment', sub: 'sub-curb65', label: 'CURB-65 Pneumonia Score' },
+    { keywords: ['parkland','burn','tbsa','fluid resuscitation','burns','burn formula'], tab: 'assessment', sub: 'sub-parkland', label: 'Parkland Burn Formula' },
+    // Pediatric
+    { keywords: ['pediatric weight','peds weight','child weight','broselow','estimated weight'], tab: 'pediatric', sub: 'sub-peds-weight', label: 'Pediatric Weight Estimation' },
+    { keywords: ['pediatric dose','peds dose','child dose','paediatric'], tab: 'pediatric', sub: 'sub-peds-dose', label: 'Pediatric Dosage' },
+    { keywords: ['apgar','newborn','neonate','birth score','infant assessment'], tab: 'pediatric', sub: 'sub-apgar', label: 'APGAR Score' },
+    // Lab
+    { keywords: ['lab','convert','mmol','mg/dl','laboratory','sodium','potassium','glucose','hemoglobin','haemoglobin','si units','conventional'], tab: 'lab', sub: null, label: 'Lab Value Converter' },
+    // Converters
+    { keywords: ['convert','weight convert','kg lb','celsius fahrenheit','temperature convert','height convert','cm inch','unit convert'], tab: 'convert', sub: null, label: 'Unit Converters' },
+    // Reference
+    { keywords: ['opioid','morphine equivalents','fentanyl','hydromorphone','equianalgesic','opioid conversion'], tab: 'reference', sub: 'sub-ref-opioid', label: 'Opioid Equianalgesic' },
+    { keywords: ['edd','gestational age','lmp','due date','pregnancy','obstetric','trimester'], tab: 'reference', sub: 'sub-ref-edd', label: 'EDD / Gestational Age' },
+    { keywords: ['inr','warfarin','anticoagulation','coumadin','therapeutic range','anticoag'], tab: 'reference', sub: 'sub-ref-inr', label: 'INR / Warfarin Checker' },
+    // Drugs
+    { keywords: ['drug','medication','reference','dose range','norepinephrine','epinephrine','dopamine','morphine','fentanyl','vancomycin','antibiotic','analgesic','vasopressor','drug card'], tab: 'drugs', sub: null, label: 'Drug Reference' },
+    // Notes
+    { keywords: ['notes','shift notes','write','document','record','text','handover notes'], tab: 'notes', sub: null, label: 'Shift Notes' },
+    // I&O
+    { keywords: ['fluid balance','intake output','io','fluid','urine output','intake','output','iv fluids','ins and outs'], tab: 'io', sub: null, label: 'Fluid Balance / I&O Tracker' },
+    // Handover
+    { keywords: ['handover','sbar','patient list','shift handover','bedside handover','patient summary','handoff'], tab: 'handover', sub: null, label: 'Patient Handover Builder' },
+    // Med Due
+    { keywords: ['medication due','med due','next dose','drug schedule','dose time','when is next','prn tracker','medication tracker'], tab: 'meddue', sub: null, label: 'Medication Due Tracker' },
+    // NEWS2
+    { keywords: ['news2','news','early warning','deterioration','vital signs score','rapid response','escalation'], tab: 'news2', sub: null, label: 'NEWS2 Early Warning Score' },
+    // qSOFA
+    { keywords: ['qsofa','sofa','sepsis','septic shock','infection','organ dysfunction','sepsis screening'], tab: 'qsofa', sub: null, label: 'qSOFA Sepsis Screening' },
+    // ECG
+    { keywords: ['ecg','ekg','rhythm','cardiac rhythm','heart rhythm','atrial fibrillation','af','svt','vt','vf','heart block','bundle branch','qtc','qt interval','pr interval','st elevation','stemi'], tab: 'ecg', sub: null, label: 'ECG Rhythm Guide' },
+    { keywords: ['qtc','qt corrected','torsades','qt prolongation','long qt','bazett'], tab: 'ecg', sub: 'sub-ecg-intervals', label: 'QTc Calculator' },
+    // Crash Cart
+    { keywords: ['crash cart','emergency drugs','resuscitation','acls','als','cardiac arrest','adrenaline dose','emergency dose','code blue','crash'], tab: 'crashcart', sub: null, label: 'Crash Cart Drug Doses' },
+    // IV Compat
+    { keywords: ['iv compatibility','compatible','incompatible','y-site','iv mixing','same line','drug interaction iv','infusion compatible'], tab: 'ivcompat', sub: null, label: 'IV Drug Compatibility' },
 ];
 
 /* Global search */
@@ -8012,9 +8791,10 @@ function initGlobalSearch() {
         clearBtn.style.display = q ? 'flex' : 'none';
         if (!q) { results.innerHTML = ''; results.style.display = 'none'; return; }
 
-        const matches = CALC_SEARCH_INDEX.filter(item =>
-            item.keywords.some(k => k.includes(q) || q.split(' ').some(w => k.includes(w)))
-        ).slice(0, 6);
+        const matches = CALC_SEARCH_INDEX.filter(item => {
+            const haystack = [...item.keywords, item.label.toLowerCase()].join(' ');
+            return q.split(' ').filter(Boolean).every(word => haystack.includes(word));
+        }).slice(0, 8);
 
         if (!matches.length) {
             results.innerHTML = `<div class="calc-search-empty">No calculators found for "<strong>${q}</strong>"</div>`;
@@ -8476,7 +9256,7 @@ function updateMoreSheetThemeBtn(theme) {
 /* ==================== MOBILE NAV SYNC ==================== */
 /* ── More Sheet tabs ── */
 // Tabs that live inside the More sheet (not in bottom nav)
-const MORE_TABS = ['vitals','assessment','pediatric','lab','drugs','convert','reference'];
+const MORE_TABS = ['vitals','assessment','pediatric','lab','drugs','convert','reference','io','handover','meddue','news2','qsofa','ecg','crashcart','ivcompat'];
 
 function updateMobileNav(tabId) {
     const isMoreTab = MORE_TABS.includes(tabId);
@@ -8713,20 +9493,6 @@ if ('serviceWorker' in navigator) {
 /* ==================== MANIFEST: add id field dynamically ==================== */
 // manifest.json can't be edited at runtime, but we log the missing field
 // (The fix should be applied to manifest.json directly — see updated file)
-
-/* ==================== SEARCH INDEX: add new tools ==================== */
-(function() {
-    const extraIndex = [
-        { keywords: ['curb','curb65','pneumonia','severity','infection'], tab: 'assessment', sub: 'sub-curb65', label: 'CURB-65 Pneumonia Score' },
-        { keywords: ['parkland','burn','tbsa','fluid resuscitation'], tab: 'assessment', sub: 'sub-parkland', label: 'Parkland Burn Formula' },
-        { keywords: ['opioid','morphine','fentanyl','hydromorphone','equianalgesic','convert opioid'], tab: 'reference', sub: 'sub-ref-opioid', label: 'Opioid Equianalgesic' },
-        { keywords: ['edd','gestational age','lmp','due date','pregnancy','obstetric'], tab: 'reference', sub: 'sub-ref-edd', label: 'EDD / Gestational Age' },
-        { keywords: ['inr','warfarin','anticoagulation','coumadin','therapeutic range'], tab: 'reference', sub: 'sub-ref-inr', label: 'INR / Warfarin Checker' },
-    ];
-    if (window.CALC_SEARCH_INDEX) {
-        window.CALC_SEARCH_INDEX.push(...extraIndex);
-    }
-})();
 
 /* ==================== INIT: Run all improvements ==================== */
 document.addEventListener('DOMContentLoaded', function() {
@@ -9245,10 +10011,1096 @@ window.addEventListener('load', function() {
     }
 });
 
-</script>
 
-<!-- ==================== GLOVE SCRATCHPAD ==================== -->
-<!-- Floating Action Button -->
+/* ══════════════════════════════════════════════════════
+   FEATURE: PATIENT PROFILE SLOT
+   ══════════════════════════════════════════════════════ */
+function getPatientProfile() {
+    try { return JSON.parse(localStorage.getItem('mc_patient') || 'null'); } catch { return null; }
+}
+function savePatientProfileData(p) {
+    try { localStorage.setItem('mc_patient', JSON.stringify(p)); } catch {}
+}
+
+function renderPatientBanner() {
+    const p = getPatientProfile();
+    const valEl = document.getElementById('patient-banner-values');
+    if (!valEl) return;
+    if (!p || (!p.weight && !p.age)) {
+        valEl.innerHTML = '<span class="patient-banner-empty">Tap to add patient — auto-fills weight, age &amp; eGFR</span>';
+        return;
+    }
+    const chips = [];
+    if (p.weight) chips.push(`<span class="patient-banner-chip">${p.weight} kg <span>weight</span></span>`);
+    if (p.age)    chips.push(`<span class="patient-banner-chip">${p.age} yr <span>${p.sex||'M'}</span></span>`);
+    if (p.height) chips.push(`<span class="patient-banner-chip">${p.height} cm <span>height</span></span>`);
+    if (p.egfr)   chips.push(`<span class="patient-banner-chip">${Math.round(p.egfr)} <span>eGFR</span></span>`);
+    if (p.creatinine) chips.push(`<span class="patient-banner-chip">${p.creatinine} <span>SCr</span></span>`);
+    valEl.innerHTML = chips.join('');
+}
+
+function calcEGFRFromCr(age, sex, cr) {
+    if (!age || !cr || cr <= 0) return null;
+    const kappa = sex === 'female' ? 0.7 : 0.9;
+    const alpha = sex === 'female' ? -0.241 : -0.302;
+    const sf = sex === 'female' ? 1.012 : 1.0;
+    return Math.round(142 * Math.pow(Math.min(cr/kappa,1),alpha) * Math.pow(Math.max(cr/kappa,1),-1.200) * Math.pow(0.9938,age) * sf);
+}
+
+window.openPatientModal = function() {
+    const p = getPatientProfile() || {};
+    document.getElementById('pt-weight').value     = p.weight || '';
+    document.getElementById('pt-age').value        = p.age || '';
+    document.getElementById('pt-sex').value        = p.sex || 'male';
+    document.getElementById('pt-height').value     = p.height || '';
+    document.getElementById('pt-creatinine').value = p.creatinine || '';
+    updatePatientEGFRBadge();
+    const modal = document.getElementById('patient-modal');
+    modal.classList.add('visible');
+    setTimeout(() => document.getElementById('pt-weight').focus(), 200);
+
+    // Live eGFR preview
+    ['pt-age','pt-sex','pt-creatinine'].forEach(id => {
+        document.getElementById(id).addEventListener('input', updatePatientEGFRBadge);
+    });
+};
+
+function updatePatientEGFRBadge() {
+    const age = parseInt(document.getElementById('pt-age').value);
+    const sex = document.getElementById('pt-sex').value;
+    const cr  = parseFloat(document.getElementById('pt-creatinine').value);
+    const badge = document.getElementById('pt-egfr-badge');
+    if (!badge) return;
+    const egfr = calcEGFRFromCr(age, sex, cr);
+    if (egfr !== null) {
+        const color = egfr >= 60 ? 'var(--success)' : egfr >= 30 ? 'var(--warning)' : 'var(--danger)';
+        badge.style.display = 'inline-flex';
+        badge.style.background = egfr >= 60 ? 'var(--success-bg)' : egfr >= 30 ? 'var(--warning-bg)' : 'var(--danger-bg)';
+        badge.style.color = color;
+        badge.style.border = `1px solid ${color}`;
+        badge.style.borderRadius = 'var(--radius-full)';
+        badge.style.padding = '0.2em 0.65em';
+        badge.style.fontSize = 'var(--text-xs)';
+        badge.style.fontWeight = '700';
+        badge.style.fontFamily = 'var(--font-body)';
+        badge.style.marginTop = 'var(--space-2)';
+        const stage = egfr >= 90 ? 'G1' : egfr >= 60 ? 'G2' : egfr >= 45 ? 'G3a' : egfr >= 30 ? 'G3b' : egfr >= 15 ? 'G4' : 'G5';
+        badge.textContent = `eGFR ≈ ${egfr} mL/min/1.73m² — CKD ${stage}`;
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+window.closePatientModal = function() {
+    document.getElementById('patient-modal').classList.remove('visible');
+};
+
+window.clearPatientProfile = function() {
+    localStorage.removeItem('mc_patient');
+    renderPatientBanner();
+    closePatientModal();
+    showToast('Patient profile cleared', 'info');
+};
+
+window.savePatientProfile = function() {
+    const weight     = parseFloat(document.getElementById('pt-weight').value) || null;
+    const age        = parseInt(document.getElementById('pt-age').value)       || null;
+    const sex        = document.getElementById('pt-sex').value;
+    const height     = parseFloat(document.getElementById('pt-height').value)  || null;
+    const creatinine = parseFloat(document.getElementById('pt-creatinine').value) || null;
+    const egfr       = calcEGFRFromCr(age, sex, creatinine);
+    const p = { weight, age, sex, height, creatinine, egfr };
+    savePatientProfileData(p);
+    renderPatientBanner();
+    applyPatientAutofill(p);
+    closePatientModal();
+    showToast('Patient profile saved & applied', 'success');
+    if (navigator.vibrate) navigator.vibrate(12);
+};
+
+function applyPatientAutofill(p) {
+    if (!p) return;
+    function fill(id, val) {
+        if (!val) return;
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.value = val;
+        el.classList.add('autofilled');
+        setTimeout(() => el.classList.remove('autofilled'), 800);
+    }
+    // Weight-based dosing
+    if (p.weight) {
+        fill('weight-dose-kg', p.weight);
+        const wtBtn = document.querySelector('#sub-dosage-weight .unit-toggle-btn[data-unit="kg"]');
+        if (wtBtn) { wtBtn.classList.add('active'); const lbsBtn = document.querySelector('#sub-dosage-weight .unit-toggle-btn[data-unit="lbs"]'); if(lbsBtn) lbsBtn.classList.remove('active'); }
+        const inp = document.getElementById('weight-dose-kg');
+        if (inp) inp.dataset.unit = 'kg';
+        fill('bsa-weight', p.weight);
+        fill('parkland-weight', p.weight);
+        fill('bmi-weight', p.weight);
+    }
+    if (p.height) { fill('bsa-height', p.height); fill('bmi-height', p.height); }
+    if (p.age)    { fill('egfr-age', p.age); fill('vanco-age', p.age); fill('amino-age', p.age); }
+    if (p.sex)    { const egfrSex = document.getElementById('egfr-sex'); if(egfrSex) egfrSex.value = p.sex; const vancoSex = document.getElementById('vanco-sex'); if(vancoSex) vancoSex.value = p.sex; const aminoSex = document.getElementById('amino-sex'); if(aminoSex) aminoSex.value = p.sex; }
+    if (p.creatinine) { fill('egfr-cr', p.creatinine); fill('vanco-cr', p.creatinine); fill('amino-cr', p.creatinine); }
+    if (p.weight) { fill('vanco-weight', p.weight); fill('amino-weight', p.weight); fill('amino-height', p.height); }
+    // Show autofill labels
+    ['vanco-weight-autofill','vanco-age-autofill','amino-weight-autofill','amino-age-autofill'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.textContent = '← from patient';
+    });
+}
+
+// Init on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+    renderPatientBanner();
+    const p = getPatientProfile();
+    if (p) applyPatientAutofill(p);
+    // Close modal on overlay click
+    document.getElementById('patient-modal').addEventListener('click', e => {
+        if (e.target === document.getElementById('patient-modal')) closePatientModal();
+    });
+});
+
+/* ══════════════════════════════════════════════════════
+   FEATURE: RENAL DOSE BADGES ON DRUG CARDS
+   ══════════════════════════════════════════════════════ */
+const DRUG_RENAL_FLAGS = {
+    'Vancomycin':            { type: 'adjust',  note: 'Dose & interval ↓ for CrCl <50. Monitor AUC/MIC.' },
+    'Gentamicin':            { type: 'adjust',  note: 'Extend interval for CrCl <60. Monitor levels.' },
+    'Metformin':             { type: 'avoid',   note: 'Contraindicated if eGFR <30. Hold pre-contrast.' },
+    'Enoxaparin':            { type: 'adjust',  note: 'Reduce to 1 mg/kg q24h if CrCl <30 mL/min.' },
+    'Cefazolin':             { type: 'adjust',  note: 'Reduce dose for CrCl <35 mL/min.' },
+    'Ketorolac':             { type: 'caution', note: 'Avoid in renal insufficiency (GI/renal risk).' },
+    'Morphine':              { type: 'caution', note: 'Active metabolite accumulates; reduce dose in renal impairment.' },
+    'Furosemide':            { type: 'caution', note: 'Higher doses needed in renal impairment; ototoxicity risk.' },
+    'Heparin':               { type: 'caution', note: 'Monitor aPTT closely; bleeding risk ↑ in renal impairment.' },
+    'Meropenem':             { type: 'adjust',  note: 'Dose adjustment required for CrCl <50 mL/min.' },
+    'Piperacillin-Tazobactam':{ type: 'adjust', note: 'Reduce to 2.25 g q6h for CrCl <20 mL/min.' },
+    'Ceftriaxone':           { type: 'caution', note: 'No adjustment usually needed; use caution in severe impairment.' },
+    'Acetaminophen':         { type: 'caution', note: 'Increase interval to q8h if eGFR <30.' },
+    'Ondansetron':           { type: 'caution', note: 'Reduce dose in severe hepatic impairment (also monitor QT).' },
+    'Potassium Chloride':    { type: 'caution', note: 'Risk of hyperkalaemia; monitor K+ closely in renal impairment.' },
+};
+
+const BADGE_LABELS = { adjust: 'Renal: Adjust', caution: 'Renal: Caution', avoid: 'Renal: Avoid' };
+const BADGE_ICONS  = {
+    adjust:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>',
+    caution: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>',
+    avoid:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>',
+};
+
+// Patch buildDrugCard to append renal badge
+(function() {
+    const _orig = window.buildDrugCard;
+    if (!_orig) return;
+    window.buildDrugCard = function(d) {
+        let html = _orig(d);
+        const flag = DRUG_RENAL_FLAGS[d.name];
+        if (flag) {
+            const badge = `<span class="drug-renal-badge renal-${flag.type}" title="${flag.note}">${BADGE_ICONS[flag.type]}${BADGE_LABELS[flag.type]}</span>`;
+            // Insert badge after the drug-badge span
+            html = html.replace('</div>\n        </div>\n        <div class="drug-meta">', `${badge}</div>\n        </div>\n        <div class="drug-meta">`);
+        }
+        return html;
+    };
+})();
+
+/* ══════════════════════════════════════════════════════
+   FEATURE: MULTI-TIMER
+   ══════════════════════════════════════════════════════ */
+let multiTimers = [];
+let _mtIdCounter = 0;
+
+function addMultiTimer() {
+    const name = prompt('Timer name (e.g. "Dopamine infusion", "BP recheck"):') || `Timer ${_mtIdCounter + 1}`;
+    const secsInput = prompt('Duration in seconds (e.g. 300 for 5 min):');
+    const secs = parseInt(secsInput);
+    if (!secs || secs <= 0) { showToast('Enter a valid duration', 'warning'); return; }
+
+    const id = ++_mtIdCounter;
+    const timer = { id, name: name.substring(0, 40), total: secs, remaining: secs, running: false, interval: null, done: false };
+    multiTimers.push(timer);
+    renderMultiTimers();
+    mtStart(id);
+}
+
+function renderMultiTimers() {
+    const list = document.getElementById('multi-timer-list');
+    const empty = document.getElementById('multi-timer-empty');
+    if (!list) return;
+    if (multiTimers.length === 0) {
+        if (empty) empty.style.display = '';
+        list.innerHTML = '';
+        list.appendChild(empty || document.createElement('div'));
+        return;
+    }
+    if (empty) empty.style.display = 'none';
+    list.innerHTML = multiTimers.map(t => {
+        const pct = t.total > 0 ? Math.max(0, t.remaining / t.total) * 100 : 0;
+        const disp = t.done ? 'Done!' : formatMTTime(t.remaining);
+        const cls = t.done ? 'mt-done' : t.running ? 'mt-running' : '';
+        return `<div class="multi-timer-item ${cls}" id="mt-item-${t.id}">
+            <div style="display:flex;flex-direction:column;flex:1;min-width:0;gap:3px;">
+                <div class="mt-name" title="${t.name}">${t.name}</div>
+                <div style="height:3px;background:var(--border);border-radius:99px;overflow:hidden;">
+                    <div style="height:100%;width:${pct}%;background:${t.done?'var(--dusty-rose)':t.remaining<=30?'var(--amber)':'var(--sage)'};border-radius:99px;transition:width 1s linear;"></div>
+                </div>
+            </div>
+            <div class="mt-display" id="mt-disp-${t.id}">${disp}</div>
+            <div class="mt-controls">
+                ${!t.done ? `<button class="mt-btn" onclick="mtToggle(${t.id})" title="${t.running?'Pause':'Resume'}">
+                    ${t.running
+                        ? '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>'
+                        : '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>'}
+                </button>` : ''}
+                <button class="mt-btn mt-stop" onclick="mtRemove(${t.id})" title="Remove">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function formatMTTime(s) {
+    if (s >= 3600) return `${Math.floor(s/3600)}:${String(Math.floor((s%3600)/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+    return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+}
+
+function mtStart(id) {
+    const t = multiTimers.find(x => x.id === id);
+    if (!t || t.done) return;
+    t.running = true;
+    t.interval = setInterval(() => {
+        t.remaining--;
+        const dispEl = document.getElementById(`mt-disp-${t.id}`);
+        const itemEl = document.getElementById(`mt-item-${t.id}`);
+        if (t.remaining <= 0) {
+            t.remaining = 0; t.done = true; t.running = false;
+            clearInterval(t.interval);
+            renderMultiTimers();
+            showToast(`⏰ "${t.name}" complete!`, 'success');
+            if (navigator.vibrate) navigator.vibrate([200,100,200,100,200]);
+            if (typeof playTimerChime === 'function') playTimerChime();
+        } else {
+            if (dispEl) dispEl.textContent = formatMTTime(t.remaining);
+            // Update progress bar inline
+            if (itemEl) {
+                const bar = itemEl.querySelector('div[style*="height:100%"]');
+                if (bar) bar.style.width = `${(t.remaining / t.total) * 100}%`;
+            }
+        }
+    }, 1000);
+    renderMultiTimers();
+}
+
+window.mtToggle = function(id) {
+    const t = multiTimers.find(x => x.id === id);
+    if (!t || t.done) return;
+    if (t.running) { clearInterval(t.interval); t.running = false; }
+    else { mtStart(id); return; }
+    renderMultiTimers();
+};
+
+window.mtRemove = function(id) {
+    const t = multiTimers.find(x => x.id === id);
+    if (t && t.interval) clearInterval(t.interval);
+    multiTimers = multiTimers.filter(x => x.id !== id);
+    renderMultiTimers();
+};
+
+// Init empty state
+document.addEventListener('DOMContentLoaded', () => {
+    renderMultiTimers();
+});
+
+/* ══════════════════════════════════════════════════════
+   FEATURE: QR CODE SHARE FOR SHIFT NOTES
+   ══════════════════════════════════════════════════════ */
+window.showQRShare = function() {
+    const editor = document.getElementById('shift-notes');
+    if (!editor || !editor.innerText.trim()) { showToast('Add some notes first', 'warning'); return; }
+
+    const text = editor.innerText.trim();
+    const modal = document.getElementById('qr-modal');
+    const charEl = document.getElementById('qr-modal-chars');
+    if (charEl) charEl.textContent = `${text.length} characters — scan with any camera app`;
+
+    modal.classList.add('visible');
+    // Generate QR using a lightweight pure-JS implementation
+    setTimeout(() => generateQRCode(text), 50);
+};
+
+window.closeQRModal = function() {
+    document.getElementById('qr-modal').classList.remove('visible');
+};
+
+window.downloadQR = function() {
+    const canvas = document.getElementById('qr-canvas');
+    if (!canvas) return;
+    const a = document.createElement('a');
+    a.download = `medconvert-notes-${new Date().toISOString().slice(0,10)}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+    showToast('QR image saved', 'success');
+};
+
+function generateQRCode(text) {
+    // Minimal QR code renderer using data URI approach via external lib
+    const canvas = document.getElementById('qr-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    // Use a data URL approach: encode text as a URL and render via QR API
+    // We'll use the qrcode.js library loaded from CDN
+    if (typeof QRCode !== 'undefined') {
+        canvas.width = 200; canvas.height = 200;
+        const qr = new QRCode(canvas, { text: text.substring(0, 2000), width: 200, height: 200, colorDark: '#2d5a27', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+    } else {
+        // Fallback: load qrcode library dynamically
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+        script.onload = () => {
+            canvas.width = 200; canvas.height = 200;
+            canvas.innerHTML = '';
+            new QRCode(canvas, { text: text.substring(0, 2000), width: 200, height: 200, colorDark: '#2d5a27', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+        };
+        script.onerror = () => {
+            // Ultimate fallback: render a message
+            ctx.fillStyle = '#f5f0e8';
+            ctx.fillRect(0,0,200,200);
+            ctx.fillStyle = '#2d5a27';
+            ctx.font = '11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('QR unavailable offline.', 100, 90);
+            ctx.fillText('Use Copy instead.', 100, 110);
+        };
+        document.head.appendChild(script);
+    }
+}
+
+// Close QR modal on overlay click
+document.addEventListener('DOMContentLoaded', () => {
+    const qrOverlay = document.getElementById('qr-modal');
+    if (qrOverlay) qrOverlay.addEventListener('click', e => { if (e.target === qrOverlay) closeQRModal(); });
+});
+
+/* ══════════════════════════════════════════════════════
+   FEATURE: VANCOMYCIN AUC/MIC DOSING CALCULATOR
+   ══════════════════════════════════════════════════════ */
+window.calculateVancomycin = function() {
+    const weight   = parseFloat(document.getElementById('vanco-weight').value);
+    const age      = parseInt(document.getElementById('vanco-age').value);
+    const cr       = parseFloat(document.getElementById('vanco-cr').value);
+    const sex      = document.getElementById('vanco-sex').value;
+    const interval = parseInt(document.getElementById('vanco-interval').value);
+    const mic      = parseFloat(document.getElementById('vanco-mic').value);
+
+    if (!weight || !age || !cr || !interval) { showToast('Fill in all fields', 'warning'); return; }
+    if (weight < 20 || weight > 300) { showToast('Check patient weight', 'warning'); return; }
+
+    // Cockcroft-Gault CrCl
+    const crcl = ((140 - age) * weight / (72 * cr)) * (sex === 'female' ? 0.85 : 1.0);
+    // Vanco CL (Matzke 1984): CL = (0.695 × CrCl/TBW) + 0.05
+    const vancoClLhrKg = (0.695 * (crcl / weight)) + 0.05;
+    const vancoCl = vancoClLhrKg * weight; // L/hr
+    // Vd (Rybak): 0.4–0.7 L/kg; use 0.5 L/kg
+    const vd = 0.5 * weight;
+    // Kel
+    const kel = vancoCl / vd;
+    // Half-life
+    const t12 = 0.693 / kel;
+
+    // Target AUC 400–600; aim for 500
+    const targetAUC = 500; // mg·h/L (assuming MIC=1)
+    const adjustedTarget = targetAUC * mic;
+    // Dose = CL × targetAUC × interval / 24  (simplified one-compartment)
+    const dose = Math.round((vancoCl * adjustedTarget * (interval / 24)) / 100) * 100;
+    const clampedDose = Math.min(Math.max(dose, 500), 3000);
+    // Predicted AUC at this dose
+    const predAUC = (clampedDose * 24) / (vancoCl * interval * mic);
+    const aucStatus = predAUC >= 400 && predAUC <= 600 ? 'vc-target' : predAUC > 600 ? 'vc-warn' : 'vc-danger';
+
+    document.getElementById('vc-cl-val').textContent  = `${vancoCl.toFixed(2)} L/hr`;
+    document.getElementById('vc-vd-val').textContent  = `${(vd/weight).toFixed(2)} L/kg`;
+    document.getElementById('vc-dose-val').textContent = `${clampedDose} mg`;
+    document.getElementById('vc-auc-val').textContent  = `${Math.round(predAUC)} mg·h/L`;
+
+    document.getElementById('vc-auc-card').className = `vanco-result-card ${aucStatus}`;
+
+    let interp = '';
+    if (predAUC >= 400 && predAUC <= 600) {
+        interp = `Predicted AUC/MIC ${Math.round(predAUC)} is within target (400–600). Give ${clampedDose} mg every ${interval} hours.`;
+    } else if (predAUC > 600) {
+        interp = `⚠️ Predicted AUC/MIC ${Math.round(predAUC)} exceeds target. Consider reducing dose to ${Math.max(clampedDose-250,500)} mg q${interval}h or extending interval.`;
+    } else {
+        interp = `Predicted AUC/MIC ${Math.round(predAUC)} is below target. Consider increasing dose. Verify renal function and weight.`;
+    }
+    interp += ` CrCl: ${Math.round(crcl)} mL/min. Half-life: ${t12.toFixed(1)} hrs.`;
+    document.getElementById('vanco-interp-text').textContent = interp;
+    const interpEl = document.getElementById('vanco-interp');
+    interpEl.classList.remove('result-normal','result-warning','result-danger','result-neutral');
+    interpEl.classList.add(predAUC >= 400 && predAUC <= 600 ? 'result-normal' : predAUC > 600 ? 'result-warning' : 'result-danger');
+
+    document.getElementById('vanco-results').style.display = '';
+    addToHistory('Dosage', 'Vancomycin', `${clampedDose} mg q${interval}h`);
+};
+
+/* ══════════════════════════════════════════════════════
+   FEATURE: AMINOGLYCOSIDE HARTFORD NOMOGRAM
+   ══════════════════════════════════════════════════════ */
+window.calculateAminoglycoside = function() {
+    const drug   = document.getElementById('amino-drug').value;
+    const abw    = parseFloat(document.getElementById('amino-weight').value);
+    const height = parseFloat(document.getElementById('amino-height').value);
+    const sex    = document.getElementById('amino-sex').value;
+    const cr     = parseFloat(document.getElementById('amino-cr').value);
+    const age    = parseInt(document.getElementById('amino-age').value);
+
+    if (!abw || !height || !cr || !age) { showToast('Fill in all fields', 'warning'); return; }
+
+    // Ideal body weight
+    const ibw = sex === 'male' ? 50 + 2.3 * ((height/2.54) - 60) : 45.5 + 2.3 * ((height/2.54) - 60);
+    // Adjusted BW if obese (ABW > 130% IBW)
+    const dosingWeight = abw > 1.3 * ibw ? ibw + 0.4 * (abw - ibw) : abw;
+
+    // CrCl (Cockcroft-Gault)
+    const crcl = Math.min(((140 - age) * dosingWeight / (72 * cr)) * (sex === 'female' ? 0.85 : 1.0), 120);
+
+    if (crcl < 20) { showToast('CrCl <20 mL/min — once-daily aminoglycoside not recommended', 'danger'); return; }
+
+    // Dosing
+    const dosePerKg = drug === 'amikacin' ? 15 : 7;
+    const dose = Math.round(dosingWeight * dosePerKg / 10) * 10;
+
+    // Hartford nomogram interval selection based on CrCl
+    let intervalHrs, nomogramNote;
+    if (crcl >= 60)      { intervalHrs = 24; nomogramNote = 'Plot 6–14 hr level on Hartford nomogram — expect q24h zone.'; }
+    else if (crcl >= 40) { intervalHrs = 36; nomogramNote = 'Plot 6–14 hr level — likely q36h zone. Confirm with nomogram.'; }
+    else                 { intervalHrs = 48; nomogramNote = 'Plot 6–14 hr level — likely q48h zone. Confirm with nomogram.'; }
+
+    document.getElementById('amino-dosing-weight').textContent = `${dosingWeight.toFixed(1)} kg${abw > 1.3*ibw ? ' (adj)' : ''}`;
+    document.getElementById('amino-dose').textContent          = `${dose} mg`;
+    document.getElementById('amino-crcl').textContent         = `${Math.round(crcl)} mL/min`;
+    document.getElementById('amino-interval').textContent     = `q${intervalHrs}h`;
+
+    const interp = `${dose} mg ${drug} every ${intervalHrs} hrs. IBW: ${ibw.toFixed(1)} kg. ${nomogramNote} Draw random level 6–14 hrs post-infusion to confirm interval.`;
+    document.getElementById('amino-interp-text').textContent = interp;
+    const interpEl = document.getElementById('amino-interp');
+    interpEl.classList.remove('result-normal','result-warning','result-danger','result-neutral');
+    interpEl.classList.add(intervalHrs === 24 ? 'result-normal' : intervalHrs === 36 ? 'result-warning' : 'result-danger');
+
+    document.getElementById('amino-results').style.display = '';
+    addToHistory('Dosage', drug.charAt(0).toUpperCase()+drug.slice(1), `${dose} mg q${intervalHrs}h`);
+};
+
+/* ══════════════════════════════════════════════════════
+   I&O TRACKER
+   ══════════════════════════════════════════════════════ */
+let ioEntries = [];
+try { ioEntries = JSON.parse(localStorage.getItem('mc_io') || '[]'); } catch {}
+
+function ioSave() { try { localStorage.setItem('mc_io', JSON.stringify(ioEntries)); } catch {} }
+
+function ioAdd(dir) {
+    const amt = parseFloat(document.getElementById(`io-${dir}-amt`).value);
+    const type = document.getElementById(`io-${dir}-type`).value;
+    if (!amt || amt <= 0) { showToast('Enter a valid amount', 'warning'); return; }
+    ioEntries.push({ dir, amt, type, time: new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',hour12:true}), ts: Date.now() });
+    document.getElementById(`io-${dir}-amt`).value = '';
+    ioSave(); ioRender();
+    showToast(`${dir==='in'?'Intake':'Output'}: ${amt} mL (${type})`, 'success');
+    if (navigator.vibrate) navigator.vibrate(10);
+}
+
+function ioRender() {
+    const log = document.getElementById('io-log');
+    if (!log) return;
+    const totalIn  = ioEntries.filter(e=>e.dir==='in').reduce((s,e)=>s+e.amt,0);
+    const totalOut = ioEntries.filter(e=>e.dir==='out').reduce((s,e)=>s+e.amt,0);
+    const bal = totalIn - totalOut;
+    const balEl = document.getElementById('io-balance');
+    if (balEl) {
+        balEl.textContent = `${bal >= 0 ? '+' : ''}${bal} mL`;
+        balEl.style.color = bal > 0 ? 'var(--success)' : bal < 0 ? 'var(--dusty-rose)' : 'var(--forest)';
+    }
+    if (!ioEntries.length) { log.innerHTML = '<div class="multi-timer-empty">No entries yet. Add intake or output above.</div>'; return; }
+    log.innerHTML = [...ioEntries].reverse().map(e => `
+        <div style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius-lg);">
+            <div style="width:2.25rem;height:2.25rem;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;background:${e.dir==='in'?'var(--success-bg)':'var(--danger-bg)'};border:1px solid ${e.dir==='in'?'var(--success)':'var(--dusty-rose)'};">
+                <svg viewBox="0 0 24 24" fill="none" stroke="${e.dir==='in'?'var(--success)':'var(--dusty-rose)'}" stroke-width="2.5" stroke-linecap="round" width="14" height="14">${e.dir==='in'?'<path d="M12 5v14M5 12l7 7 7-7"/>':'<path d="M12 19V5M5 12l7-7 7 7"/>'}</svg>
+            </div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:var(--text-sm);font-weight:700;color:var(--text-primary);font-family:var(--font-body);">${e.amt} mL — ${e.type}</div>
+                <div style="font-size:0.65rem;color:var(--text-muted);font-family:var(--font-body);">${e.dir==='in'?'Intake':'Output'} · ${e.time}</div>
+            </div>
+            <button onclick="ioRemove(${e.ts})" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0.25rem;border-radius:var(--radius-sm);" title="Remove">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>`).join('');
+}
+
+window.ioRemove = function(ts) { ioEntries = ioEntries.filter(e=>e.ts!==ts); ioSave(); ioRender(); };
+window.ioClearAll = function() { ioEntries = []; ioSave(); ioRender(); showToast('I&O cleared','info'); };
+document.addEventListener('DOMContentLoaded', ioRender);
+
+/* ══════════════════════════════════════════════════════
+   HANDOVER BUILDER
+   ══════════════════════════════════════════════════════ */
+let handoverPatients = [];
+try { handoverPatients = JSON.parse(localStorage.getItem('mc_handover') || '[]'); } catch {}
+let _hoId = handoverPatients.reduce((m,p)=>Math.max(m,p.id||0),0);
+
+function handoverSave() { try { localStorage.setItem('mc_handover', JSON.stringify(handoverPatients)); } catch {} }
+
+window.handoverAdd = function() {
+    const id = ++_hoId;
+    handoverPatients.push({ id, bed:'', name:'', diagnosis:'', situation:'', background:'', assessment:'', recommendation:'', allergies:'' });
+    handoverSave(); handoverRender(); handoverRenderEmpty();
+};
+
+window.handoverRemove = function(id) {
+    handoverPatients = handoverPatients.filter(p=>p.id!==id);
+    handoverSave(); handoverRender(); handoverRenderEmpty();
+};
+
+window.handoverUpdate = function(id, field, val) {
+    const p = handoverPatients.find(x=>x.id===id);
+    if (p) { p[field] = val; handoverSave(); }
+};
+
+window.handoverCopyAll = function() {
+    if (!handoverPatients.length) { showToast('No patients to copy','warning'); return; }
+    const text = handoverPatients.map(p => [
+        `=== ${p.bed ? 'Bed '+p.bed : 'Patient'} ${p.name ? '— '+p.name : ''} ===`,
+        p.diagnosis ? `Dx: ${p.diagnosis}` : '',
+        p.allergies ? `Allergies: ${p.allergies}` : '',
+        p.situation ? `S: ${p.situation}` : '',
+        p.background ? `B: ${p.background}` : '',
+        p.assessment ? `A: ${p.assessment}` : '',
+        p.recommendation ? `R: ${p.recommendation}` : '',
+    ].filter(Boolean).join('\n')).join('\n\n');
+    navigator.clipboard.writeText(text).then(()=>showToast('Handover copied','success')).catch(()=>showToast('Copy failed','danger'));
+};
+
+window.handoverPrint = function() {
+    const w = window.open('','_blank');
+    const rows = handoverPatients.map(p=>`<tr><td>${p.bed}</td><td>${p.name}</td><td>${p.diagnosis}</td><td>${p.allergies}</td><td>${p.situation}</td><td>${p.assessment}</td><td>${p.recommendation}</td></tr>`).join('');
+    w.document.write(`<html><head><title>Handover</title><style>body{font-family:sans-serif;font-size:12px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ccc;padding:4px 6px;vertical-align:top;}th{background:#eaf5e8;}@media print{body{margin:0;}}</style></head><body><h2 style="color:#2d5a27">Shift Handover — ${new Date().toLocaleDateString()}</h2><table><tr><th>Bed</th><th>Name</th><th>Diagnosis</th><th>Allergies</th><th>Situation</th><th>Assessment</th><th>Plan/Rec</th></tr>${rows}</table></body></html>`);
+    w.document.close(); setTimeout(()=>{w.print();},300);
+};
+
+window.handoverClearAll = function() {
+    if (!confirm('Clear all patients?')) return;
+    handoverPatients=[]; _hoId=0; handoverSave(); handoverRender(); handoverRenderEmpty();
+};
+
+function handoverRender() {
+    const list = document.getElementById('handover-list');
+    if (!list) return;
+    list.innerHTML = handoverPatients.map(p => `
+        <div style="background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius-xl);padding:var(--space-5);display:flex;flex-direction:column;gap:var(--space-3);">
+            <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;">
+                <input type="text" value="${p.bed}" placeholder="Bed #" style="width:5rem;padding:0.35rem 0.5rem;border:1.5px solid var(--border);border-radius:var(--radius-md);font-family:var(--font-body);font-size:var(--text-xs);font-weight:700;background:var(--bg-input);color:var(--text-primary);" oninput="handoverUpdate(${p.id},'bed',this.value)">
+                <input type="text" value="${p.name}" placeholder="Patient name" style="flex:1;min-width:8rem;padding:0.35rem 0.5rem;border:1.5px solid var(--border);border-radius:var(--radius-md);font-family:var(--font-body);font-size:var(--text-sm);background:var(--bg-input);color:var(--text-primary);" oninput="handoverUpdate(${p.id},'name',this.value)">
+                <input type="text" value="${p.allergies}" placeholder="Allergies (NKDA)" style="flex:1;min-width:8rem;padding:0.35rem 0.5rem;border:1.5px solid var(--border);border-radius:var(--radius-md);font-family:var(--font-body);font-size:var(--text-xs);background:var(--danger-bg);color:var(--danger);border-color:rgba(122,42,34,0.3);" oninput="handoverUpdate(${p.id},'allergies',this.value)">
+                <button onclick="handoverRemove(${p.id})" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0.25rem;" title="Remove patient">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <input type="text" value="${p.diagnosis}" placeholder="Diagnosis / admission reason" style="width:100%;padding:0.35rem 0.5rem;border:1.5px solid var(--border);border-radius:var(--radius-md);font-family:var(--font-body);font-size:var(--text-sm);background:var(--bg-input);color:var(--text-primary);" oninput="handoverUpdate(${p.id},'diagnosis',this.value)">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);">
+                <div><label style="display:block;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--sage);font-family:var(--font-body);margin-bottom:3px;">S — Situation</label>
+                <textarea rows="2" style="width:100%;resize:vertical;padding:0.35rem 0.5rem;border:1.5px solid var(--border);border-radius:var(--radius-md);font-family:var(--font-body);font-size:var(--text-xs);background:var(--bg-input);color:var(--text-primary);outline:none;" placeholder="Current status, reason for call…" oninput="handoverUpdate(${p.id},'situation',this.value)">${p.situation}</textarea></div>
+                <div><label style="display:block;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--sage);font-family:var(--font-body);margin-bottom:3px;">B — Background</label>
+                <textarea rows="2" style="width:100%;resize:vertical;padding:0.35rem 0.5rem;border:1.5px solid var(--border);border-radius:var(--radius-md);font-family:var(--font-body);font-size:var(--text-xs);background:var(--bg-input);color:var(--text-primary);outline:none;" placeholder="PMHx, meds, allergies…" oninput="handoverUpdate(${p.id},'background',this.value)">${p.background}</textarea></div>
+                <div><label style="display:block;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--amber);font-family:var(--font-body);margin-bottom:3px;">A — Assessment</label>
+                <textarea rows="2" style="width:100%;resize:vertical;padding:0.35rem 0.5rem;border:1.5px solid var(--border);border-radius:var(--radius-md);font-family:var(--font-body);font-size:var(--text-xs);background:var(--bg-input);color:var(--text-primary);outline:none;" placeholder="Nurse assessment…" oninput="handoverUpdate(${p.id},'assessment',this.value)">${p.assessment}</textarea></div>
+                <div><label style="display:block;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--dusty-rose);font-family:var(--font-body);margin-bottom:3px;">R — Recommendation</label>
+                <textarea rows="2" style="width:100%;resize:vertical;padding:0.35rem 0.5rem;border:1.5px solid var(--border);border-radius:var(--radius-md);font-family:var(--font-body);font-size:var(--text-xs);background:var(--bg-input);color:var(--text-primary);outline:none;" placeholder="Action needed, pending tasks…" oninput="handoverUpdate(${p.id},'recommendation',this.value)">${p.recommendation}</textarea></div>
+            </div>
+        </div>`).join('');
+}
+
+function handoverRenderEmpty() {
+    const empty = document.getElementById('handover-empty');
+    if (empty) empty.style.display = handoverPatients.length ? 'none' : '';
+}
+
+document.addEventListener('DOMContentLoaded', () => { handoverRender(); handoverRenderEmpty(); });
+
+/* ══════════════════════════════════════════════════════
+   MED DUE TRACKER
+   ══════════════════════════════════════════════════════ */
+let medDueList = [];
+try { medDueList = JSON.parse(localStorage.getItem('mc_meddue') || '[]'); } catch {}
+let _mdId = medDueList.reduce((m,x)=>Math.max(m,x.id||0),0);
+
+function medDueSave() { try { localStorage.setItem('mc_meddue', JSON.stringify(medDueList)); } catch {} }
+
+window.medDueAdd = function() {
+    const name = document.getElementById('med-name').value.trim();
+    const lastGiven = document.getElementById('med-last-given').value;
+    const freqHrs = parseFloat(document.getElementById('med-freq').value);
+    const patient = document.getElementById('med-patient').value.trim();
+    if (!name || !lastGiven) { showToast('Enter drug name and last given time', 'warning'); return; }
+    const [h,m] = lastGiven.split(':').map(Number);
+    const givenMs = new Date(); givenMs.setHours(h,m,0,0);
+    const nextDue = new Date(givenMs.getTime() + freqHrs * 3600000);
+    medDueList.push({ id: ++_mdId, name, lastGiven, freqHrs, nextDue: nextDue.getTime(), patient });
+    document.getElementById('med-name').value = '';
+    document.getElementById('med-last-given').value = '';
+    document.getElementById('med-patient').value = '';
+    medDueSave(); medDueRender();
+    showToast(`${name} tracked — next due ${nextDue.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',hour12:true})}`, 'success');
+};
+
+window.medDueRemove = function(id) { medDueList = medDueList.filter(x=>x.id!==id); medDueSave(); medDueRender(); };
+
+function medDueRender() {
+    const list = document.getElementById('meddue-list');
+    const empty = document.getElementById('meddue-empty');
+    if (!list) return;
+    if (!medDueList.length) { if(empty) empty.style.display=''; list.innerHTML=''; return; }
+    if(empty) empty.style.display='none';
+    const now = Date.now();
+    list.innerHTML = [...medDueList].sort((a,b)=>a.nextDue-b.nextDue).map(m => {
+        const diff = m.nextDue - now;
+        const overdue = diff < 0;
+        const dueTime = new Date(m.nextDue).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',hour12:true});
+        const diffAbs = Math.abs(diff);
+        const diffH = Math.floor(diffAbs/3600000);
+        const diffM = Math.floor((diffAbs%3600000)/60000);
+        const diffStr = diffH > 0 ? `${diffH}h ${diffM}m` : `${diffM}m`;
+        const urgency = overdue ? 'var(--danger)' : diff < 1800000 ? 'var(--warning)' : 'var(--success)';
+        const bg = overdue ? 'var(--danger-bg)' : diff < 1800000 ? 'var(--warning-bg)' : 'var(--bg-card)';
+        return `<div style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);background:${bg};border:1.5px solid ${urgency};border-radius:var(--radius-lg);">
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:var(--text-sm);font-weight:700;color:var(--text-primary);font-family:var(--font-body);">${m.name}</div>
+                <div style="font-size:0.65rem;color:var(--text-muted);font-family:var(--font-body);">${m.patient ? m.patient+' · ' : ''}q${m.freqHrs}h · Last: ${m.lastGiven}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+                <div style="font-size:var(--text-sm);font-weight:800;color:${urgency};font-family:var(--font-display);">${dueTime}</div>
+                <div style="font-size:0.65rem;font-weight:700;color:${urgency};font-family:var(--font-body);">${overdue?'OVERDUE '+diffStr:'in '+diffStr}</div>
+            </div>
+            <button onclick="medDueRemove(${m.id})" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0.25rem;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>`;
+    }).join('');
+}
+
+// Refresh med due times every minute
+setInterval(medDueRender, 60000);
+document.addEventListener('DOMContentLoaded', medDueRender);
+
+/* ══════════════════════════════════════════════════════
+   NEWS2 SCORE
+   ══════════════════════════════════════════════════════ */
+window.calcNEWS2 = function() {
+    const rr   = parseFloat(document.getElementById('news-rr')?.value);
+    const spo2 = parseFloat(document.getElementById('news-spo2')?.value);
+    const sbp  = parseFloat(document.getElementById('news-sbp')?.value);
+    const hr   = parseFloat(document.getElementById('news-hr')?.value);
+    const temp = parseFloat(document.getElementById('news-temp')?.value);
+    const o2   = parseInt(document.getElementById('news-o2')?.value || '0');
+    const avpu = parseInt(document.getElementById('news-avpu')?.value || '0');
+    const scale= parseInt(document.getElementById('news-scale')?.value || '1');
+    if (!rr && !spo2 && !sbp && !hr && !temp) return;
+
+    let s = {rr:0, spo2:0, o2, sbp:0, hr:0, temp:0, avpu};
+
+    // RR
+    if (rr <= 8) s.rr=3; else if (rr <= 11) s.rr=1; else if (rr <= 20) s.rr=0; else if (rr <= 24) s.rr=2; else s.rr=3;
+    // SpO2 — Scale 1
+    if (scale===1) {
+        if (spo2 <= 91) s.spo2=3; else if (spo2 <= 93) s.spo2=2; else if (spo2 <= 95) s.spo2=1; else s.spo2=0;
+    } else {
+        // Scale 2 (COPD target 88-92%)
+        if (spo2 <= 83) s.spo2=3; else if (spo2 <= 85) s.spo2=2; else if (spo2 <= 87) s.spo2=1;
+        else if (spo2 <= 92) s.spo2=0; else if (spo2 <= 94) s.spo2=1; else if (spo2 <= 96) s.spo2=2; else s.spo2=3;
+    }
+    // SBP
+    if (sbp <= 90) s.sbp=3; else if (sbp <= 100) s.sbp=2; else if (sbp <= 110) s.sbp=1; else if (sbp <= 219) s.sbp=0; else s.sbp=3;
+    // HR
+    if (hr <= 40) s.hr=3; else if (hr <= 50) s.hr=1; else if (hr <= 90) s.hr=0; else if (hr <= 110) s.hr=1; else if (hr <= 130) s.hr=2; else s.hr=3;
+    // Temp
+    if (temp <= 35.0) s.temp=3; else if (temp <= 36.0) s.temp=1; else if (temp <= 38.0) s.temp=0; else if (temp <= 39.0) s.temp=1; else s.temp=2;
+
+    const total = Object.values(s).reduce((a,b)=>a+b,0);
+    const maxSingle = Math.max(s.rr, s.spo2, s.sbp, s.hr, s.temp);
+    const hasRedFlag = maxSingle === 3;
+
+    let risk, action, color;
+    if (total >= 7 || (total >= 5 && hasRedFlag)) { risk='HIGH'; color='result-danger'; action='Emergency response — continuous monitoring, consider ICU, notify senior immediately.'; }
+    else if (total >= 5 || (total >= 4 && hasRedFlag)) { risk='MEDIUM-HIGH'; color='result-warning'; action='Urgent clinical review within 30 min. Consider HDU/ICU step-up.'; }
+    else if (total >= 3) { risk='MEDIUM'; color='result-warning'; action='Increased monitoring (q1h vitals). Urgent ward review.'; }
+    else { risk='LOW'; color='result-normal'; action='Routine monitoring as per ward policy.'; }
+
+    const resEl = document.getElementById('news2-result');
+    if (resEl) { resEl.className = `result-display show ${color}`; }
+    const scoreEl = document.getElementById('news2-score');
+    if (scoreEl) scoreEl.textContent = `${total} — ${risk}`;
+    const actionEl = document.getElementById('news2-action');
+    if (actionEl) actionEl.textContent = action;
+    const breakdownEl = document.getElementById('news2-breakdown');
+    if (breakdownEl) breakdownEl.innerHTML = `RR:${s.rr} | SpO₂:${s.spo2} | O₂:${s.o2} | SBP:${s.sbp} | HR:${s.hr} | Temp:${s.temp} | AVPU:${s.avpu}`;
+    addToHistory('Clinical', 'NEWS2', `${total} (${risk})`);
+    if (total >= 5 && navigator.vibrate) navigator.vibrate([100,50,100]);
+};
+
+/* ══════════════════════════════════════════════════════
+   qSOFA
+   ══════════════════════════════════════════════════════ */
+window.calcQSOFA = function() {
+    const rr  = document.getElementById('qsofa-rr')?.checked  ? 1 : 0;
+    const ms  = document.getElementById('qsofa-ms')?.checked  ? 1 : 0;
+    const sbp = document.getElementById('qsofa-sbp')?.checked ? 1 : 0;
+    const total = rr + ms + sbp;
+    const resEl = document.getElementById('qsofa-result');
+    const scoreEl = document.getElementById('qsofa-score');
+    const interpEl = document.getElementById('qsofa-interp');
+    if (!resEl || !scoreEl || !interpEl) return;
+    scoreEl.textContent = `${total} / 3`;
+    if (total >= 2) {
+        resEl.className = 'result-display show result-danger';
+        interpEl.textContent = '⚠️ High risk — suspect sepsis. Assess for organ dysfunction. Check lactate, cultures, consider escalation.';
+    } else if (total === 1) {
+        resEl.className = 'result-display show result-warning';
+        interpEl.textContent = 'Intermediate — monitor closely. Reassess if condition changes.';
+    } else {
+        resEl.className = 'result-display show result-normal';
+        interpEl.textContent = 'Low risk — routine monitoring. Reassess if deterioration.';
+    }
+    addToHistory('Clinical','qSOFA',`${total}/3`);
+};
+
+/* ══════════════════════════════════════════════════════
+   ECG GUIDE
+   ══════════════════════════════════════════════════════ */
+const ECG_RHYTHMS = [
+    { name:'Normal Sinus Rhythm', rate:'60–100 bpm', p:'Regular, upright in II', pr:'0.12–0.20s', qrs:'<0.12s', notes:'Normal variant. Rate varies with respiration (sinus arrhythmia is normal).' },
+    { name:'Sinus Bradycardia', rate:'<60 bpm', p:'Normal', pr:'Normal', qrs:'Normal', notes:'May be normal (athletes). Treat if symptomatic (hypotension, syncope). Atropine 0.5–1 mg IV.' },
+    { name:'Sinus Tachycardia', rate:'>100 bpm', p:'Normal', pr:'May shorten', qrs:'Normal', notes:'Treat the cause (fever, pain, dehydration, PE, sepsis). Rarely primary.' },
+    { name:'Atrial Fibrillation', rate:'Irregularly irregular', p:'Absent (fibrillatory baseline)', pr:'N/A', qrs:'Usually narrow', notes:'Rate control (metoprolol, diltiazem). Anticoagulation if >48h or unknown duration.' },
+    { name:'Atrial Flutter', rate:'Atrial ~300, ventricular 150 (2:1)', p:'Sawtooth flutter waves (II,III,aVF)', pr:'Variable', qrs:'Usually narrow', notes:'2:1 block most common. Cardioversion or rate control. High thromboembolic risk.' },
+    { name:'SVT (AVNRT)', rate:'150–250 bpm', p:'Buried in or after QRS', pr:'Very short', qrs:'Narrow', notes:'Vagal maneuvers first. Adenosine 6 mg rapid IV if no response. Cardiovert if unstable.' },
+    { name:'Ventricular Tachycardia', rate:'>100 bpm', p:'Dissociated', pr:'N/A', qrs:'>0.12s (wide, bizarre)', notes:'Pulseless VT → CPR + defibrillation. Pulsed → amiodarone 150 mg IV or cardiovert.' },
+    { name:'Ventricular Fibrillation', rate:'Chaotic', p:'Absent', pr:'N/A', qrs:'Absent — chaotic waves', notes:'Shockable rhythm — CPR immediately, defibrillate (200J biphasic), adrenaline 1 mg q3-5 min.' },
+    { name:'1st Degree AV Block', rate:'Normal', p:'Normal', pr:'>0.20s (>200 ms)', qrs:'Normal', notes:'Benign. Usually no treatment required. Monitor for progression.' },
+    { name:'2nd Degree — Mobitz I (Wenckebach)', rate:'Variable', p:'Normal', pr:'Progressive lengthening then dropped QRS', qrs:'Normal', notes:'Usually benign. If symptomatic, atropine or pacing. Often resolves.' },
+    { name:'2nd Degree — Mobitz II', rate:'Slow', p:'Normal', pr:'Fixed, then sudden dropped QRS', qrs:'Often wide', notes:'Risk of complete block. Pacemaker usually required. Atropine less effective.' },
+    { name:'3rd Degree (Complete) AV Block', rate:'Ventricular <40 bpm', p:'P waves dissociated from QRS', pr:'Varies — no relationship', qrs:'Wide (escape)', notes:'Emergency. Transcutaneous pacing immediately, then transvenous. Atropine bridge only.' },
+    { name:'Left Bundle Branch Block', rate:'Variable', p:'Normal', pr:'Normal', qrs:'>0.12s, notched in V5-6', notes:'New LBBB with chest pain = STEMI equivalent — activate cath lab.' },
+    { name:'Right Bundle Branch Block', rate:'Variable', p:'Normal', pr:'Normal', qrs:'>0.12s, rSR\' in V1', notes:'Often benign. New RBBB with anterior ST changes may indicate RV strain (PE, STEMI).' },
+];
+
+const ECG_INTERVALS = [
+    { name:'PR Interval', normal:'120–200 ms (3–5 small squares)', abnormal:'<120 ms = WPW/accessory pathway | >200 ms = 1st degree AV block' },
+    { name:'QRS Duration', normal:'<120 ms (<3 small squares)', abnormal:'>120 ms = bundle branch block, ventricular rhythm, hyperkalaemia, Na-channel toxicity' },
+    { name:'QT Interval', normal:'Men <440 ms | Women <460 ms', abnormal:'>500 ms = high risk TdP. Correct for rate using QTc = QT ÷ √RR (Bazett).' },
+    { name:'ST Segment', normal:'Isoelectric (flat)', abnormal:'Elevation ≥1 mm (2+ leads) = STEMI. Depression = ischaemia/strain/digoxin.' },
+    { name:'T Waves', normal:'Upright in I, II, V3–V6', abnormal:'Inverted = ischaemia, RBBB, RV strain. Peaked = hyperkalaemia.' },
+    { name:'P Wave', normal:'<2.5 mm tall, <120 ms wide, upright II', abnormal:'Bifid (P mitrale) = LAE. Peaked (P pulmonale) = RAE. Absent = AF/junctional rhythm.' },
+];
+
+const ECG_APPROACH = [
+    { step:1, title:'Rate', detail:'Count R-R intervals. 300÷(large squares between R-R). Normal 60–100. >100 = tachy, <60 = brady.' },
+    { step:2, title:'Rhythm', detail:'Regular or irregular? Check R-R intervals. Irregular = AF, PVCs, Wenckebach. Mark every P wave.' },
+    { step:3, title:'P waves', detail:'Present? Shape? One before every QRS? Upright in II, inverted in aVR?' },
+    { step:4, title:'PR interval', detail:'Measure from start of P to start of QRS. Normal 120–200 ms (3–5 small squares at 25mm/s).' },
+    { step:5, title:'QRS complex', detail:'Width? Normal <120 ms. Morphology in V1 and V6. RSR\' = RBBB. Slurred S in lateral = LBBB.' },
+    { step:6, title:'ST segment & T waves', detail:'Compare to TP baseline. Elevation in ≥2 contiguous leads? Depression? T-wave inversions? Hyperacute T?' },
+    { step:7, title:'QT interval', detail:'Measure QTc. Prolonged >500 ms = risk of Torsades de Pointes (TdP).' },
+    { step:8, title:'Overall interpretation', detail:'Combine all findings. State: Rate, Rhythm, Axis, Intervals, ST/T changes, and clinical correlation.' },
+];
+
+function renderECGGuide() {
+    const rhythmEl = document.getElementById('ecg-rhythm-list');
+    if (rhythmEl) {
+        rhythmEl.innerHTML = ECG_RHYTHMS.map(r => `
+            <div style="background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-4);">
+                <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-2);">
+                    <span style="font-size:var(--text-sm);font-weight:700;color:var(--forest);font-family:var(--font-display);">${r.name}</span>
+                    <span style="font-size:0.65rem;font-weight:700;background:var(--moss);color:var(--forest);padding:0.1em 0.55em;border-radius:var(--radius-full);font-family:var(--font-body);">${r.rate}</span>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-2);margin-bottom:var(--space-2);">
+                    <div style="font-size:0.65rem;font-family:var(--font-body);"><span style="color:var(--text-muted);font-weight:700;display:block;">P WAVE</span><span style="color:var(--text-primary);">${r.p}</span></div>
+                    <div style="font-size:0.65rem;font-family:var(--font-body);"><span style="color:var(--text-muted);font-weight:700;display:block;">PR</span><span style="color:var(--text-primary);">${r.pr}</span></div>
+                    <div style="font-size:0.65rem;font-family:var(--font-body);"><span style="color:var(--text-muted);font-weight:700;display:block;">QRS</span><span style="color:var(--text-primary);">${r.qrs}</span></div>
+                </div>
+                <div style="font-size:var(--text-xs);color:var(--text-secondary);font-family:var(--font-body);padding:var(--space-2) var(--space-3);background:var(--parchment);border-radius:var(--radius-md);border-left:3px solid var(--sage);">${r.notes}</div>
+            </div>`).join('');
+    }
+    const intEl = document.getElementById('ecg-interval-list');
+    if (intEl) {
+        intEl.innerHTML = ECG_INTERVALS.map(i => `
+            <div style="background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-4);">
+                <div style="font-size:var(--text-sm);font-weight:700;color:var(--forest);font-family:var(--font-display);margin-bottom:var(--space-2);">${i.name}</div>
+                <div style="font-size:var(--text-xs);font-family:var(--font-body);margin-bottom:var(--space-2);"><span style="color:var(--success);font-weight:700;">Normal: </span><span style="color:var(--text-primary);">${i.normal}</span></div>
+                <div style="font-size:var(--text-xs);font-family:var(--font-body);padding:var(--space-2) var(--space-3);background:var(--warning-bg);border-radius:var(--radius-md);border-left:3px solid var(--warning);"><span style="color:var(--warning);font-weight:700;">Abnormal: </span><span style="color:var(--text-primary);">${i.abnormal}</span></div>
+            </div>`).join('');
+    }
+    const appEl = document.getElementById('ecg-approach-list');
+    if (appEl) {
+        appEl.innerHTML = ECG_APPROACH.map(s => `
+            <div style="display:flex;align-items:flex-start;gap:var(--space-3);padding:var(--space-4);background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius-lg);">
+                <div style="width:2rem;height:2rem;border-radius:50%;background:var(--forest);color:white;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:var(--text-sm);flex-shrink:0;">${s.step}</div>
+                <div><div style="font-size:var(--text-sm);font-weight:700;color:var(--text-primary);font-family:var(--font-body);margin-bottom:4px;">${s.title}</div>
+                <div style="font-size:var(--text-xs);color:var(--text-secondary);font-family:var(--font-body);line-height:1.6;">${s.detail}</div></div>
+            </div>`).join('');
+    }
+}
+
+window.calcQTc = function() {
+    const qt = parseFloat(document.getElementById('qtc-qt').value);
+    const rr = parseFloat(document.getElementById('qtc-rr').value);
+    if (!qt || !rr) { showToast('Enter QT and RR intervals', 'warning'); return; }
+    const qtc = qt / Math.sqrt(rr / 1000);
+    const resEl = document.getElementById('qtc-result');
+    const valEl = document.getElementById('qtc-value');
+    const noteEl = document.getElementById('qtc-note');
+    if (!resEl) return;
+    resEl.style.display = '';
+    valEl.textContent = `${Math.round(qtc)} ms`;
+    let status, note;
+    if (qtc > 500) { status='result-danger'; note='Critically prolonged — high risk of Torsades de Pointes. Review QT-prolonging drugs, electrolytes (K+, Mg2+, Ca2+).'; }
+    else if (qtc > 460) { status='result-warning'; note='Prolonged — monitor, review medications and electrolytes.'; }
+    else { status='result-normal'; note='Within normal limits (Men <440 ms, Women <460 ms).'; }
+    resEl.className = `result-display show ${status}`;
+    noteEl.textContent = note;
+    addToHistory('ECG','QTc',`${Math.round(qtc)} ms`);
+};
+
+document.addEventListener('DOMContentLoaded', renderECGGuide);
+
+/* ══════════════════════════════════════════════════════
+   CRASH CART
+   ══════════════════════════════════════════════════════ */
+const CRASH_DRUGS = [
+    { name:'Adrenaline (Epinephrine)', adult:'1 mg IV q3-5 min', peds:'0.01 mg/kg IV (max 1 mg)', dose_fn: w=>`${(0.01*w).toFixed(2)} mg (${(0.1*w).toFixed(1)} mL of 1:10000)`, category:'Cardiac Arrest', color:'var(--danger)' },
+    { name:'Amiodarone', adult:'300 mg IV (VF/pVT)', peds:'5 mg/kg IV', dose_fn: w=>`${(5*w).toFixed(0)} mg`, category:'Antiarrhythmic', color:'var(--amber)' },
+    { name:'Atropine', adult:'0.5–1 mg IV, repeat to 3 mg', peds:'0.02 mg/kg IV (min 0.1 mg)', dose_fn: w=>`${Math.max(0.1,(0.02*w)).toFixed(2)} mg`, category:'Bradycardia', color:'var(--sage)' },
+    { name:'Adenosine', adult:'6 mg rapid IVP, then 12 mg', peds:'0.1 mg/kg (max 6 mg)', dose_fn: w=>`${Math.min(6,(0.1*w)).toFixed(1)} mg rapid IVP`, category:'SVT', color:'var(--sage)' },
+    { name:'Calcium Chloride 10%', adult:'5–10 mL IV (500–1000 mg)', peds:'0.2 mL/kg IV (20 mg/kg)', dose_fn: w=>`${(0.2*w).toFixed(1)} mL (${(20*w).toFixed(0)} mg)`, category:'Hyperkalaemia/Ca2+', color:'var(--warning)' },
+    { name:'Sodium Bicarbonate 8.4%', adult:'50–100 mmol IV', peds:'1 mmol/kg IV', dose_fn: w=>`${(1*w).toFixed(0)} mmol (${(1*w).toFixed(0)} mL of 8.4%)`, category:'Severe Acidosis', color:'var(--warning)' },
+    { name:'Dextrose 50%', adult:'50 mL (25 g) IV', peds:'2–5 mL/kg D10W', dose_fn: w=>`${(2*w).toFixed(0)}–${(5*w).toFixed(0)} mL of D10W`, category:'Hypoglycaemia', color:'var(--amber)' },
+    { name:'Magnesium Sulfate', adult:'1–2 g IV (TdP), 4–6 g (eclampsia)', peds:'25–50 mg/kg IV', dose_fn: w=>`${(25*w).toFixed(0)}–${(50*w).toFixed(0)} mg`, category:'TdP / Eclampsia', color:'var(--sage)' },
+    { name:'Naloxone', adult:'0.4–2 mg IV/IM/IN q2-3 min', peds:'0.01 mg/kg IV (max 0.1 mg/kg)', dose_fn: w=>`${(0.01*w).toFixed(3)} mg IV`, category:'Opioid Reversal', color:'var(--forest)' },
+    { name:'Midazolam (Seizure)', adult:'5–10 mg IM/IV', peds:'0.1–0.2 mg/kg IM (max 10 mg)', dose_fn: w=>`${(0.15*w).toFixed(1)} mg (range ${(0.1*w).toFixed(1)}–${Math.min(10,(0.2*w)).toFixed(1)} mg)`, category:'Seizure', color:'var(--amber)' },
+    { name:'Hydrocortisone', adult:'200 mg IV', peds:'2–4 mg/kg IV (max 200 mg)', dose_fn: w=>`${Math.min(200,(3*w)).toFixed(0)} mg IV`, category:'Anaphylaxis / Adrenal', color:'var(--sage)' },
+];
+
+window.renderCrashCart = function() {
+    const weight = parseFloat(document.getElementById('crash-weight')?.value) || 0;
+    const list = document.getElementById('crash-cart-list');
+    if (!list) return;
+    list.innerHTML = CRASH_DRUGS.map(d => {
+        const doseCalc = weight > 0 ? `<div style="font-size:var(--text-sm);font-weight:700;color:${d.color};font-family:var(--font-display);margin-top:var(--space-1);">→ ${d.dose_fn(weight)}</div>` : '';
+        return `<div style="background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-4);">
+            <div style="display:flex;align-items:flex-start;gap:var(--space-3);flex-wrap:wrap;">
+                <div style="flex:1;min-width:0;">
+                    <span style="font-size:0.65rem;font-weight:700;background:var(--parchment);color:var(--text-muted);padding:0.1em 0.55em;border-radius:var(--radius-full);font-family:var(--font-body);border:1px solid var(--border);">${d.category}</span>
+                    <div style="font-size:var(--text-sm);font-weight:700;color:var(--text-primary);font-family:var(--font-body);margin-top:var(--space-1);">${d.name}</div>
+                    <div style="font-size:var(--text-xs);color:var(--text-secondary);font-family:var(--font-body);margin-top:2px;">${d.adult}</div>
+                    ${doseCalc}
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+    // Autofill label
+    const lbl = document.getElementById('crash-weight-autofill');
+    if (lbl) lbl.textContent = '';
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const p = getPatientProfile ? getPatientProfile() : null;
+    if (p?.weight) {
+        const el = document.getElementById('crash-weight');
+        if (el && !el.value) { el.value = p.weight; const lbl = document.getElementById('crash-weight-autofill'); if(lbl) lbl.textContent='← from patient'; renderCrashCart(); }
+    }
+    renderCrashCart();
+});
+
+/* ══════════════════════════════════════════════════════
+   IV COMPATIBILITY
+   ══════════════════════════════════════════════════════ */
+// C=Compatible, I=Incompatible, U=Unknown/variable, V=Variable
+const IV_DRUGS = ['Norepinephrine','Epinephrine','Dopamine','Dobutamine','Amiodarone','Heparin','Insulin','Morphine','Fentanyl','Midazolam','Propofol','Vancomycin','Piperacillin-Taz','Meropenem','Furosemide','Potassium Cl','Magnesium SO4','Ondansetron'];
+
+const IV_COMPAT = {
+    'Norepinephrine-Epinephrine':'C','Norepinephrine-Dopamine':'C','Norepinephrine-Dobutamine':'C',
+    'Norepinephrine-Amiodarone':'C','Norepinephrine-Heparin':'C','Norepinephrine-Insulin':'C',
+    'Norepinephrine-Morphine':'C','Norepinephrine-Fentanyl':'C','Norepinephrine-Midazolam':'C',
+    'Norepinephrine-Propofol':'C','Norepinephrine-Vancomycin':'C','Norepinephrine-Furosemide':'I',
+    'Norepinephrine-Potassium Cl':'C','Norepinephrine-Magnesium SO4':'C','Norepinephrine-Ondansetron':'C',
+    'Epinephrine-Dopamine':'C','Epinephrine-Dobutamine':'C','Epinephrine-Amiodarone':'C',
+    'Epinephrine-Heparin':'C','Epinephrine-Insulin':'C','Epinephrine-Morphine':'C',
+    'Epinephrine-Midazolam':'C','Epinephrine-Propofol':'C','Epinephrine-Vancomycin':'C',
+    'Epinephrine-Furosemide':'I','Epinephrine-Ondansetron':'C',
+    'Dopamine-Dobutamine':'C','Dopamine-Amiodarone':'C','Dopamine-Heparin':'C',
+    'Dopamine-Insulin':'C','Dopamine-Morphine':'C','Dopamine-Fentanyl':'C',
+    'Dopamine-Midazolam':'C','Dopamine-Propofol':'C','Dopamine-Vancomycin':'C',
+    'Dopamine-Furosemide':'I','Dopamine-Potassium Cl':'C','Dopamine-Ondansetron':'C',
+    'Amiodarone-Heparin':'I','Amiodarone-Morphine':'C','Amiodarone-Midazolam':'C',
+    'Amiodarone-Propofol':'I','Amiodarone-Vancomycin':'C','Amiodarone-Furosemide':'I',
+    'Amiodarone-Potassium Cl':'C','Amiodarone-Ondansetron':'I',
+    'Heparin-Insulin':'C','Heparin-Morphine':'C','Heparin-Fentanyl':'C',
+    'Heparin-Midazolam':'I','Heparin-Vancomycin':'I','Heparin-Furosemide':'C',
+    'Heparin-Potassium Cl':'C','Heparin-Magnesium SO4':'C','Heparin-Ondansetron':'I',
+    'Insulin-Morphine':'C','Insulin-Fentanyl':'C','Insulin-Midazolam':'C',
+    'Insulin-Propofol':'C','Insulin-Vancomycin':'C','Insulin-Furosemide':'C',
+    'Insulin-Potassium Cl':'C','Insulin-Ondansetron':'C',
+    'Morphine-Fentanyl':'C','Morphine-Midazolam':'C','Morphine-Propofol':'C',
+    'Morphine-Vancomycin':'C','Morphine-Furosemide':'I','Morphine-Ondansetron':'C',
+    'Fentanyl-Midazolam':'C','Fentanyl-Propofol':'C','Fentanyl-Vancomycin':'C',
+    'Fentanyl-Furosemide':'I','Fentanyl-Ondansetron':'C',
+    'Midazolam-Propofol':'C','Midazolam-Vancomycin':'C','Midazolam-Furosemide':'I',
+    'Midazolam-Potassium Cl':'C','Midazolam-Ondansetron':'C',
+    'Propofol-Vancomycin':'C','Propofol-Furosemide':'I','Propofol-Ondansetron':'C',
+    'Propofol-Potassium Cl':'C','Propofol-Magnesium SO4':'C',
+    'Vancomycin-Piperacillin-Taz':'I','Vancomycin-Meropenem':'C','Vancomycin-Furosemide':'I',
+    'Vancomycin-Potassium Cl':'C','Vancomycin-Ondansetron':'C',
+    'Piperacillin-Taz-Meropenem':'U','Piperacillin-Taz-Furosemide':'C','Piperacillin-Taz-Vancomycin':'I',
+    'Meropenem-Furosemide':'I','Meropenem-Vancomycin':'C','Meropenem-Ondansetron':'C',
+    'Furosemide-Potassium Cl':'C','Furosemide-Magnesium SO4':'C','Furosemide-Ondansetron':'I',
+    'Potassium Cl-Magnesium SO4':'C','Potassium Cl-Ondansetron':'C',
+    'Magnesium SO4-Ondansetron':'C',
+};
+
+function getCompat(a,b) {
+    return IV_COMPAT[`${a}-${b}`] || IV_COMPAT[`${b}-${a}`] || 'U';
+}
+
+function initCompatMatrix() {
+    const s1 = document.getElementById('compat-drug1');
+    const s2 = document.getElementById('compat-drug2');
+    if (!s1 || !s2) return;
+    IV_DRUGS.forEach(d => {
+        s1.innerHTML += `<option value="${d}">${d}</option>`;
+        s2.innerHTML += `<option value="${d}">${d}</option>`;
+    });
+    renderCompatMatrix();
+}
+
+window.checkCompat = function() {
+    const a = document.getElementById('compat-drug1')?.value;
+    const b = document.getElementById('compat-drug2')?.value;
+    const resEl = document.getElementById('compat-result');
+    const verdictEl = document.getElementById('compat-verdict');
+    const noteEl = document.getElementById('compat-note');
+    if (!a || !b || a === b) { if(resEl) resEl.style.display='none'; return; }
+    const c = getCompat(a, b);
+    if(resEl) resEl.style.display='';
+    const info = {
+        'C': { text:'Compatible', status:'result-normal', note:'Generally compatible in Y-site or same line. Verify concentration and diluent.' },
+        'I': { text:'Incompatible', status:'result-danger', note:'Do NOT mix or co-administer in same line. Use separate IV lines or flush between.' },
+        'V': { text:'Variable', status:'result-warning', note:'Compatibility depends on concentration. Consult pharmacy or Trissel\'s.' },
+        'U': { text:'Unknown / No data', status:'result-neutral', note:'No sufficient data. Consult pharmacy before co-administering.' },
+    }[c] || { text:'Unknown', status:'result-neutral', note:'Consult pharmacy.' };
+    if(resEl) { resEl.className = `result-display show ${info.status}`; resEl.style.display=''; }
+    if(verdictEl) verdictEl.textContent = info.text;
+    if(noteEl) noteEl.textContent = info.note;
+};
+
+function renderCompatMatrix() {
+    const el = document.getElementById('compat-matrix');
+    if (!el) return;
+    const drugs = IV_DRUGS.slice(0, 12); // top 12 for matrix size
+    const colors = { C:'#c8f7c5', I:'#ffc8c8', V:'#fff3c8', U:'#e8e8e8' };
+    const labels = { C:'C', I:'✗', V:'V', U:'?' };
+    let html = '<table style="border-collapse:collapse;font-size:0.6rem;font-family:var(--font-body);">';
+    html += '<tr><th style="padding:3px;"></th>';
+    drugs.forEach(d => html += `<th style="padding:3px 2px;writing-mode:vertical-rl;text-orientation:mixed;white-space:nowrap;font-weight:700;color:var(--text-secondary);max-height:80px;">${d.substring(0,10)}</th>`);
+    html += '</tr>';
+    drugs.forEach((a,i) => {
+        html += `<tr><td style="padding:3px 4px;font-weight:700;color:var(--text-secondary);white-space:nowrap;">${a.substring(0,12)}</td>`;
+        drugs.forEach((b,j) => {
+            if (i === j) { html += `<td style="background:#f0f0f0;text-align:center;padding:2px;"></td>`; return; }
+            if (i > j) { const c=getCompat(a,b); html += `<td style="background:${colors[c]};text-align:center;padding:2px;font-weight:700;color:#333;cursor:default;" title="${a} + ${b}: ${c==='C'?'Compatible':c==='I'?'Incompatible':'Variable/Unknown'}">${labels[c]}</td>`; }
+            else { html += `<td style="background:transparent;"></td>`; }
+        });
+        html += '</tr>';
+    });
+    html += '</table><div style="display:flex;gap:var(--space-3);margin-top:var(--space-3);flex-wrap:wrap;">';
+    [['C','Compatible','#c8f7c5'],['I','Incompatible','#ffc8c8'],['V','Variable','#fff3c8'],['?','Unknown','#e8e8e8']].forEach(([l,t,c])=>{ html+=`<span style="display:flex;align-items:center;gap:4px;font-size:0.65rem;font-family:var(--font-body);color:var(--text-muted);"><span style="display:inline-block;width:12px;height:12px;background:${c};border:1px solid #ccc;border-radius:2px;"></span>${l} = ${t}</span>`; });
+    html += '</div>';
+    el.innerHTML = html;
+}
+
+document.addEventListener('DOMContentLoaded', initCompatMatrix);
+
+/* ══════════════════════════════════════════════════════
+   SWIPE TO SWITCH TABS (mobile)
+   ══════════════════════════════════════════════════════ */
+(function() {
+    let swipeStartX = 0, swipeStartY = 0;
+    const THRESHOLD = 60, ANGLE_MAX = 35;
+    const TAB_ORDER = ['timer','dosage','iv','vitals','assessment','pediatric','lab','convert','reference','notes','drugs','io','handover','meddue','news2','qsofa','ecg','crashcart','ivcompat'];
+
+    document.addEventListener('touchstart', e => {
+        swipeStartX = e.touches[0].clientX;
+        swipeStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', e => {
+        if (window.innerWidth > 640) return;
+        const dx = e.changedTouches[0].clientX - swipeStartX;
+        const dy = e.changedTouches[0].clientY - swipeStartY;
+        if (Math.abs(dy) / Math.abs(dx) > Math.tan(ANGLE_MAX * Math.PI / 180)) return;
+        if (Math.abs(dx) < THRESHOLD) return;
+        // Don't swipe within inputs, editors or scrollable elements
+        const tgt = e.target;
+        if (tgt.closest('input,textarea,[contenteditable],.notes-editor,.more-sheet,.glove-panel')) return;
+        const activePanel = document.querySelector('.calc-card.active');
+        if (!activePanel) return;
+        const curTab = activePanel.id.replace('panel-','');
+        const idx = TAB_ORDER.indexOf(curTab);
+        if (idx === -1) return;
+        const nextIdx = dx < 0 ? Math.min(idx+1, TAB_ORDER.length-1) : Math.max(idx-1, 0);
+        if (nextIdx === idx) return;
+        const nextTab = TAB_ORDER[nextIdx];
+        if (window.switchToTab) window.switchToTab(nextTab);
+        if (window.updateMobileNav) window.updateMobileNav(nextTab);
+    }, { passive: true });
+})();
+
+/* ══════════════════════════════════════════════════════
+   PWA INSTALL PROMPT
+   ══════════════════════════════════════════════════════ */
+(function() {
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // Show nudge after 30s if not already installed
+        const installed = window.matchMedia('(display-mode: standalone)').matches;
+        if (installed) return;
+        const dismissed = localStorage.getItem('mc_install_dismissed');
+        if (dismissed && Date.now() - parseInt(dismissed) < 7 * 86400000) return;
+        setTimeout(() => showInstallNudge(), 30000);
+    });
+
+    function showInstallNudge() {
+        const existing = document.getElementById('pwa-nudge');
+        if (existing) return;
+        const nudge = document.createElement('div');
+        nudge.id = 'pwa-nudge';
+        nudge.style.cssText = `position:fixed;bottom:calc(4.5rem + env(safe-area-inset-bottom,0px) + 0.75rem);left:50%;transform:translateX(-50%);background:var(--forest);color:#fff;padding:0.75rem 1.25rem;border-radius:var(--radius-full);font-family:var(--font-body);font-size:var(--text-xs);font-weight:700;display:flex;align-items:center;gap:0.75rem;box-shadow:0 8px 32px rgba(45,90,39,0.4);z-index:8000;white-space:nowrap;max-width:90vw;`;
+        nudge.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><path d="M12 5v14M5 12l7-7 7 7"/></svg>Add to Home Screen for offline use<button id="pwa-install-btn" style="background:rgba(255,255,255,0.2);border:none;border-radius:var(--radius-md);color:#fff;padding:0.2rem 0.6rem;font-family:var(--font-body);font-size:var(--text-2xs);font-weight:700;cursor:pointer;margin-left:4px;">Install</button><button id="pwa-dismiss-btn" style="background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;padding:0.15rem;font-size:1rem;line-height:1;">×</button>`;
+        document.body.appendChild(nudge);
+        document.getElementById('pwa-install-btn')?.addEventListener('click', async () => {
+            if (deferredPrompt) { deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; deferredPrompt = null; }
+            nudge.remove();
+        });
+        document.getElementById('pwa-dismiss-btn')?.addEventListener('click', () => {
+            localStorage.setItem('mc_install_dismissed', Date.now().toString());
+            nudge.remove();
+        });
+        // Auto-hide after 15s
+        setTimeout(() => nudge.remove(), 15000);
+    }
+})();
+
+</script>
 <button class="glove-fab" id="glove-fab" onclick="toggleGlove()" aria-label="Open Glove Scratchpad" title="Quick vitals scratchpad">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
@@ -9318,6 +11170,61 @@ window.addEventListener('load', function() {
             <span id="glove-expiry-text">No auto-clear set</span>
         </div>
         <button class="glove-send-btn" onclick="gloveSendToNotes()">→ Send to Notes</button>
+    </div>
+</div>
+
+<!-- ==================== PATIENT PROFILE MODAL ==================== -->
+<div id="patient-modal" class="patient-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="patient-modal-title">
+    <div class="patient-modal-card">
+        <h3 class="patient-modal-title" id="patient-modal-title">Current Patient</h3>
+        <p class="patient-modal-subtitle">Values auto-fill into weight-based dosing, BSA, eGFR, and vancomycin calculators.</p>
+        <div class="patient-modal-grid">
+            <div class="form-group">
+                <label>Weight (kg)</label>
+                <input type="number" inputmode="decimal" id="pt-weight" placeholder="e.g., 70" step="0.1" min="1">
+            </div>
+            <div class="form-group">
+                <label>Age (years)</label>
+                <input type="number" inputmode="decimal" id="pt-age" placeholder="e.g., 45" step="1" min="1" max="120">
+            </div>
+            <div class="form-group">
+                <label>Sex</label>
+                <select id="pt-sex"><option value="male">Male</option><option value="female">Female</option></select>
+            </div>
+            <div class="form-group">
+                <label>Height (cm)</label>
+                <input type="number" inputmode="decimal" id="pt-height" placeholder="e.g., 170" step="1">
+            </div>
+        </div>
+        <div class="patient-egfr-row form-group">
+            <label>Serum Creatinine (mg/dL) — used to estimate eGFR</label>
+            <input type="number" inputmode="decimal" id="pt-creatinine" placeholder="e.g., 1.0" step="0.01">
+            <div class="patient-egfr-badge" id="pt-egfr-badge" style="display:none"></div>
+        </div>
+        <div class="patient-modal-actions">
+            <button class="btn btn-secondary" onclick="closePatientModal()">Cancel</button>
+            <button class="btn btn-accent" onclick="clearPatientProfile()" style="background:transparent;border-color:var(--border);color:var(--text-muted);">Clear</button>
+            <button class="btn btn-primary" onclick="savePatientProfile()">Save &amp; Apply</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== QR SHARE MODAL ==================== -->
+<div id="qr-modal" class="qr-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="qr-modal-title">
+    <div class="qr-modal-card">
+        <h3 class="qr-modal-title" id="qr-modal-title">QR Handover</h3>
+        <p class="qr-modal-hint">Incoming colleague scans this to receive your shift notes instantly — no login or app needed.</p>
+        <div class="qr-canvas-wrap">
+            <canvas id="qr-canvas" width="200" height="200"></canvas>
+        </div>
+        <p class="qr-modal-hint" id="qr-modal-chars"></p>
+        <div class="qr-modal-actions">
+            <button class="btn btn-secondary" onclick="closeQRModal()">Close</button>
+            <button class="btn btn-primary" onclick="downloadQR()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Save Image
+            </button>
+        </div>
     </div>
 </div>
 
