@@ -2,16 +2,19 @@
 
 /* ── Cache identity ──────────────────────────────────────────────────────── */
 const BUILD_TS_RAW = 'BUILD_TS';
-// Guard: if the deploy-time sed replacement never ran, fall back to a timestamp
-// so at least the string is unique and won't forever match an old cache.
-const BUILD_TS   = BUILD_TS_RAW === 'BUILD_TS' ? 'fallback-' + Date.now() : BUILD_TS_RAW;
+// Guard: if the deploy-time sed replacement never ran, fall back to a hash of
+// a fixed seed so the cache name is STABLE between registrations (not a new
+// unique string every time, which would leak old caches endlessly).
+const BUILD_TS   = BUILD_TS_RAW === 'BUILD_TS' ? 'dev-2025-stable' : BUILD_TS_RAW;
 const CACHE_NAME = `medconvert-v4-${BUILD_TS}`;
 
 /* ── Core assets to precache ─────────────────────────────────────────────── */
 const PRECACHE_ASSETS = [
-    '/',
-    '/index.html',
-    '/manifest.json',
+    '/Med-Calc/',
+    '/Med-Calc/index.html',
+    '/Med-Calc/medconvert.css',
+    '/Med-Calc/medconvert.js',
+    '/Med-Calc/manifest.json',
 ];
 
 /* ── Offline fallback HTML ───────────────────────────────────────────────── */
