@@ -4252,7 +4252,7 @@ input[type="checkbox"]:focus-visible {
 }
 /* ── Time Adder ─────────────────────────────────────────────────────────── */
 .time-adder-section {
-    margin-top: var(--space-7);
+    margin-top: var(--space-9);
     padding: var(--space-5);
     background: var(--bg-input);
     border: 1.5px solid var(--border);
@@ -4361,10 +4361,18 @@ input[type="checkbox"]:focus-visible {
     font-family: var(--font-body); font-size: var(--text-xs);
     color: var(--text-muted);
 }
+.time-adder-btn-row {
+    display: flex; gap: var(--space-3); margin-top: var(--space-4);
+}
+.time-adder-btn-row .btn {
+    flex: 1;
+}
 
 /* Mobile responsive tweaks for time adder */
 @media (max-width: 480px) {
     .time-adder-row { gap: var(--space-2); }
     .time-adder-op-wrap { flex-direction: row; padding-bottom: 0; align-self: center; margin-top: var(--space-4); }
     .ta-result-time { font-size: 1.75rem; }
+    .time-adder-btn-row { flex-direction: column; }
+    .time-adder-btn-row .btn { width: 100%; }
 }

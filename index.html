@@ -567,10 +567,16 @@
                 <button class="ta-chip" onclick="setTAMins(480)">8h</button>
             </div>
 
-            <button class="btn btn-primary btn-full" onclick="calculateTimeAdder()" style="margin-top:var(--space-4);">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                Calculate Result Time
-            </button>
+            <div class="time-adder-btn-row">
+                <button class="btn btn-primary" onclick="calculateTimeAdder()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    Calculate
+                </button>
+                <button class="btn btn-secondary" onclick="resetTimeAdder()" aria-label="Reset to current time">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+                    Reset
+                </button>
+            </div>
 
             <div class="time-adder-result" id="ta-result" aria-live="polite" style="display:none;">
                 <div class="ta-result-equation" id="ta-result-equation"></div>

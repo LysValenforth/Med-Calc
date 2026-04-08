@@ -3782,6 +3782,26 @@ window.setTAMins = function(mins) {
     }
 };
 
+window.resetTimeAdder = function() {
+    const inp = document.getElementById('ta-base-time');
+    const minsInp = document.getElementById('ta-minutes');
+    const resultEl = document.getElementById('ta-result');
+    const now = new Date();
+    if (inp) {
+        inp.value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        delete inp.dataset.userEdited;
+    }
+    if (minsInp) minsInp.value = '';
+    if (resultEl) resultEl.style.display = 'none';
+    // Clear active chip highlight
+    document.querySelectorAll('.ta-chip').forEach(c => c.classList.remove('active'));
+    // Reset op to add
+    _taOp = 'add';
+    document.getElementById('ta-op-add')?.classList.add('active');
+    document.getElementById('ta-op-sub')?.classList.remove('active');
+    showToast('Reset to current time', 'info');
+};
+
 window.calculateTimeAdder = function() {
     const baseInput = document.getElementById('ta-base-time');
     const minsInput = document.getElementById('ta-minutes');
