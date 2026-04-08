@@ -527,6 +527,57 @@
                 <div class="multi-timer-empty" id="multi-timer-empty">Add parallel timers to track multiple infusions or obs intervals simultaneously.</div>
             </div>
         </div>
+
+        <!-- Time Adder section -->
+        <div class="time-adder-section">
+            <div class="time-adder-header">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                <span class="time-adder-title">Time Calculator</span>
+            </div>
+            <p class="time-adder-subtitle">Add or subtract minutes from any time — great for next-dose, recheck, or end-of-infusion planning.</p>
+
+            <div class="time-adder-row">
+                <div class="time-adder-field-wrap">
+                    <label class="time-adder-label" for="ta-base-time">Start Time</label>
+                    <input type="time" id="ta-base-time" class="time-adder-input" aria-label="Start time">
+                </div>
+                <div class="time-adder-op-wrap">
+                    <button class="time-adder-op-btn active" id="ta-op-add" onclick="setTimeAdderOp('add')" aria-label="Add time">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <button class="time-adder-op-btn" id="ta-op-sub" onclick="setTimeAdderOp('sub')" aria-label="Subtract time">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                </div>
+                <div class="time-adder-field-wrap">
+                    <label class="time-adder-label" for="ta-minutes">Minutes</label>
+                    <input type="number" id="ta-minutes" class="time-adder-input time-adder-mins" inputmode="numeric" placeholder="e.g. 70" min="1" max="1440" aria-label="Minutes to add or subtract">
+                </div>
+            </div>
+
+            <!-- Quick minute chips -->
+            <div class="time-adder-chips" aria-label="Quick minute presets">
+                <button class="ta-chip" onclick="setTAMins(15)">15m</button>
+                <button class="ta-chip" onclick="setTAMins(30)">30m</button>
+                <button class="ta-chip" onclick="setTAMins(60)">1h</button>
+                <button class="ta-chip" onclick="setTAMins(90)">90m</button>
+                <button class="ta-chip" onclick="setTAMins(120)">2h</button>
+                <button class="ta-chip" onclick="setTAMins(240)">4h</button>
+                <button class="ta-chip" onclick="setTAMins(360)">6h</button>
+                <button class="ta-chip" onclick="setTAMins(480)">8h</button>
+            </div>
+
+            <button class="btn btn-primary btn-full" onclick="calculateTimeAdder()" style="margin-top:var(--space-4);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                Calculate Result Time
+            </button>
+
+            <div class="time-adder-result" id="ta-result" aria-live="polite" style="display:none;">
+                <div class="ta-result-equation" id="ta-result-equation"></div>
+                <div class="ta-result-time" id="ta-result-time"></div>
+                <div class="ta-result-note" id="ta-result-note"></div>
+            </div>
+        </div>
     </div>
 
     <!-- dosage panel -->

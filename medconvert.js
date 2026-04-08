@@ -1,5 +1,3 @@
-/* MedConvert — main script */
-
 'use strict';
 
 document.addEventListener('DOMContentLoaded', () => { initializeApp(); });
@@ -277,55 +275,90 @@ function applyProfileData() {
 
 /* shift countdown */
 function initShiftCountdown() {
-    const p = getProfile();
     const el = document.getElementById('shift-countdown');
     if (!el) return;
-    if (!p?.shiftStart || !p?.shiftEnd) { el.style.display = 'none'; return; }
 
     function update() {
+        // Re-read profile on every tick so changes in Settings are reflected immediately
+        const p = getProfile();
+        if (!p?.shiftStart || !p?.shiftEnd) { el.style.display = 'none'; return; }
+
         const now = new Date();
+        const nowMins = now.getHours() * 60 + now.getMinutes();
+
         const [sh, sm] = p.shiftStart.split(':').map(Number);
         const [eh, em] = p.shiftEnd.split(':').map(Number);
-        let end = new Date(now); end.setHours(eh, em, 0, 0);
-        let start = new Date(now); start.setHours(sh, sm, 0, 0);
-        if (end <= start) end.setDate(end.getDate() + 1);
+        const startMins = sh * 60 + sm;
+        const endMins   = eh * 60 + em;
 
-        const inShift = now >= start && now < end;
+        // Determine if it's an overnight shift (end time < start time)
+        const overnight = endMins <= startMins;
+
+        let inShift;
+        if (overnight) {
+            // Overnight: in shift if nowMins >= startMins OR nowMins < endMins
+            inShift = nowMins >= startMins || nowMins < endMins;
+        } else {
+            inShift = nowMins >= startMins && nowMins < endMins;
+        }
+
         if (!inShift) {
-            if (now >= end) start.setDate(start.getDate() + 1);
-            const diff = start - now;
-            const hrs = Math.floor(diff / 3600000), mins = Math.floor((diff % 3600000) / 60000);
+            // Calculate minutes until next shift start
+            let minsUntilStart;
+            if (nowMins < startMins) {
+                minsUntilStart = startMins - nowMins;
+            } else {
+                // Past start time today (and not in shift), so next start is tomorrow
+                minsUntilStart = (24 * 60 - nowMins) + startMins;
+            }
+            const hrs  = Math.floor(minsUntilStart / 60);
+            const mins = minsUntilStart % 60;
             el.innerHTML = `<span class="cd-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6M12 5v-3"/></svg></span><span class="cd-text">Shift starts in <strong>${hrs}h ${mins}m</strong></span>`;
             el.className = 'shift-countdown cd-pre';
         } else {
-            const diff = end - now;
-            const hrs = Math.floor(diff / 3600000), mins = Math.floor((diff % 3600000) / 60000);
-            const pct = Math.round(((end - start - diff) / (end - start)) * 100);
+            // Calculate minutes until shift ends
+            let minsUntilEnd;
+            if (overnight && nowMins >= startMins) {
+                // Past midnight still to come
+                minsUntilEnd = (24 * 60 - nowMins) + endMins;
+            } else {
+                minsUntilEnd = endMins - nowMins;
+            }
+
+            // Total shift duration in minutes
+            let totalShiftMins;
+            if (overnight) {
+                totalShiftMins = (24 * 60 - startMins) + endMins;
+            } else {
+                totalShiftMins = endMins - startMins;
+            }
+
+            const hrs  = Math.floor(minsUntilEnd / 60);
+            const mins = minsUntilEnd % 60;
+            const pct  = Math.round(((totalShiftMins - minsUntilEnd) / totalShiftMins) * 100);
             const ending = hrs < 2;
             const iconPath = ending
                 ? '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>'
                 : '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>';
-            // Simple straight progress line
-            (function buildBar() {
-                const W = 400, H = 6;
-                const clipW = Math.max(0, Math.min(W, (pct / 100) * W));
-                const fill  = ending ? '#9e4f42' : '#2d5a27';
-                const track = ending ? 'rgba(158,79,66,0.2)' : 'rgba(0,0,0,0.12)';
 
-                el.innerHTML = `
-                <span class="cd-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${iconPath}</svg></span>
-                <span class="cd-text"><strong>${hrs}h ${mins}m</strong> left</span>
-                <svg class="cd-ecg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
-                  <rect x="0" y="0" width="${W}" height="${H}" rx="3" fill="${track}"/>
-                  <rect x="0" y="0" width="${clipW}" height="${H}" rx="3" fill="${fill}"/>
-                </svg>`;
-            })();
+            const W = 400, H = 6;
+            const clipW = Math.max(0, Math.min(W, (pct / 100) * W));
+            const fill  = ending ? '#9e4f42' : '#2d5a27';
+            const track = ending ? 'rgba(158,79,66,0.2)' : 'rgba(0,0,0,0.12)';
+
+            el.innerHTML = `
+            <span class="cd-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${iconPath}</svg></span>
+            <span class="cd-text">Shift ends in <strong>${hrs}h ${mins}m</strong></span>
+            <svg class="cd-ecg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+              <rect x="0" y="0" width="${W}" height="${H}" rx="3" fill="${track}"/>
+              <rect x="0" y="0" width="${clipW}" height="${H}" rx="3" fill="${fill}"/>
+            </svg>`;
             el.className = `shift-countdown ${ending ? 'cd-ending' : 'cd-active'}`;
         }
         el.style.display = 'flex';
     }
     update();
-    setInterval(update, 60000);
+    setInterval(update, 30000); // refresh every 30s for better accuracy
 }
 
 /* pinned tools */
@@ -3237,7 +3270,28 @@ function attachSheetSwipe(sheet) {
         if (window.innerWidth <= 640) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+        // Sync time adder base time to current time when switching to timer tab
+        if (tabId === 'timer') {
+            const inp = document.getElementById('ta-base-time');
+            if (inp && !inp.dataset.userEdited) {
+                const now = new Date();
+                inp.value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+            }
+        }
     };
+})();
+
+// Mark time input as user-edited once they manually change it
+(function() {
+    document.addEventListener('DOMContentLoaded', () => {
+        const inp = document.getElementById('ta-base-time');
+        if (inp) {
+            inp.addEventListener('change', () => { inp.dataset.userEdited = '1'; });
+            // Set initial value
+            const now = new Date();
+            inp.value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        }
+    });
 })();
 
 /* notes auto-save indicator */
@@ -3706,6 +3760,80 @@ function toggleTimerSound() {
         showToast('Sound off', 'info');
     }
 }
+
+/* ── Time Adder ───────────────────────────────────────────────────────────── */
+let _taOp = 'add'; // 'add' | 'sub'
+
+window.setTimeAdderOp = function(op) {
+    _taOp = op;
+    document.getElementById('ta-op-add').classList.toggle('active', op === 'add');
+    document.getElementById('ta-op-sub').classList.toggle('active', op === 'sub');
+};
+
+window.setTAMins = function(mins) {
+    const inp = document.getElementById('ta-minutes');
+    if (inp) {
+        inp.value = mins;
+        // Highlight active chip
+        document.querySelectorAll('.ta-chip').forEach(c => {
+            c.classList.toggle('active', parseInt(c.getAttribute('onclick')?.match(/\d+/)?.[0]) === mins);
+        });
+        calculateTimeAdder();
+    }
+};
+
+window.calculateTimeAdder = function() {
+    const baseInput = document.getElementById('ta-base-time');
+    const minsInput = document.getElementById('ta-minutes');
+    const resultEl  = document.getElementById('ta-result');
+    const eqEl      = document.getElementById('ta-result-equation');
+    const timeEl    = document.getElementById('ta-result-time');
+    const noteEl    = document.getElementById('ta-result-note');
+
+    if (!baseInput?.value) { showToast('Please enter a start time', 'error'); return; }
+    const minsRaw = parseInt(minsInput?.value);
+    if (!minsRaw || minsRaw < 1) { showToast('Please enter the minutes', 'error'); return; }
+
+    const [bh, bm] = baseInput.value.split(':').map(Number);
+    const baseTotalMins = bh * 60 + bm;
+    const delta = _taOp === 'add' ? minsRaw : -minsRaw;
+    let resultMins = ((baseTotalMins + delta) % 1440 + 1440) % 1440;
+
+    const rh = Math.floor(resultMins / 60);
+    const rm = resultMins % 60;
+
+    // Format helper: HH:MM AM/PM
+    function fmt12(h, m) {
+        const ampm = h < 12 ? 'AM' : 'PM';
+        const h12 = h % 12 === 0 ? 12 : h % 12;
+        return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+    }
+    function fmt24(h, m) { return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; }
+
+    const baseFmt  = fmt12(bh, bm);
+    const resultFmt = fmt12(rh, rm);
+    const result24  = fmt24(rh, rm);
+    const opSym = _taOp === 'add' ? '+' : '−';
+    const minsLabel = minsRaw >= 60
+        ? (minsRaw % 60 === 0 ? `${minsRaw / 60}h` : `${Math.floor(minsRaw / 60)}h ${minsRaw % 60}m`)
+        : `${minsRaw} min`;
+
+    // Cross-midnight note
+    const crossesMidnight = _taOp === 'add'
+        ? (baseTotalMins + minsRaw) >= 1440
+        : baseTotalMins - minsRaw < 0;
+    const dayNote = crossesMidnight
+        ? (_taOp === 'add' ? '(next day)' : '(previous day)')
+        : '';
+
+    eqEl.textContent  = `${baseFmt}  ${opSym}  ${minsLabel}`;
+    timeEl.textContent = resultFmt + (dayNote ? `  ${dayNote}` : '');
+    noteEl.textContent = `24-hr: ${result24}`;
+
+    resultEl.style.display = 'block';
+    // Scroll result into view on mobile
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+};
 
 /* timer preset active state */
 let activePresetSeconds = null;
