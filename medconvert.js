@@ -731,17 +731,25 @@ window.calculateBSADose = function () {
 };
 
 /* iv & drip */
+/* IV helpers */
+window.setIVTime = function (hr, min) {
+    document.getElementById('iv-time-hr').value = hr || '';
+    document.getElementById('iv-time-min').value = min || '';
+};
+
 window.calculateIV = function () {
-    const vol = parseFloat(document.getElementById('iv-volume').value);
-    const time = parseFloat(document.getElementById('iv-time').value);
-    const gtt = parseFloat(document.getElementById('iv-gtt').value);
-    if (!vol || !time || !gtt) { showToast('Please fill in all fields', 'warning'); return; }
-    const rate = (vol * gtt) / time, rounded = Math.round(rate);
+    const vol  = parseFloat(document.getElementById('iv-volume').value);
+    const hrs  = parseFloat(document.getElementById('iv-time-hr').value)  || 0;
+    const mins = parseFloat(document.getElementById('iv-time-min').value) || 0;
+    const gtt  = parseFloat(document.getElementById('iv-gtt').value);
+    const totalMin = hrs * 60 + mins;
+    if (!vol || totalMin <= 0 || !gtt) { showToast('Please fill in volume, time, and drop factor', 'warning'); return; }
+    const rate = (vol * gtt) / totalMin, rounded = Math.round(rate);
     const display = `${rounded} gtt/min`;
     const re = document.getElementById('iv-result');
     document.getElementById('iv-result-value').textContent = display;
     document.getElementById('iv-result-note').textContent = `Count ${Math.round(rate / 4)} drops every 15 seconds`;
-    document.getElementById('iv-ml-hr').textContent = `Flow rate: ${Math.round((vol / time) * 60)} mL/hr`;
+    document.getElementById('iv-ml-hr').textContent = `Flow rate: ${((vol / totalMin) * 60).toFixed(1)} mL/hr`;
     re.classList.remove('result-normal', 'result-warning', 'result-danger', 'result-neutral');
     re.classList.add('result-neutral', 'show');
     addToHistory('IV/Drip', 'Drip Rate', display);
@@ -768,6 +776,76 @@ window.calculateConcentration = function () {
     const display = `${conc.toFixed(3)} ${unit}/mL`;
     showResult('concentration-result', 'concentration-value', display, 'neutral');
     addToHistory('IV/Drip', 'Concentration', display);
+};
+
+/* ── Weight-Based Infusion Rate ─────────────────────────────────────────── */
+const WBR_PRESETS = {
+    dopamine:      { drugAmt: 400, drugUnit: 'mg', bagVol: 250, dose: 5,    doseUnit: 'mcg_kg_min' },
+    dobutamine:    { drugAmt: 250, drugUnit: 'mg', bagVol: 250, dose: 5,    doseUnit: 'mcg_kg_min' },
+    norepinephrine:{ drugAmt: 4,   drugUnit: 'mg', bagVol: 250, dose: 0.1,  doseUnit: 'mcg_kg_min' },
+    nitroglycerin: { drugAmt: 50,  drugUnit: 'mg', bagVol: 250, dose: 5,    doseUnit: 'mcg_kg_min' },
+    propofol:      { drugAmt: 500, drugUnit: 'mg', bagVol: 50,  dose: 5,    doseUnit: 'mcg_kg_min' },
+    heparin:       { drugAmt: 25000, drugUnit: 'units', bagVol: 250, dose: 18, doseUnit: 'units_kg_hr' },
+};
+
+window.setWBRPreset = function (key) {
+    const p = WBR_PRESETS[key];
+    if (!p) return;
+    document.getElementById('wbr-drug-amt').value  = p.drugAmt;
+    document.getElementById('wbr-drug-unit').value = p.drugUnit;
+    document.getElementById('wbr-bag-vol').value   = p.bagVol;
+    document.getElementById('wbr-dose').value      = p.dose;
+    document.getElementById('wbr-dose-unit').value = p.doseUnit;
+    showToast(`${key.charAt(0).toUpperCase()+key.slice(1)} preset loaded`, 'info');
+};
+
+window.calculateWeightBasedRate = function () {
+    const weight   = parseFloat(document.getElementById('wbr-weight').value);
+    const dose     = parseFloat(document.getElementById('wbr-dose').value);
+    const doseUnit = document.getElementById('wbr-dose-unit').value;
+    const drugAmt  = parseFloat(document.getElementById('wbr-drug-amt').value);
+    const drugUnit = document.getElementById('wbr-drug-unit').value;
+    const bagVol   = parseFloat(document.getElementById('wbr-bag-vol').value);
+
+    if (!weight || !dose || !drugAmt || !bagVol) {
+        showToast('Please fill in all fields', 'warning'); return;
+    }
+
+    // Convert everything to mcg for concentration calc
+    let drugMcg = drugAmt;
+    if (drugUnit === 'mg')    drugMcg = drugAmt * 1000;
+    if (drugUnit === 'units') drugMcg = drugAmt;          // keep raw for units
+
+    const concPerMl = drugMcg / bagVol;  // mcg/mL (or units/mL)
+
+    // Convert dose to per-hour per-kg in same unit
+    let dosePerHrPerKg = dose;
+    if      (doseUnit === 'mcg_kg_min') dosePerHrPerKg = dose * 60;
+    else if (doseUnit === 'mcg_kg_hr')  dosePerHrPerKg = dose;
+    else if (doseUnit === 'mg_kg_hr')   dosePerHrPerKg = dose * 1000;  // → mcg
+    else if (doseUnit === 'units_kg_hr')dosePerHrPerKg = dose;
+
+    const rateMLhr = (weight * dosePerHrPerKg) / concPerMl;
+
+    const display = `${rateMLhr.toFixed(2)} mL/hr`;
+    const concLabel = drugUnit === 'units'
+        ? `${concPerMl.toFixed(2)} units/mL`
+        : `${(concPerMl >= 1000 ? (concPerMl/1000).toFixed(3)+' mg/mL' : concPerMl.toFixed(3)+' mcg/mL')}`;
+
+    const doseUnitLabel = { mcg_kg_min:'mcg/kg/min', mcg_kg_hr:'mcg/kg/hr', mg_kg_hr:'mg/kg/hr', units_kg_hr:'units/kg/hr' }[doseUnit];
+
+    document.getElementById('wbr-breakdown').innerHTML =
+        `<strong>Concentration:</strong> ${drugAmt} ${drugUnit} in ${bagVol} mL = <strong>${concLabel}</strong><br>` +
+        `<strong>Dose:</strong> ${dose} ${doseUnitLabel} × ${weight} kg × ${doseUnit.includes('min') ? '60' : '1'} = ${(weight * dosePerHrPerKg).toFixed(1)} ${drugUnit === 'units' ? 'units' : 'mcg'}/hr<br>` +
+        `<strong>Pump Rate:</strong> ${(weight * dosePerHrPerKg).toFixed(1)} ÷ ${concPerMl.toFixed(3)} = <strong>${rateMLhr.toFixed(2)} mL/hr</strong>`;
+
+    const res = document.getElementById('wbr-result');
+    document.getElementById('wbr-rate-value').textContent = display;
+    res.classList.remove('result-normal','result-warning','result-danger','result-neutral');
+    res.classList.add('result-neutral','show');
+    res.style.display = '';
+    addToHistory('IV/Drip', 'Weight-Based Rate', display);
+    if (navigator.vibrate) navigator.vibrate(12);
 };
 
 /* vitals */
@@ -2282,7 +2360,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const calcFns = [
         'calculateDosage','calculateWeightDose','calculateBSA','calculateBSADose',
-        'calculateIV','calculateInfusionTime','calculateConcentration',
+        'calculateIV','calculateInfusionTime','calculateConcentration','calculateWeightBasedRate',
         'calculateMAP','calculatePP','calculateShockIndex','calculateAAGradient',
         'calculateGCS','calculateBMI','calculateEGFR','calculateWells',
         'calculatePedsWeight','calculatePedsDose','calculateAPGAR',
@@ -4263,9 +4341,9 @@ function applyPatientAutofill(p) {
     if (p.age)    { fill('egfr-age', p.age); fill('vanco-age', p.age); fill('amino-age', p.age); }
     if (p.sex)    { const egfrSex = document.getElementById('egfr-sex'); if(egfrSex) egfrSex.value = p.sex; const vancoSex = document.getElementById('vanco-sex'); if(vancoSex) vancoSex.value = p.sex; const aminoSex = document.getElementById('amino-sex'); if(aminoSex) aminoSex.value = p.sex; }
     if (p.creatinine) { fill('egfr-cr', p.creatinine); fill('vanco-cr', p.creatinine); fill('amino-cr', p.creatinine); }
-    if (p.weight) { fill('vanco-weight', p.weight); fill('amino-weight', p.weight); fill('amino-height', p.height); }
+    if (p.weight) { fill('vanco-weight', p.weight); fill('amino-weight', p.weight); fill('amino-height', p.height); fill('wbr-weight', p.weight); }
     // Show autofill labels
-    ['vanco-weight-autofill','vanco-age-autofill','amino-weight-autofill','amino-age-autofill'].forEach(id => {
+    ['vanco-weight-autofill','vanco-age-autofill','amino-weight-autofill','amino-age-autofill','wbr-weight-autofill'].forEach(id => {
         const el = document.getElementById(id); if (el) el.textContent = '← from patient';
     });
 }
@@ -5268,39 +5346,6 @@ function renderCompatMatrix() {
 }
 
 document.addEventListener('DOMContentLoaded', initCompatMatrix);
-
-/* swipe to switch tabs (mobile) */
-(function() {
-    let swipeStartX = 0, swipeStartY = 0;
-    const THRESHOLD = 60, ANGLE_MAX = 35;
-    const TAB_ORDER = ['timer','dosage','iv','vitals','assessment','pediatric','lab','convert','reference','notes','drugs','io','handover','meddue','news2','qsofa','ecg','crashcart','ivcompat'];
-
-    document.addEventListener('touchstart', e => {
-        swipeStartX = e.touches[0].clientX;
-        swipeStartY = e.touches[0].clientY;
-    }, { passive: true });
-
-    document.addEventListener('touchend', e => {
-        if (window.innerWidth > 640) return;
-        const dx = e.changedTouches[0].clientX - swipeStartX;
-        const dy = e.changedTouches[0].clientY - swipeStartY;
-        if (Math.abs(dy) / Math.abs(dx) > Math.tan(ANGLE_MAX * Math.PI / 180)) return;
-        if (Math.abs(dx) < THRESHOLD) return;
-        // Don't swipe within inputs, editors or scrollable elements
-        const tgt = e.target;
-        if (tgt.closest('input,textarea,[contenteditable],.notes-editor,.more-sheet,.glove-panel')) return;
-        const activePanel = document.querySelector('.calc-card.active');
-        if (!activePanel) return;
-        const curTab = activePanel.id.replace('panel-','');
-        const idx = TAB_ORDER.indexOf(curTab);
-        if (idx === -1) return;
-        const nextIdx = dx < 0 ? Math.min(idx+1, TAB_ORDER.length-1) : Math.max(idx-1, 0);
-        if (nextIdx === idx) return;
-        const nextTab = TAB_ORDER[nextIdx];
-        if (window.switchToTab) window.switchToTab(nextTab);
-        if (window.updateMobileNav) window.updateMobileNav(nextTab);
-    }, { passive: true });
-})();
 
 /* pwa install prompt */
 (function() {

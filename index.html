@@ -892,13 +892,24 @@
             <button class="sub-tab active" onclick="showSubPanel('drip-rate')">Drip Rate</button>
             <button class="sub-tab" onclick="showSubPanel('infusion-time')">Infusion Time</button>
             <button class="sub-tab" onclick="showSubPanel('concentration')">Concentration</button>
+            <button class="sub-tab" onclick="showSubPanel('weight-based-rate')">Weight-Based Rate</button>
         </div>
 
         <div id="sub-drip-rate" class="sub-panel active">
             <h3 class="card-subtitle mb-md" style="color:var(--text-primary);font-weight:600;margin-bottom:var(--space-5);">IV Drip Rate</h3>
             <div class="form-row">
-                <div class="form-group"><label>Total Volume (mL)</label><input type="number" inputmode="decimal" id="iv-volume" placeholder="e.g., 1000" step="1"></div>
-                <div class="form-group"><label>Time (minutes)</label><input type="number" inputmode="decimal" id="iv-time" placeholder="e.g., 480" step="1"></div>
+                <div class="form-group">
+                    <label>Total Volume (mL)</label>
+                    <input type="number" inputmode="decimal" id="iv-volume" placeholder="e.g., 1000" step="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Infusion Time</label>
+                    <div style="display:flex;gap:var(--space-2);">
+                        <input type="number" inputmode="decimal" id="iv-time-hr" placeholder="hr" step="1" min="0" style="flex:1;" aria-label="Hours">
+                        <input type="number" inputmode="decimal" id="iv-time-min" placeholder="min" step="1" min="0" max="59" style="flex:1;" aria-label="Minutes">
+                    </div>
+                    <div style="font-size:var(--text-2xs);color:var(--text-muted);margin-top:3px;">hours &nbsp;·&nbsp; minutes</div>
+                </div>
                 <div class="form-group">
                     <label>Drop Factor (gtt/mL)</label>
                     <select id="iv-gtt">
@@ -909,14 +920,26 @@
                     </select>
                 </div>
             </div>
-            <button class="btn btn-primary btn-full" onclick="calculateIV()">Calculate Rate</button>
+            <!-- Quick time presets -->
+            <div style="display:flex;flex-wrap:wrap;gap:var(--space-2);margin-bottom:var(--space-4);" aria-label="Quick time presets">
+                <span style="font-size:var(--text-2xs);color:var(--text-muted);align-self:center;margin-right:2px;">Quick:</span>
+                <button class="ta-chip" onclick="setIVTime(0,30)">30 min</button>
+                <button class="ta-chip" onclick="setIVTime(1,0)">1 hr</button>
+                <button class="ta-chip" onclick="setIVTime(2,0)">2 hr</button>
+                <button class="ta-chip" onclick="setIVTime(4,0)">4 hr</button>
+                <button class="ta-chip" onclick="setIVTime(6,0)">6 hr</button>
+                <button class="ta-chip" onclick="setIVTime(8,0)">8 hr</button>
+                <button class="ta-chip" onclick="setIVTime(10,0)">10 hr</button>
+                <button class="ta-chip" onclick="setIVTime(12,0)">12 hr</button>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="calculateIV()">Calculate Drip Rate</button>
             <div class="result-display" id="iv-result">
                 <div class="result-label">Drip Rate</div>
-                <div class="result-value" id="iv-result-value">0 gtt/min</div>
+                <div class="result-value" id="iv-result-value">— gtt/min</div>
                 <div class="result-note" id="iv-result-note"></div>
                 <div class="result-interpretation" id="iv-ml-hr"></div>
             </div>
-            <div class="info-box"><p><strong>Formula:</strong> Drops/min = (Volume × Drop Factor) ÷ Time in Minutes<br><br><strong>Verification tip:</strong> Count drops for 15 seconds and multiply by 4.</p></div>
+            <div class="info-box"><p><strong>Formula:</strong> Drops/min = (Volume × Drop Factor) ÷ Time (min)<br><br><strong>Verification tip:</strong> Count drops for 15 sec and multiply by 4.</p></div>
         </div>
 
         <div id="sub-infusion-time" class="sub-panel">
@@ -951,6 +974,87 @@
                 <div class="result-note">Use this to verify medication preparations.</div>
             </div>
             <div class="info-box"><p><strong>Formula:</strong> Concentration = Drug Amount ÷ Total Volume<br><br><strong>Example:</strong> 400 mg Dopamine in 250 mL = 1.6 mg/mL</p></div>
+        </div>
+
+        <!-- Weight-Based Rate sub-panel -->
+        <div id="sub-weight-based-rate" class="sub-panel">
+            <h3 class="card-subtitle mb-md" style="color:var(--text-primary);font-weight:600;margin-bottom:var(--space-3);">Weight-Based Infusion Rate</h3>
+            <p style="font-size:var(--text-sm);color:var(--text-secondary);margin-bottom:var(--space-5);line-height:1.55;">Calculates the pump rate (mL/hr) for titratable infusions — vasopressors, inotropes, sedatives — ordered as <strong>mcg/kg/min</strong> or <strong>mcg/kg/hr</strong>.</p>
+
+            <!-- Formula card -->
+            <div style="background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);margin-bottom:var(--space-5);text-align:center;">
+                <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-2);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Formula</div>
+                <div style="font-size:var(--text-sm);color:var(--text-primary);font-family:var(--font-body);line-height:1.8;">
+                    <span style="display:block;border-bottom:1.5px solid var(--text-secondary);padding-bottom:var(--space-1);margin-bottom:var(--space-1);">
+                        Weight (kg) &times; Dose (mcg/kg/min) &times; 60 min/hr
+                    </span>
+                    <span style="display:block;">Concentration (mcg/mL)</span>
+                </div>
+                <div style="font-size:var(--text-xs);color:var(--sage);font-weight:600;margin-top:var(--space-2);">= Rate (mL/hr)</div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Patient Weight (kg) <span id="wbr-weight-autofill" style="font-size:0.65rem;color:var(--sage);font-weight:600;"></span></label>
+                    <input type="number" inputmode="decimal" id="wbr-weight" placeholder="e.g., 70" step="0.1" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Prescribed Dose</label>
+                    <input type="number" inputmode="decimal" id="wbr-dose" placeholder="e.g., 5" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Dose Unit</label>
+                    <select id="wbr-dose-unit">
+                        <option value="mcg_kg_min">mcg/kg/min</option>
+                        <option value="mcg_kg_hr">mcg/kg/hr</option>
+                        <option value="mg_kg_hr">mg/kg/hr</option>
+                        <option value="units_kg_hr">units/kg/hr</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Drug Amount in Bag</label>
+                    <input type="number" inputmode="decimal" id="wbr-drug-amt" placeholder="e.g., 400" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Drug Unit</label>
+                    <select id="wbr-drug-unit">
+                        <option value="mcg">mcg</option>
+                        <option value="mg">mg</option>
+                        <option value="units">units</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Bag / Diluent Volume (mL)</label>
+                    <input type="number" inputmode="decimal" id="wbr-bag-vol" placeholder="e.g., 250" step="1" min="1">
+                </div>
+            </div>
+
+            <!-- Common drug presets -->
+            <div style="margin-bottom:var(--space-4);">
+                <div style="font-size:var(--text-2xs);color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--space-2);">Common Drug Presets</div>
+                <div style="display:flex;flex-wrap:wrap;gap:var(--space-2);" aria-label="Drug presets">
+                    <button class="ta-chip" onclick="setWBRPreset('dopamine')">Dopamine</button>
+                    <button class="ta-chip" onclick="setWBRPreset('dobutamine')">Dobutamine</button>
+                    <button class="ta-chip" onclick="setWBRPreset('norepinephrine')">Norepinephrine</button>
+                    <button class="ta-chip" onclick="setWBRPreset('nitroglycerin')">Nitroglycerin</button>
+                    <button class="ta-chip" onclick="setWBRPreset('propofol')">Propofol</button>
+                    <button class="ta-chip" onclick="setWBRPreset('heparin')">Heparin</button>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-full" onclick="calculateWeightBasedRate()">Calculate Pump Rate</button>
+
+            <div class="result-display" id="wbr-result" style="display:none;">
+                <div class="result-label">Pump Rate</div>
+                <div class="result-value" id="wbr-rate-value">— mL/hr</div>
+                <div id="wbr-breakdown" style="margin-top:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--bg-input);border-radius:var(--radius-sm);font-size:var(--text-xs);color:var(--text-secondary);line-height:1.8;"></div>
+            </div>
+
+            <div class="info-box" style="margin-top:var(--space-4);">
+                <p><strong>Tip:</strong> Always verify the concentration label on the prepared bag and confirm the prescribed dose unit before programming the pump.</p>
+            </div>
         </div>
     </div>
 
